@@ -1,0 +1,278 @@
+{# type: product #}
+
+{#  description #}
+{#      wide product view with a big image and thumbnails underneath #}
+{#       #}
+
+{#  layout #}
+{#      images | title + price + product form + usps #}
+{#      description | specifications #}
+{#      related products #}
+{#      upsell products #}
+{#      shop more links #}
+
+{% import 'macros/displays.twig' as af_displays %}
+
+<div class="fh-product">
+<section id="product-page-content" class="mt-24">
+    <div class="container">
+        <div class="hidden-xs hidden-sm">
+            {% include 'macros/breadcrumbs.twig' %}
+        </div>
+        
+        <div class="row">
+            <div class="col-xs-12 col-md-7 product-images">
+                
+                <div class="product-full-images swiper">
+                    <div class="swiper-wrapper">
+                        {% for image in images %}
+                            <div class="swiper-slide">
+                                <div class="d-flex justify-content-center">
+                                    <a href="{{ image.filename|image({ "w": 1000, "h": 1000 }) }}" data-fancybox="product">
+                                        <img src="{{ image.thumbs.400 }}" alt="{{ name }}" title="{{ name }}">
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="swiper-button-prev" data-target=".product-full-images"></div>
+                    <div class="swiper-button-next" data-target=".product-full-images"></div>
+                    <div class="swiper-scrollbar" data-target=".product-full-images"></div>
+                </div>
+                
+                <div class="swiper product-thumbnails">
+                    <div class="swiper-wrapper">
+                        {% for image in images %}
+                            <div class="swiper-slide">
+                                <img src="{{ image.thumbs.100 }}" class="thumbnail" alt="{{ name }}" title="{{ name }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-5 col-lg-4 col-lg-push-1 product-information">
+                <h1 class="product-name">{{ name }}</h1>
+                <p>
+                    {{ short_description }}
+                </p>
+                <div class="fh-price-detail">
+                    {% if price_from and not selected %}
+                        <span class="fh-price-from">{{ "Vanaf"|t }}</span>
+                    {% endif %}
+                    {% if has_discount %}
+                        <s class="fh-old-price">&euro;&thinsp;{{ original_price|price(true, '') }}</s>
+                    {% endif %}
+                    <span class="price-final">&euro;&thinsp;{{ price|price(true, '') }}</span>
+                    {% set price_excl = price / 1.21 %}
+                    <span class="fh-price-tax">{{ "incl. btw"|t }} &middot; &euro;&thinsp;{{ price_excl|price(true, '') }} {{ "excl. btw"|t }}</span>
+                </div>
+                {% if has_options %}
+                    <div class="product-options">
+                        {% for attributeKey,attribute in attributes %}
+                            <div class="form-group">
+                                <label>{{ attribute.label }}</label>
+                                <div class="product-options-item">
+                                    {% for option in attribute.options %}
+                                        <button
+                                            data-af-href="{{ option.url }}"
+                                            data-af-ajax-element="#product-page-content"
+                                            data-af-ajax-input="#product-page-content > *"
+                                            class="btn btn-outlined-grey btn-sm{% if option.active %} active{% endif %}{% if not option.available %} unavailable{% endif %} product-option"
+                                        >
+                                            {{ option.label }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if price > 0 %}
+                    {# Bestellen via WhatsApp (winkelwagen-functionaliteit komt later) #}
+                    <div class="fh-order">
+                        <div class="form-group">
+                            <label for="count">{{ "Aantal"|t }}</label>
+                            <input type="number" id="count" name="quantity" class="form-control input-sm" value="1" min="1" {% if not available %} disabled {% endif %}>
+                        </div>
+                        {% if available %}
+                            <div class="fh-stock">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></svg>
+                                <span>{{ stock_message ?: "Op voorraad"|t }}</span>
+                            </div>
+                            {% if blocks.pusp_primary %}
+                                <div class="fh-usp">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+                                    <span>{{ blocks.pusp_primary.content|replace({ "<p>": "", "</p>":"", '<strong>': '<strong class="text-primary">' }) }}</span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {# gekozen variant(en) uit de actieve opties #}
+                        {% set variant_parts = [] %}
+                        {% for attribute in attributes %}
+                            {% for option in attribute.options if option.active %}
+                                {% set variant_parts = variant_parts|merge([attribute.label ~ ': ' ~ option.label]) %}
+                            {% endfor %}
+                        {% endfor %}
+                        {% set variant_str = variant_parts|join(', ') %}
+                        {% set wa_msg = "Hallo! Ik wil graag bestellen: " ~ name ~ (sku ? " (art.nr: " ~ sku ~ ")" : "") ~ (variant_str ? " — " ~ variant_str : "") %}
+                        {% if available %}
+                            <a id="wa-order-btn" href="https://wa.me/31850604129?text={{ wa_msg|url_encode }}" target="_blank" rel="noopener" data-wa-base="https://wa.me/31850604129" data-wa-name="{{ name }}" data-wa-sku="{{ sku ?: '-' }}" data-wa-variant="{{ variant_str }}" class="fh-btn fh-btn-wa fh-btn-block">
+                                <svg class="fh-wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm0 18.15h-.01c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.19.84.85-3.11-.2-.32a8.2 8.2 0 0 1-1.26-4.36c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.69 8.23-8.24 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.77-1.84-.2-.48-.41-.42-.56-.43l-.48-.01c-.16 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.16 1.75 2.67 4.25 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+                                {{ "Bestellen via WhatsApp"|t }}
+                            </a>
+                            <script>
+                            (function(){
+                                var b=document.getElementById('wa-order-btn'); if(!b) return;
+                                var q=document.getElementById('count');
+                                function u(){
+                                    var n=(q&&q.value)?q.value:'1';
+                                    var v=b.getAttribute('data-wa-variant');
+                                    var m="Hallo! Ik wil graag bestellen via de webshop:\n\n"+b.getAttribute('data-wa-name')+" (art.nr: "+b.getAttribute('data-wa-sku')+")"+(v?"\n"+v:"")+"\nAantal: "+n+"\n"+location.href;
+                                    b.href=b.getAttribute('data-wa-base')+"?text="+encodeURIComponent(m);
+                                }
+                                if(q) q.addEventListener('input',u);
+                                u();
+                            })();
+                            </script>
+                        {% else %}
+                            <span class="fh-btn fh-btn-wa fh-btn-block is-disabled">{{ stock_message ?: "Niet op voorraad"|t }}</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if link %}
+                    <strong>
+                        {{ link.label }}
+                    </strong>
+                    <div class="row">
+                        {% for link in link.links %}
+                            <div class="col-xs-4">
+                                <a href="{{ link.url }}">
+                                    <img src="{{ link.image.thumbs.200 }}" alt="{{ link.name }}" title="{{ link.name }}"/>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <hr/>
+                <ul class="list-unstyled fh-usp-list">
+                    {% for usp in blocks if "pusp" in usp.identifier and usp.identifier != 'pusp_primary' %}
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></svg>
+                            <span>{{ usp.content|replace({'<p>':'','</p>':'', '<strong>': '<strong class="text-primary">'}) }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="row product-specifications">
+            <hr/>
+            {#col-md-6 aangepast naar col-md-12#}
+            <div class="col-md-12">
+                <h2>{{ "Omschrijving"|t }}</h2>
+                {{ description }}
+            </div>
+           {# <div class="col-md-6">
+                <h2>{{ "Specificaties"|t }}</h2>
+
+                <table class="table-striped w-100">
+                    <tr>
+                        <td class="px-10 py-5"><strong>{{"Artikelnummer"|t}}</strong></td>
+                        <td class="px-10 py-5">{% if sku %}{{sku}}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-10 py-5"><strong>{{"EAN nummer"|t}}</strong></td>
+                        <td class="px-10 py-5">{% if ean %}{{ean}}{% else %}-{% endif %}</td>
+                    </tr>
+                    
+                    {% for specification in specifications if specification.visible %}
+                        <tr>
+                            <td class="px-10 py-5"><strong>
+                                {% if specification.key matches '/^(\.{2}[-_]is|is[-_])inclusief.*/'  %}
+                                    {{specification.label|t|split('_')[2:]|join(" ")|capitalize}}
+                                {% elseif specification.key matches '/^(\.{2}[-_]is|is[-_]).*/'  %}
+                                    {{specification.label|t|split('_')[1:]|join(" ")|capitalize}}
+                                {% elseif specification.key matches '/^(waarde)/'  %}
+                                    {{specification.label|t|split('_')[2:]|join(" ")|capitalize}}
+                                {% elseif specification.key matches '/^(nl|be|de|en)[-_]/'  %}
+                                    {{specification.label|t|split('_')[1:]|join(" ")|capitalize}}
+                                {% else %}
+                                    {{specification.label|t|replace({ '_': ' ' })|capitalize}}
+                                {% endif %} 
+                            </strong></td>
+                            <td class="px-10 py-5">
+                                {% for option in specification.options %}
+                                    {% if specification.key matches '/^(\.{2}[-_]is|is[-_]).*/'  %}
+                                       {% if option.label|trim matches ' /^[0nNFfO].*/' %} 
+                                            <i class="far fa-times fa-w-10 text-danger"></i>
+                                       {% else %}
+                                            <i class="far fa-check fa-w-14 text-success"></i>
+                                       {% endif %}
+                                    {% elseif specification.key matches '/^(waarde)/'  %}
+                                        {{option.label}} {{specification.key|split("-")[1]}}
+                                    {% elseif specification.key == 'merk'  %}
+                                        <a
+                                            href="{{home_url ~ option.label|lower|replace({ " ": "-" }) ~ '/'}}"
+                                            title="Bekijk alles van {{option.label}}"
+                                        >
+                                            {{option.label}}
+                                        </a>
+                                    {% else %}
+                                        {{option.label}}
+                                    {% endif %} 
+                                    </br>
+                                {% endfor %}
+                            </td>
+                        </tr>                                
+                    {% endfor %}
+                    
+                </table>
+            </div>#}
+        </div>
+
+        {% include 'product/bundleGrid.twig' %}
+
+        {% if has_app('related_products') and not related_products is empty %}
+            <hr>
+            <h3>{{ "Anderen bestelden ook"|t }}</h3>
+            {{ af_displays.products({
+                'products'  : related_products,
+                'style'     : 'grid',
+                'use_quickview': true
+            }) }}
+        {% endif %}
+        {% if has_app('related_products') and not upsell_products is empty %}
+            <hr>
+            <h3>{{ "Vergelijkbare producten"|t }}</h3>
+            {{ af_displays.products({
+                'products'  : upsell_products,
+                'style'     : 'grid',
+                'use_quickview': true
+            }) }}
+        {% endif %}
+        {% if menu_items is not empty %}
+            <hr/>
+            <span>{{ "Shop meer"|t }}</span>
+            <ul class="shop-more list-inline">
+                {% for item in menu_items %}
+                    <li>
+                        <a href="{{ item.url }}" title="{{ item.label }}"><i class="fa fa-caret-right"></i> {{ item.label }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="visible-xs visible-sm">
+            {% include 'macros/breadcrumbs.twig' with {'mobile_breadcrumb': true} %}
+        </div>
+        {% include 'product/reviews.twig' %}
+    </div>
+</section>
+
+<div class="hidden">
+    {% if use_quickview %}
+        {% include "product/quickview.twig" %}
+    {% endif %}
+    {% if use_share %}
+        {% include "product/share.twig" %}
+    {% endif %}
+</div>
+</div>{# /.fh-product #}

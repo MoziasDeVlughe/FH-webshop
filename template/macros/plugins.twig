@@ -1,0 +1,36 @@
+{# plugin macros #}
+
+{# use these macros by importing macros/plugins.twig as af_plugins in your document #}
+
+{# Config expects: slider #}
+{% macro kiyoh(config) %}
+	{% include "macros/plugins/kiyohWidget.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: slider #}
+{% macro facebook_stream(config) %}
+	{% include "macros/plugins/facebookWidget.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: slider #}
+{% macro wwk(config) %}
+	{% include "macros/plugins/webwinkelkeurWidget.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro instagram(config) %}
+	{% include "macros/plugins/instagram.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: title, twitter_url, height and theme #}
+{% macro twitter(config) %}
+	{% include "macros/plugins/twitter.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: dateto, name and a format #}
+{% macro countdown(config) %}
+	{% include "macros/plugins/countdown.twig" with config only %}
+{% endmacro %}

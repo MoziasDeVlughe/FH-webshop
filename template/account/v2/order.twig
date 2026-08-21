@@ -1,0 +1,194 @@
+<div class="container">
+    <h1 class="account-heading">
+      {{'Order: [order_number]'|t({"[order_number]":sale.order_number})}}
+    </h1>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig'  with {'active': 'orders'} %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10 page-main-content">
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <strong>{{'Orderinfo'|t}}</strong>
+                        </div>
+                        <div class="panel-body">
+                            <table id="order-information" class="full-width">
+                                <tr>
+                                    <td>{{'Ordernummer'|t}}:</td>
+                                    <td >{{sale.order_number}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{'Besteldatum'|t}}:</td>
+                                    <td >{{sale.order_date|date("d-m-Y")}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{'Status'|t}}:</td>
+                                    <td >
+                                        {% if sale.status|lower == "concept" %}
+                                            {{"Niet afgerond"|t}}
+                                        {% else %}
+                                            {{sale.status}}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>{{'Totaalbedrag'|t}}:</td>
+                                    <td>
+                                        {{sale.total|price}}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="btn-toolbar">
+                                {% if sale.order_print_url%}
+                                    <a href="{{sale.order_print_url}}" class="btn btn-sm btn-primary-inverse "><i class="fa fa-print"></i> {{"Order"|t}}</a>
+                                {% endif %}
+                                {% if sale.invoice_print_url%}
+                                    <a href="{{sale.invoice_print_url}}" class="btn btn-sm btn-primary-inverse "><i class="fa fa-print"></i> {{"Factuur"|t}}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <strong>
+                                {{'Adressen'|t}}
+                            </strong>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <table>
+                                        <tr>
+                                            <th>
+                                                {{"Verzendadres"|t}}
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{shipping.address.name|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{shipping.address.street|e}} {{shipping.address.house_number|e}} {{shipping.address.house_number_suffix|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{shipping.address.postal_code|e|upper}}, {{shipping.address.city|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {% for country in countries if country.id == shipping.address.country.id %}
+                                                    {{country.name}}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-xs-6">
+                                    <table>
+                                        <tr>
+                                            <th>
+                                                {{"factuuradres"|t}}
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{billing.address.name|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{billing.address.street|e}} {{billing.address.house_number|e}} {{billing.address.house_number_suffix|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {{billing.address.postal_code|e|upper}}, {{billing.address.city|e}}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                {% for country in countries if country.id == billing.address.country.id %}
+                                                    {{country.name}}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2>
+                {{'Producten'|t}}
+            </h2>
+            <hr class="light">
+            <div id="product-grid" class="list product-grid no-switch">
+                {% for listitem in sale.items %}
+                    {% set item = listitem %}
+                    {% set product = item.product %}
+                    
+                    <article class="product-grid-item col-xs-6 col-sm-4 col-md-4 col-lg-3 ">
+                        <div class="product-image">
+                            <a href="{{product.url}}">
+                                <img src='{{product.image_default.thumbs.100|image({"w": 100, "h": 100})}}' alt="{{"Foto van"|t}} {{product.name}}"/>
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <div class="product-info-description">
+                                <a data-af-href="{{product.url}}" class="product-name list-visible">
+                                    <strong>{{product.name}}</strong>
+                                </a>
+                                <div class="">
+                                    {{'besteld: [amount_ordered]'|t({"[amount_ordered]": item.amount_ordered})}}<br>
+                                    {{'geleverd: [amount_shipped]'|t({"[amount_shipped]": sale.status|lower == 'afgerond' ? item.amount_shipped : 0})}}
+                                </div>
+                            </div>
+                            <div class="product-action">
+                                <div class="product-action-text text-right">
+                                    <strong>
+                                        {% if product.has_discount %}
+                                            <small>
+                                                <s>
+                                                    {{product.original_price|price}}
+                                                </s>
+                                            </small>
+                                        {% endif %}
+                                        <span> {{item.price_gross|price}}</span>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-push-8 col-xs-12 mb-50">
+                    <hr class="dark">
+                    <table class="full-width">
+                        <tr>
+                            <td class="text-right">
+                                <strong>
+                                    {{"Totaal"|t}}
+                                </strong>
+                            </td>
+                            <td class="text-right">
+                                {{sale.total|price}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

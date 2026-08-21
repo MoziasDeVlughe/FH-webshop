@@ -1,0 +1,47 @@
+{% set more_link = (more_link is defined ? more_link : '/blog') %}
+{% set more_btn = (more_btn is defined ? more_btn : 'meer') %}
+{% set show_title = (show_title is defined ? show_title : true) %}
+{% set show_text = (show_text is defined ? show_text : false) %}
+{% set show_date = (show_date is defined ? show_date : false) %}
+{% set show_excerpt = (show_excerpt is defined ? show_excerpt : false) %}
+{% set width = (width is defined ? width : 6) %}
+
+{% if filter_tag %}
+    {% set filtered_posts = [] %}
+    {% for post in blog %}
+        {% if post.tags[filter_tag] is defined %}
+            {% set filtered_posts = filtered_posts|merge([post]) %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+    {% set filtered_posts = blog %}
+{% endif %} 
+
+<div class="d-grid grid-columns-md-3 grid-columns-1 blog-grid p-lg-40 p-10">
+    {% for blog in filtered_posts %}
+        <a href="{{blog.url}}" class="p-10">
+            <div class="blogpost align-items-center">
+                <div class="blogpost-image" style="background-image: url({{blog.image.filename|replace({'inline':'blogpost'})}});">
+                </div> 
+                <div class="blogpost-title-inner h-pr-100">
+                    {% if show_title %}
+                        <h2 class="blogpost-big-title font-size-24 font-weight-200 ">{{blog.title}}</h2>
+                    {% endif %}
+                    {#{% if show_text %}#}
+                    {#    <h4 class="blogpost-small-title">{{blog.subtitle}}</h4>#}
+                    {#{% endif %}#}
+                    {#{% if show_date %}#}
+                    {#    <span class="text-muted">{{blog.publish_date|date("d F Y")}}</span>#}
+                    {#{% endif %}#}
+                </div>
+                <hr>
+                {% if show_excerpt %}
+                    <div class="blogpost-excerpt">
+                        {{get_excerpt(blog.content, 200, 0)}}
+                    </div>
+                {% endif %}
+            </div>
+        </a>
+    {% endfor %}
+</div>
+<div class='clearfix'></div>

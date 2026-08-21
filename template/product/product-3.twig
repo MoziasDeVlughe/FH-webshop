@@ -1,0 +1,344 @@
+{# type: product #}
+
+{#  description #}
+{#      wide product view with a big image and thumbnails underneath #}
+{#       #}
+
+{#  layout #}
+{#      images | title + price + product form + usps #}
+{#      description | specifications #}
+{#      related products #}
+{#      upsell products #}
+{#      shop more links #}
+
+{% import 'macros/displays.twig' as af_displays %}
+
+<section id="product-page-content">
+    <div class="container">
+        <div class="hidden-xs hidden-sm">
+            {% include 'macros/breadcrumbs.twig' %}
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-7 product-images">
+                <div class="main-image text-center">
+                    {% if image_default %}
+                        <img src="{{image_default.thumbs.400|image({"w": 400, "h": 400})}}" alt="{{"Foto van"|t}} {{name}}" title="{{name}}">
+                    {% else %}
+                        <img src="http://cdn.afosto.com/static/common/thumbs/400/default.jpg" alt="{{"Foto van"|t}} {{name}}" title="{{name}}">
+                    {% endif %}
+                </div>
+                <div{% if images|length == 1 %} class="hidden"{% endif %}>
+                    <div class="row thumbnail-container">
+                        {% for image in images %}
+                            <div class="thumbnail-container-item">
+                                <a href="{{image.filename|image}}" data-lightbox="product">
+                                    <img src="{{image.thumbs.100|image({"w": 100, "h": 100})}}" class="thumbnail" alt="{{"Foto van"|t}} {{name}}" data-img="{{image.thumbs.400|image({"w": 400, "h": 400})}}">
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-5 col-lg-4 col-lg-push-1 product-information">
+                <h1 class="product-name">{{name}}</h1>
+                <p>
+                    {{short_description}}
+                </p>
+                
+                {#{% if specifications.merk %}#}
+                {#<span>{{'Bekijk alle'|t}}</span>#}
+                {#    <a href="{{home_url}}{{specifications['hoofdcategorie']['options']|first.label|lower|replace({" ": "-"}) }}/{{specifications['merk']['options']|first.label|lower|replace({" & ":"-","&":"-", " + ":"-", " " : "-", ".":"", "'":"-", "é": "e"})}}/" #}
+                {#        title="{{specifications['merk']['options']|first.label}} {{specifications['hoofdcategorie']['options']|first.label|lower|t}}">#}
+                {#            {{ specifications['merk']['options']|first.label }} {{specifications['hoofdcategorie']['options']|first.label|lower|t}}#}
+                {#    </a>#}
+                {#{% endif %}#}
+                
+                <div class="well">
+                    <h3>
+                        {% if price_from and not selected %}
+                            {{"Vanaf:"|t}} 
+                        {% endif %}
+                        {% if has_discount %}
+                            <small>
+                                <s>
+                                    {{original_price|price}}
+                                </s>
+                            </small>
+                        {% endif %}
+                        <span class="price-final">
+                            {{price|price}}
+                        </span>
+                    </h3>
+                    {% if has_options %}
+                        <div class="product-options">
+                            {% for attributeKey,attribute in attributes %}
+                                <div class="form-group">
+                                    <div>
+                                        <span data-toggle="modal" data-target="#sizing-chart-modal"><label class="text-underline">{{'maatadvies'|t}}</label> <i class="fa fa-question-circle-o"></i></span>
+                                    </div>
+                                    <label>{{attribute.label}}</label>
+                                    <div class="product-options-item">
+                                        {% for option in attribute.options %}
+                                            <button 
+                                                data-af-href="{{option.url}}" 
+                                                data-af-ajax-element="#product-page-content" 
+                                                data-af-ajax-input="#product-page-content > *" 
+                                                class="btn btn-primary btn-sm{% if option.active %} active{% endif %}{% if not option.available %} unavailable{% endif %} product-option"
+                                            >
+                                                {{option.label}}
+                                                </button>
+                                        {% endfor %} 
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if price > 0 %}
+                        <form action="{{cart_url}}" method="post" id="product-form" data-cart-url="{{home_url}}cart" data-product-url="{{url}}">
+                            {% if has_app('extrafield') and fields is not empty %}
+                                <div class="product-fields">
+                                    {% for field in fields %}
+                                        <div class="product-field-container" id="free_{{field.key}}_container">
+                                            <label>{{"Type:"|t}}</label>
+                                            <input type="text" value="" id="free_{{field.key}}" name="{{field.key}}" {% if field.required %}class="required" {% endif %} />
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <input type="hidden" value="{{price}}" name="price" />
+                            <input type="hidden" value="{{id}}" name="product_id" />
+                            <div class="form-group">
+                                <label for="count">{{"Aantal"|t}}</label>
+                                <input type="number" id="count" name="quantity" class="form-control input-sm" value="1" min="1" {% if not available or not selected %} disabled {% endif %}>
+                            </div>
+                            <div class="form-group">
+                                <div class="d-flex mx-n5">
+                                    <div class="flex-fill px-5">
+                                        <button {% if not available or not selected %} disabled {% endif %} class="btn btn-primary btn-block">
+                                            {% if selected %}
+                                                {% if available %}
+                                                    <i class="fa fa-shopping-cart fa-lg"> </i> {{"In winkelwagen"|t}}
+                                                {% else %}
+                                                    {{stock_message}}
+                                                {% endif %}
+                                            {% else %}
+                                                {{"Kies een optie"|t}}
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                    {% if has_app('myWishlist') %}
+                                        <div class="px-5">
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-primary-inverse px-10" 
+                                                data-toggle="modal" 
+                                                data-target="#wishlist-modal" 
+                                                class="wishlist-link" 
+                                                data-wl-product="{{product_wishlist_url}}" 
+                                                data-wl-ajax-element="#wishlist-modal .modal-body" 
+                                                data-wl-ajax-input="#wishlist-content > *" 
+                                                aria-label="{{'Toevoegen aan wishlist'|t}}"
+                                            >
+                                                <i class="fa fa-fw fa-heart"> </i> 
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="d-flex pt-25 pb-30">
+                                {% for method in properties.payment_methods if method.icon %}
+                                    <img src="{{ method.icon.filename|image({"h": 25}) }}" class="icon-h-25 mr-15" alt="{{ 'Betaal met [methode]'|t({"[methode]": method.name}) }}" title="{{ 'Betaal met [methode]'|t({"[methode]": method.name}) }}">
+                                {% endfor %}
+                            </div>
+                            {% if has_app('expected_delivery') and pluginData.expectedDelivery.bestDelivery.id %}
+                                <div class="text-success">
+                                    {{expected_delivery_notification}}
+                                </div>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                    
+                    <div class="row">            
+                        {% if has_app('related_products') and not related_products is empty %}
+                            <div class="col-xs-12">                            
+                                <h3>{{"Anderen bestelden ook"|t}}</h3>
+                                {{af_displays.products({
+                                    'products'  : related_products,
+                                    'style'     : 'grid',
+                                    'use_quickview': true
+                                })}}
+                            </div>
+                        {% endif %}
+                        {% if has_app('related_products') and not upsell_products is empty %}
+                            <div class="col-xs-12">
+                                <h3>{{"Vergelijkbare producten"|t}}</h3>
+                                {{af_displays.products({
+                                    'products'  : upsell_products,
+                                    'style'     : 'grid',
+                                    'use_quickview': true
+                                })}}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                {% if link %}
+                    <strong>
+                        {{link.label}}
+                    </strong>
+                    <div class="row">
+                        {% for link in link.links %}
+                            <div class="col-xs-4">
+                                <a href="{{link.url}}">
+                                    <img src="{{link.image.thumbs.200}}" alt="{{"Foto van"|t}} {{link.name}}" title="{{link.name}}"/>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <hr />
+                <ul class="list-unstyled">
+                    {% for usp in blocks if "psps" in usp.identifier%}
+                        <li>
+                            {{usp.content|replace({'<p>':'','</p>':''})}}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="row product-specifications">
+            <hr />
+            <div class="col-md-6 col-lg-7">
+                <h2>{{name}} {{"Omschrijving"|t}}</h2>
+                {{description}}
+            </div>
+            <div class="col-md-6 col-lg-5">
+                <h2>{{name}} {{"Specificaties"|t}}</h2>
+                
+                <table class="table-striped w-100">
+                    <tr>
+                        <td class="px-10 py-5"><strong>{{"Artikelnummer"|t}}</strong></td>
+                        <td class="px-10 py-5">{% if sku %}{{sku}}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-10 py-5"><strong>{{"EAN nummer"|t}}</strong></td>
+                        <td class="px-10 py-5">{% if ean %}{{ean}}{% else %}-{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-10 py-5"><strong>{{"Voorraad"|t}}</strong></td>
+                        <td class="px-10 py-5">{% if stock > 0 %}{{stock}} {{"stuk|stuks"|t(stock)}}{% else %}-{% endif %}</td>
+                    </tr>
+                    {#<tr>#}
+                    {#    <td class="px-10 py-5"><strong>{{"Leverancier"|t}}</strong></td>#}
+                    {#    <td class="px-10 py-5">{% if supplier %}{{supplier}}{% else %}-{% endif %}</td>#}
+                    {#</tr>#}
+                    {% for specification in specifications if specification.visible %}
+                        
+                        <tr>
+                            <td class="px-10 py-5"><strong>{{specification.label}}</strong></td>
+                            <td class="px-10 py-5">
+                                {% for option in specification.options %}
+                                        {{option.label}}
+                                {% endfor %}
+                            </td>
+                        </tr>                                
+                    {% endfor %}
+                </table>
+                
+            </div>
+        
+                <div class="col-md-6 col-md-offset-6 col-lg-5 col-lg-offset-7">
+                    <div class="product-contact-grid">
+                        {# edit opening times below in each button's "data-open-from" attribute #}
+                        <button type="button" class="d-flex align-items-center btn trigger-chat show-contact-status" data-open-text="{{"Open"|t}}" data-current-date="{{"now"|date("U")}}" data-open-days="0,1,2,3,4" data-open-from="09:00" data-open-till="17:00">
+                            <span class="contact-button-text"><i class="far fa-comments mr-10"></i>{{'Live chat'|t}}</span>
+                        </button>
+                        <button type="button" class="d-flex align-items-center btn show-contact-status" data-open-text="{{"Open"|t}}" data-window-url="https://api.whatsapp.com/send?l={{language|lower}}&phone=316123456789" data-current-date="{{"now"|date("U")}}" data-open-days="0,1,2,3,4" data-open-from="09:00" data-open-till="17:00">
+                            <span class="contact-button-text"><i class="fab fa-whatsapp mr-10"></i>{{'Whatsapp'|t}}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        
+        {% include 'product/bundleGrid.twig' %}
+        
+        {% if has_app('related_products') and not related_products is empty %}
+            <hr>
+            <h3>{{"Anderen bestelden ook"|t}}</h3>
+            {{af_displays.products({
+                'products'  : related_products,
+                'style'     : 'grid',
+                'use_quickview': true
+            })}}
+        {% endif %}
+        {% if has_app('related_products') and not upsell_products is empty %}
+            <hr>
+            <h3>{{"Vergelijkbare producten"|t}}</h3>
+            {{af_displays.products({
+                'products'  : upsell_products,
+                'style'     : 'grid',
+                'use_quickview': true
+            })}}
+        {% endif %}
+        {% if menu_items is not empty %}
+            <hr />
+            <span>{{"Shop meer"|t}}</span>
+            <ul class="shop-more list-inline">
+                {% for item in menu_items %}
+                    <li>
+                        <a href="{{item.url}}" title="{{item.label}}"><i class="fa fa-caret-right"></i> {{item.label}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="visible-xs visible-sm">
+            {% include 'macros/breadcrumbs.twig' with {'mobile_breadcrumb': true} %} 
+        </div>
+        {% include 'product/reviews.twig' %}
+    </div>
+</section>
+
+<div class="modal fade" id="sizing-chart-modal" tabindex="-1" role="dialog" aria-labelledby="sizing-chart">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="modal-title h4" id="sizing-chart">
+                    {{"Maattabel"|t}}
+                </span> 
+            </div>
+            <div class="modal-body">
+                {% for chart in blocks|sort if "sizechart_" in chart.identifier %}
+                    <div class="panel-group" id="accordion-{{chart.identifier|trim}}" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="{{chart.identifier|trim}}">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion-{{chart.identifier|trim}}" class="collapsed" href="#{{chart.identifier|trim}}_id" aria-expanded="false" aria-controls="{{chart.identifier|trim}}_id">
+                                    <span class="panel-title h4">
+                                        {{chart.title}}
+                                        <i class="fas fa-caret-up"></i>
+                                    </span>
+                                    
+                                </a>
+                            </div>
+                            <div id="{{chart.identifier|trim}}_id" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{chart.identifier|trim}}">
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        {{chart.content}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hidden">
+    {% if use_quickview %}
+        {% include "product/quickview.twig" %}
+    {% endif %}
+    {% if use_share %}
+        {% include "product/share.twig" %}
+    {% endif %}
+</div>

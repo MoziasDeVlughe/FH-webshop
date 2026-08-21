@@ -1,0 +1,6 @@
+{% set fullscreen = (fullscreen is defined ? fullscreen : true) %}
+{% set lazyload = (lazyload is defined ? lazyload : true) %}
+
+<div class="lazyload-wrapper lazyload-video">
+    <iframe class="lazyload" data-src="{{link}}" frameborder="0" {% if fullscreen %} allowfullscreen {% endif %}></iframe>
+</div>

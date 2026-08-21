@@ -1,0 +1,13 @@
+{% if breadcrumbs %}
+    <div class="breadcrumb-container mb-20">
+        <ol class="breadcrumb">
+            {% for breadcrumb in breadcrumbs %}
+                {% if loop.last %} 
+                    <li>{{breadcrumb.label}}{% if not loop|last %}<span class="separator px-8">/</span>{% endif %}</li>
+                {% else %}
+                    <li><a {% if mobile_breadcrumb %}data-af-{% endif %}href="{{breadcrumb.link}}">{{breadcrumb.label}}</a>{% if not loop|last %}<span class="separator px-8">/</span>{% endif %}</li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </div>
+{% endif %}

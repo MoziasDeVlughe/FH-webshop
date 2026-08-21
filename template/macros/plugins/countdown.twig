@@ -1,0 +1,5 @@
+{% set name = (name is defined ? name : 'countdown-element') %}
+{% set to_date = (to_date is defined ? to_date : "now"|date('m/d/Y')) %}
+
+<div class="countdown-clock" id="{{name}}" data-countdown-to="{{to_date}}"></div>
+<div class="clearfix"></div>

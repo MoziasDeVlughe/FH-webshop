@@ -1,0 +1,70 @@
+<div class="row cart-overview-item">
+    <div class="col-xs-3">
+        <a href="{{item.url}}">
+            <div class="lazyload-wrapper lazyload-square">
+                <img class="lazyload" data-src="{{item.image.thumbs.100|image({"w": 75, "h": 75})}}" alt="{{'Bekijk [name]'|t({'[name]': item.name})}}"/>
+            </div>
+        </a>
+    </div>
+    <div class="col-xs-9">
+        <div>
+            <a href="{{item.url}}">
+                {% if item.pluginData.bundle.bundle.name %}
+                    {{item.pluginData.bundle.bundle.name}}
+                {% else %}
+                    {{item.name}}
+                {% endif %}
+            </a>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <i class="text-muted">{{item.quantity}}x</i>
+            </div>
+            <div class="col-xs-6 text-right pull-right">
+                <strong>
+                    {% if item.pluginData.bundle.bundle.name %}
+                        {{(item.pluginData.bundle.bundle.price * item.quantity)|price}}
+                    {% else %}
+                        {{item.subtotal|price}}
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        {% if item.pluginData.bundle %}
+            <div class="row mt-10">
+                <div class="col-xs-2 col-xs-push-1">
+                    <a href="{{item.url}}">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="lazyload" data-src="{{item.image.thumbs.50|image({"w": 50, "h": 50})}}" alt="{{'Bekijk [name]'|t({'[name]': item.name})}}"/></a>
+                        </div>
+                </div>
+                <div class="col-xs-9 col-xs-push-1">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <a href="{{item.url}}">{{item.name}}</a>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        {% endif %}
+        {% for child in item.children %}
+            <div class="row mt-10">
+                <div class="col-xs-2 col-xs-push-1">
+                    <a href="{{child.url}}">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="lazyload" data-src="{{child.image.thumbs.50|image({"w": 50, "h": 50})}}" alt="{{'Bekijk [name]'|t({'[name]': child.name})}}"/></a>
+                        </div>
+                </div>
+                <div class="col-xs-9 col-xs-push-1">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <a href="{{child.url}}">{{child.name}}</a>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

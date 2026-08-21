@@ -1,0 +1,56 @@
+<div class="container">
+    <h1>{{"Mijn bestellingen"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig'  with {'active': 'orders'} %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <div class="row">
+                <div class="col-sm-3 col-xs-4 hidden-xs">
+                    <strong>{{"Ordernummer"|t}}</strong>
+                </div>
+                <div class="col-sm-3 col-xs-4 hidden-xs">
+                    <strong>{{"Datum"|t}}</strong>
+                </div>
+                <div class="col-sm-3 col-xs-4 hidden-xs">
+                    <strong>{{"Bedrag"|t}}</strong>
+                </div>
+                <div class="col-sm-3 hidden-xs">
+                    
+                </div>
+            </div>
+            <hr>
+            <div class="order-list">
+                {% for sale in sales if sale.status|lower != 'concept' %}
+                    <div class="order-row">
+                        <div class="row order-row-inner" data-af-href="{{sale.order_url}}">
+                            <div class="col-xs-6 visible-xs">
+                                <strong>{{"Ordernummer"|t}}:</strong>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                {{sale.order_number}}
+                            </div>
+                            <div class="col-xs-6 visible-xs">
+                                <strong>{{"Datum"|t}}:</strong>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                {{sale.order_date|date("d-m-Y")}}
+                            </div>
+                            <div class="col-xs-6 visible-xs">
+                                <strong>{{"Bedrag"|t}}:</strong>
+                            </div>
+                            <div class="col-sm-3 col-xs-6">
+                                {{sale.total|price(false, '&euro;')}}
+                            </div>
+                            <div class="col-xs-12 space-20 visible-xs"></div>
+                            <div class="col-sm-3 col-xs-12 text-right">
+                                <a href="{{sale.order_url}}" class="btn btn-sm btn-primary-inverse "><i class="fa fa-search"> </i> {{"Bekijk details"|t}}</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

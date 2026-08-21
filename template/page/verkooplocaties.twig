@@ -1,0 +1,330 @@
+{# type: page #}
+{# Verkooplocatie-zoeker (kaart + postcode-zoeker).
+   Styling: scss/_florian-redesign.scss (.fh-locator)
+   Dispatch: layouts/base.twig matcht op paginatitel ("verkooppunten" / "verkooplocaties" / "waar te koop").
+
+   ┌─────────────────────────────────────────────────────────────────────┐
+   │  DEALERS BEWERK JE HIERONDER in het <script id="florian-dealers">     │
+   │  blok. Eén object per verkooppunt. Verplicht: name, city, lat, lng.   │
+   │  Coördinaten opzoeken: https://www.openstreetmap.org  (rechtermuis →  │
+   │  "Toon adres" geeft lat/lng), of https://nominatim.openstreetmap.org  │
+   └─────────────────────────────────────────────────────────────────────┘
+#}
+
+<script type="application/json" id="florian-dealers">
+[
+  {"name":"Florian Boutique Dordrecht","street":"Einsteinstraat 14b","postal":"3316 GG","city":"Dordrecht","phone":"06 113 634 28","tel":"+611363428","email":"jacco@florianhorsefood.nl","website":"florianhorsefood.nl","lat":51.778453,"lng":4.637169},
+  {"name":"Broes J. BV","street":"Baronsdreef 4","postal":"2861","city":"0. - L. -V. -Waver","phone":"0478 06 98 57","tel":"+32478069857","email":"Info@broesj.be","website":"","lat":51.062053,"lng":4.595906},
+  {"name":"VOF van Willigen","street":"Marijkestraat 36","postal":"4175 LP","city":"Haaften","phone":"06 39 109 241","tel":"+31639109241","email":"mootje_kruissen@hotmail.com","website":"","lat":51.844877,"lng":5.198902},
+  {"name":"De Voerboer","street":"Broekstraat 49","postal":"7122 MN","city":"Aalten","phone":"0543 476618","tel":"+31543476618","email":"info@de-voerboer.nl","website":"","lat":51.919417,"lng":6.565693},
+  {"name":"Danielle Lesuis","street":"Gemeenlandsedijk Zuid 57","postal":"3216 AH","city":"Abbenbroek","phone":"06 57900443","tel":"+31657900443","email":"daanlesuis@hotmail.com","website":"","lat":51.839002,"lng":4.249449},
+  {"name":"Hoefsmederij Schouwenaars BV","street":"Molenweg 7","postal":"4885 KV","city":"Achtmaal","phone":"","tel":"","email":"delaetsarah@yahoo.com","website":"","lat":51.456204,"lng":4.576942},
+  {"name":"Rina en Conny van de Kolk RvdK Eventing","street":"Boekel 6","postal":"1921 CD","city":"Akersloot","phone":"","tel":"","email":"c.vdkolk@hotmail.com","website":"","lat":52.574559,"lng":4.748194},
+  {"name":"Jan Equestrian","street":"Stadhoudersmolenweg 188","postal":"7317 AZ","city":"Apeldoorn","phone":"055 5223035","tel":"+31555223035","email":"info@janequestrian.nl","website":"","lat":52.246798,"lng":5.973165},
+  {"name":"Fouragehandel Schutte","street":"Baarhorsterdijk 4","postal":"7437 RH","city":"Bathmen","phone":"0570 541255","tel":"+31570541255","email":"fourage.schutte@kpnmail.nl","website":"","lat":52.251735,"lng":6.337373},
+  {"name":"Esther Schepers","street":"Oosterstraat 4","postal":"9411 PR","city":"Beilen","phone":"06 46602892","tel":"+31646602892","email":"Florianboutiquebeilen@gmail.com","website":"","lat":52.856447,"lng":6.522488},
+  {"name":"Dirks Fourage","street":"Trambaan 39 c","postal":"6658 AB","city":"Beneden-Leeuwen","phone":"","tel":"","email":"dirksfourage@outlook.com","website":"","lat":51.883899,"lng":5.530782},
+  {"name":"Treurniet mengvoeders B.V.","street":"Berkelse Poort 143","postal":"2651 JX","city":"Berkel En Rodenrijs","phone":"010 5112144","tel":"+31105112144","email":"info@treurniet-mengvoeders.nl","website":"","lat":51.988648,"lng":4.474223},
+  {"name":"Agra Totaal","street":"Buterhoeke 62","postal":"9041 AD","city":"Berlikum","phone":"0518 462456","tel":"+31518462456","email":"info@agratotaal.nl","website":"","lat":53.243117,"lng":5.641102},
+  {"name":"Van Kemenade VOF","street":"Burgstraat 7","postal":"5684 NP","city":"Best","phone":"","tel":"","email":"j.vankemenade@home.nl","website":"","lat":51.508496,"lng":5.362016},
+  {"name":"Brassers Korenmolen","street":"Oostweg 2","postal":"4373 RA","city":"Biggekerke","phone":"0118 551323","tel":"+31118551323","email":"info@brasserskorenmolen.nl","website":"","lat":51.49753,"lng":3.53209},
+  {"name":"P.G. Wolters","street":"Pieter durksstrjitte 1","postal":"9108 MK","city":"Broeksterwâld","phone":"0511 421874","tel":"+31511421874","email":"info@pgwolters.nl","website":"","lat":53.273287,"lng":5.991528},
+  {"name":"Stalwereld BV","street":"Buinerstraat 4","postal":"9526 TE","city":"Bronnegerveen","phone":"","tel":"","email":"info@stalwereld.nl","website":"","lat":52.948168,"lng":6.828831},
+  {"name":"Zalda Ruitersport","street":"Heerderweg 4","postal":"6267 NH","city":"Cadier En Keer","phone":"","tel":"","email":"info@zalda.nl","website":"","lat":50.829287,"lng":5.758328},
+  {"name":"Teurlings-De Mulder BV","street":"Dorpsstraat 30 A","postal":"5529 AW","city":"Casteren","phone":"0497 681555","tel":"+31497681555","email":"factuur@teurlings-demulder.nl","website":"","lat":51.395131,"lng":5.243018},
+  {"name":"Alice Westera","street":"Herfterweg 2 A","postal":"7722 KS","city":"Dalfsen","phone":"","tel":"","email":"a.westera@live.nl","website":"","lat":52.50742,"lng":6.185959},
+  {"name":"M.A. Schouten Transport VOF","street":"Driestedenweg 157","postal":"1661 BL","city":"De Weere","phone":"","tel":"","email":"info@schoutentransportenfourage.nl","website":"","lat":52.733512,"lng":4.984837},
+  {"name":"Vermeulen-Paardenvoeding","street":"Bedrijfsweg 1 AE","postal":"1785 AK","city":"Den Helder","phone":"","tel":"","email":"info@vermeulen-paardenvoeding.nl","website":"","lat":52.942176,"lng":4.778795},
+  {"name":"Horsepowerfood","street":"Voorpeelweg 22 a","postal":"5754 RJ","city":"Deurne","phone":"06 51948419","tel":"+31651948419","email":"info@stoervoer.nl","website":"","lat":51.451944,"lng":5.846815},
+  {"name":"Fouragehandel Drenthe","street":"Eeserstraat 4","postal":"9537 TA","city":"Eesergroen","phone":"06 11644064","tel":"+31611644064","email":"info@fouragehandeldrenthe.nl","website":"","lat":52.893066,"lng":6.784294},
+  {"name":"Tess Paul Horse & Health","street":"Borculoseweg 78","postal":"7151 MS","city":"Eibergen","phone":"06 24424302","tel":"+31624424302","email":"info@tesspaul.nl","website":"","lat":52.111576,"lng":6.606028},
+  {"name":"Lana Eccles Eccles Horse Academy","street":"Renbaan 4","postal":"7214 PL","city":"Epse","phone":"","tel":"","email":"chantijanssen@gmail.com","website":"","lat":52.217137,"lng":6.23282},
+  {"name":"AWF Diervoeders","street":"Appelaarseweg 43","postal":"4793 EJ","city":"Fijnaart","phone":"06 10320371","tel":"+31610320371","email":"inkoop@awfdiervoeders.nl","website":"","lat":51.631492,"lng":4.459939},
+  {"name":"More For Horses","street":"Ruitenlaan 27","postal":"9619 PP","city":"Froombosch","phone":"","tel":"","email":"infomoreforhorses@gmail.com","website":"","lat":53.195224,"lng":6.780583},
+  {"name":"Jose van Vlerken","street":"Napoleonsweg zuid 1","postal":"6096 ND","city":"Grathem","phone":"","tel":"","email":"josevanvlerken@outlook.com","website":"","lat":51.183227,"lng":5.854536},
+  {"name":"Boutique Haarsteeg","street":"De Omloop 10","postal":"5254 TJ","city":"Haarsteeg","phone":"","tel":"","email":"Kimjohannesen81@gmail.com","website":"","lat":51.725877,"lng":5.221833},
+  {"name":"Highstreet Diervoeders","street":"Provincialeweg West 44 a","postal":"2851 EM","city":"Haastrecht","phone":"06 54778437","tel":"+31654778437","email":"info@highstreetdiervoeders.nl","website":"","lat":52.00182,"lng":4.752864},
+  {"name":"Zorgboerderij Celester","street":"Spaarndammerweg 5","postal":"1165 MR","city":"Halfweg","phone":"","tel":"","email":"rositabroere@live.nl","website":"","lat":52.387233,"lng":4.740646},
+  {"name":"Jan Wensink Paardenvoeders","street":"Eerbeekseweg 29","postal":"6964 BM","city":"Hall","phone":"06 53723716","tel":"+31653723716","email":"info@janwensink.nl","website":"","lat":52.09239,"lng":6.091203},
+  {"name":"Nikki Goddijn","street":"Heersweg 3","postal":"6732 GV","city":"Harskamp","phone":"06 10799509","tel":"+31610799509","email":"Nikkigoddijn@outlook.com","website":"","lat":52.116783,"lng":5.750117},
+  {"name":"Hoeve Chavez","street":"Herelsestraat 213","postal":"4726 SR","city":"Heerle","phone":"06 41802771","tel":"+31641802771","email":"Info@hoevechavez.nl","website":"","lat":51.539032,"lng":4.368752},
+  {"name":"Marloes Diervoeders","street":"Kraaiendijk 5 a","postal":"4794 SG","city":"Heijningen","phone":"06 22342909","tel":"+31622342909","email":"info@mpvoeders.nl","website":"","lat":51.663536,"lng":4.404959},
+  {"name":"De Hemriker Hof","street":"Poasen 13","postal":"8409 CL","city":"Hemrik","phone":"","tel":"","email":"info@dehemrikerhof.nl","website":"","lat":53.044747,"lng":6.145054},
+  {"name":"Steven Ebbens","street":"Veldhoven 15 a","postal":"5081 NK","city":"Hilvarenbeek","phone":"","tel":"","email":"steven@florianhorsefood","website":"","lat":51.47652,"lng":5.122773},
+  {"name":"Stal Dudok","street":"Onderstraat 29 A","postal":"4927 AR","city":"Hooge Zwaluwe","phone":"06 22363564","tel":"+31622363564","email":"staldudok@hotmail.com","website":"","lat":51.68889,"lng":4.739802},
+  {"name":"Vranckaert Animal Feed & Nutrition","street":"Hogerheistraat 126","postal":"1880","city":"Kapelle Op Den Bos","phone":"0473 31 14 64","tel":"+32473311464","email":"kristin@vranckaertnutrition.be","website":"","lat":50.998055,"lng":4.340566},
+  {"name":"Den Braven Equifood","street":"Michiel van Loonstraat 7","postal":"4247 ES","city":"Kedichem","phone":"","tel":"","email":"info@denbravenequifood.nl","website":"","lat":51.860887,"lng":5.051556},
+  {"name":"Paddock paradise de Gangelt","street":"Hout 10","postal":"5995 PP","city":"Kessel","phone":"","tel":"","email":"ppdegangelt@outlook.com","website":"","lat":51.299863,"lng":6.081914},
+  {"name":"Boutique Groene Velden","street":"Groene Velden 173 175","postal":"8211 BD","city":"Lelystad","phone":"","tel":"0628907018","email":"horsefoodlelystad@hotmail.com","website":"","lat":52.532712,"lng":5.496114},
+  {"name":"Denise Koch","street":"Beemster 84","postal":"8244 CC","city":"Almere","phone":"","tel":"","email":"denisekoch@live.nl","website":"","lat":52.497567,"lng":5.425688},
+  {"name":"Stal de Lieve","street":"Vinkenkamp 9","postal":"7364 CD","city":"Lieren","phone":"","tel":"","email":"staldelieve@outlook.com","website":"","lat":52.151474,"lng":6.021466},
+  {"name":"Duinkerken Montage vof","street":"Burg. Jansstraat 26","postal":"7925 PW","city":"Linde","phone":"06 12702733","tel":"+31612702733","email":"info@duinkerkenmontage.nl","website":"","lat":52.647592,"lng":6.471774},
+  {"name":"Oliehandel van Hulst","street":"Lithoijensedijk 16 A","postal":"5396 NE","city":"Lithoijen","phone":"","tel":"","email":"natalie.vanhulst@gmail.com","website":"","lat":51.80408,"lng":5.462878},
+  {"name":"BV De Schamphoeve","street":"Kruisstraat 38","postal":"3920","city":"Lommel","phone":"","tel":"","email":"info@deschamphoeve.be","website":"","lat":51.229211,"lng":5.348558},
+  {"name":"Dressuur stal de Haarhof","street":"Haarsterweg 31","postal":"9363 VC","city":"Marum","phone":"","tel":"","email":"info@dehaarhof.nl","website":"","lat":53.131631,"lng":6.223954},
+  {"name":"Schepens Animal Care","street":"Nederweerterdijk 8","postal":"5768 PH","city":"Meijel","phone":"","tel":"","email":"info@schepensanimalcare.nl","website":"","lat":51.340077,"lng":5.852114},
+  {"name":"CJ Equine Boutique Caya Jochems","street":"Campagneweg 8","postal":"5964 PH","city":"Meterik","phone":"","tel":"","email":"cjequineboutique@gmail.com","website":"","lat":51.4448,"lng":6.030668},
+  {"name":"Jacks Diervoeders","street":"Nijverheidsweg 42","postal":"3641 RR","city":"Mijdrecht","phone":"","tel":"","email":"info@huisdiervoeders.nl","website":"","lat":52.206184,"lng":4.876426},
+  {"name":"Natasja Van der Pluijm De paardenbloem","street":"Patrijsstraat 33","postal":"5854 GK","city":"Nieuwbergen","phone":"","tel":"","email":"paardenbloem@hotmail.com","website":"","lat":51.600043,"lng":6.05868},
+  {"name":"Paard en Winst Susanne Blijleven-Bos","street":"J.J. Rooversstraat 28","postal":"2441 EL","city":"Nieuwveen","phone":"","tel":"","email":"info@paardenwinst.nl","website":"","lat":52.197955,"lng":4.750842},
+  {"name":"Oprecht Equine Assisted Coaching","street":"Loosbroekseweg 33","postal":"5388 VM","city":"Nistelrode","phone":"","tel":"","email":"info@oprechteac.nl","website":"","lat":51.70288,"lng":5.546645},
+  {"name":"Boutique Noordwolde","street":"Hoofdstraat West 67","postal":"8391 AM","city":"Noordwolde","phone":"","tel":"","email":"jokerabea@gmail.com","website":"","lat":52.886552,"lng":6.134773},
+  {"name":"Boutique Nuenen Angelique van de Linden","street":"Helsestraat 7","postal":"5674 BA","city":"Nuenen","phone":"","tel":"","email":"angeldusty@outlook.fr","website":"","lat":51.474176,"lng":5.534763},
+  {"name":"Stal de Klinkenberg","street":"Bovenweg 87","postal":"8072 PG","city":"Nunspeet","phone":"","tel":"","email":"hzhaaksema@hotmail.com","website":"","lat":52.395745,"lng":5.807233},
+  {"name":"Ruiterstad - Ippo verkooppunt","street":"Industrieweg 3 G","postal":"5688 DP","city":"Oirschot","phone":"04993773","tel":"+314993773","email":"info@ruiterstad.nl","website":"","lat":51.502248,"lng":5.322005},
+  {"name":"Céline Spekkers CS Equine Services","street":"Opmeerderweg 5","postal":"1716 KH","city":"Opmeer","phone":"","tel":"","email":"dutchbarrelranch@gmail.com","website":"","lat":52.705982,"lng":4.956548},
+  {"name":"Golda Hulstein","street":"Molendreef 160","postal":"4641 RV","city":"Ossendrecht","phone":"","tel":"","email":"gollie1975@gmail.com","website":"","lat":51.394478,"lng":4.347299},
+  {"name":"Sanus Equus","street":"Robert De Preesterstraat 107","postal":"9700","city":"Oudenaarde","phone":"0495 507907","tel":"+31495507907","email":"sanusequus@gmail.com","website":"","lat":50.866571,"lng":3.643979},
+  {"name":"De Hagendoorn BvbA","street":"Ruitersbaan 16","postal":"3990","city":"Peer","phone":"","tel":"","email":"info@dehagendoorn.be","website":"","lat":51.066876,"lng":5.451961},
+  {"name":"De Dreve","street":"Bosdruifstraat 6","postal":"2380","city":"Ravels","phone":"","tel":"","email":"Info@de-dreve.be","website":"","lat":51.381536,"lng":5.007996},
+  {"name":"Bianca Kotter","street":"Achterste heikant 4","postal":"5541 NT","city":"Reusel","phone":"","tel":"","email":"biancahendriks@outlook.com","website":"","lat":51.349835,"lng":5.140206},
+  {"name":"Sta Rho","street":"Werkersdijk 34","postal":"3161 PC","city":"Rhoon","phone":"010 5015578","tel":"+31105015578","email":"info@sta-rho.nl","website":"","lat":51.858448,"lng":4.409426},
+  {"name":"Paula van Selow","street":"Gelderdonksestraat 11","postal":"4891 PD","city":"Rijsbergen","phone":"06 10312489","tel":"+31610312489","email":"paulavanselow@hotmail.com","website":"","lat":51.490475,"lng":4.719905},
+  {"name":"Stevens Strooisels","street":"Transportweg 3","postal":"9301 ZX","city":"Roden","phone":"","tel":"","email":"leon@stevens-strooisels.nl","website":"","lat":53.149037,"lng":6.449699},
+  {"name":"De Wieken Diervoeders","street":"Hoogschaijksestraat 39","postal":"5374 EC","city":"Schaijk","phone":"06 53677390","tel":"+31653677390","email":"kantoor@diervoeders.nu","website":"","lat":51.743427,"lng":5.649424},
+  {"name":"Leontine van Ewijk Equitinus","street":"Witte moeren 5","postal":"4722 SE","city":"Schijf","phone":"","tel":"","email":"Leontine@equitinus.nl","website":"","lat":51.492115,"lng":4.57258},
+  {"name":"Overbeeke Veevoeders","street":"Molenweg 2","postal":"4423 PC","city":"Schore","phone":"0113 340734","tel":"+31113340734","email":"han.overbeeke@planet.nl","website":"","lat":51.467878,"lng":3.993933},
+  {"name":"Henkhorse","street":"Aesgewei 11","postal":"8647 SH","city":"Sibrandabuorren","phone":"","tel":"","email":"info@henkhorse.nl","website":"","lat":53.064989,"lng":5.717491},
+  {"name":"Diamonds Vision Milou Boon","street":"Gochsedijk 47","postal":"5853 AA","city":"Siebengewald","phone":"","tel":"","email":"factuur@diamondsvision.nl","website":"","lat":51.642659,"lng":6.091704},
+  {"name":"BV Baetens van Nespen","street":"St Niklaasstraat 135 b","postal":"9170","city":"Sint Gilles Waas","phone":"0473 76 46 20","tel":"+32473764620","email":"info@voeders-baetens.be","website":"","lat":51.206784,"lng":4.144588},
+  {"name":"Fouragehandel Heemskerk","street":"De Roef 7","postal":"4254 XL","city":"Sleeuwijk","phone":"06 51639965","tel":"+31651639965","email":"info@agheemskerk.nl","website":"","lat":51.80679,"lng":4.947337},
+  {"name":"Manege het Keelven","street":"Kuilvenweg 4","postal":"5712 GX","city":"Someren","phone":"0493 491537","tel":"+31493491537","email":"info@hetkeelven.nl","website":"","lat":51.380371,"lng":5.682297},
+  {"name":"Natuurlijk Goed","street":"Dendermondsesteenweg 322","postal":"9100","city":"St. Niklaas","phone":"0495 45 94 55","tel":"+32495459455","email":"info@natuurlijkgoed.be","website":"","lat":51.136189,"lng":4.152929},
+  {"name":"Natuurlijke paardenvoeding","street":"Delta-industrieweg 9","postal":"3251 LX","city":"Stellendam","phone":"088 2240400","tel":"+31882240400","email":"marinka@kpeholland.nl","website":"","lat":51.817732,"lng":4.039555},
+  {"name":"Lisanne Gruijters","street":"Pandijk 18","postal":"6029 PA","city":"Sterksel","phone":"","tel":"","email":"lisannegruijters@gmail.com","website":"","lat":51.34001,"lng":5.639581},
+  {"name":"Ruitersport Veendam","street":"Transportweg 14","postal":"9645 KX","city":"Veendam","phone":"0598 635226","tel":"+31598635226","email":"info@ruitersportveendam.nl","website":"","lat":53.112012,"lng":6.891304},
+  {"name":"Ultimate Horse Gear","street":"Koornbloemstraat 20","postal":"8570","city":"Vichte","phone":"0468 15 29 06","tel":"+32468152906","email":"info.vergote@gmail.com","website":"","lat":50.836222,"lng":3.414454},
+  {"name":"Fokkens Dier Tuin Ruitersport","street":"Juffer Marthastraat 9 a","postal":"9989 EG","city":"Warffum","phone":"0595 422919","tel":"+31595422919","email":"info@fokkens-ruitersport.nl","website":"","lat":53.395246,"lng":6.55823},
+  {"name":"Dijkers Diervoeders","street":"Bornestraat 19","postal":"7595 LH","city":"Weerselo","phone":"0541 661348","tel":"+31541661348","email":"info@dijkersdiervoeders.nl","website":"","lat":52.351142,"lng":6.830013},
+  {"name":"Anouk Cras","street":"Dennenstraat 22","postal":"2260","city":"Westerlo","phone":"0471 74 23 66","tel":"+32471742366","email":"anoukcras@hotmail.com","website":"","lat":51.137265,"lng":4.897461},
+  {"name":"Ellis Poelarends","street":"Noordsingel 28","postal":"8091 WD","city":"Wezep","phone":"","tel":"","email":"ellisp@live.nl","website":"","lat":52.468859,"lng":6.001505},
+  {"name":"Larissa del Prado","street":"Blokdijk 13","postal":"1608 HH","city":"Wijdenes","phone":"06 53808322","tel":"+31653808322","email":"info@ldpdesign.nl","website":"","lat":52.658251,"lng":5.149137},
+  {"name":"Stal de Withaar","street":"Balkerweg 61","postal":"7738 PA","city":"Witharen","phone":"06 16044439","tel":"+31616044439","email":"info@staldewithaar.nl","website":"","lat":52.56351,"lng":6.396332},
+  {"name":"DM Dressage","street":"Netelaarstraat 7","postal":"2160","city":"Wommelgem","phone":"0493 12 99 77","tel":"+32493129977","email":"Dm.dressage@telenet.be","website":"","lat":51.192643,"lng":4.510088},
+  {"name":"Sequiveri","street":"Varsselsestraat 6","postal":"7021 MV","city":"Zelhem","phone":"","tel":"","email":"Info@sequiveri.nl","website":"","lat":52.029205,"lng":6.344634},
+  {"name":"Kieftenburg Horses","street":"Eemslandweg 148","postal":"7894 AH","city":"Zwartemeer","phone":"06 11656089","tel":"+31611656089","email":"wkieft001@hetnet.nl","website":"","lat":52.721311,"lng":7.059717},
+  {"name":"Astorhoeve","street":"watersnipweg 20a","postal":"1341 AB","city":"Almere","phone":"","tel":"","email":"Info@astorhoeve.nl ","website":"","lat":52.3475421,"lng":5.3062035},
+  {"name":"Thielen Diervoeders","street":"Hultenseweg 79","postal":"5032 PH","city":"Tilburg","phone":"0161 224 515","tel":"","email":"info@thielendiervoeders.nl","website":"https://thielendiervoeders.nl/","lat":51.565481,"lng":4.967607}
+  ]
+</script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<div class="fh-collection fh-locator">
+  <div class="container mt-24">
+    <div class="title-row">
+      <h1>{{title}}</h1>
+    </div>
+    <hr />
+
+    {# De CMS-body wordt bewust NIET getoond: die dupliceerde de titel.
+       Wil je later een intro-tekst tonen, zet 'm hieronder terug:
+       {% if content is not empty %}<div class="fh-prose fh-locator__intro">{{content}}</div>{% endif %} #}
+
+    <form id="locator-form" class="fh-locator__search" role="search" autocomplete="off">
+      <label for="locator-input" class="sr-only">{{'Postcode of plaats'|t}}</label>
+      <div class="fh-locator__searchbar">
+        <div class="fh-locator__field">
+          <i data-lucide="search" class="size-20 fh-locator__searchicon"></i>
+          <input type="text" id="locator-input" name="q"
+                 placeholder="{{'Postcode of plaats…'|t}}" />
+        </div>
+        <button type="submit" class="btn btn-primary fh-locator__submit">{{'Zoek'|t}}</button>
+      </div>
+      <button type="button" id="locator-geo" class="fh-locator__geo">
+        <i data-lucide="locate-fixed" class="size-16"></i> {{'Gebruik mijn locatie'|t}}
+      </button>
+      <p id="locator-status" class="fh-locator__status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="fh-locator__layout">
+      <div class="fh-locator__list" id="locator-list">
+        <ul class="fh-locator__items" id="locator-items"></ul>
+        <p class="fh-locator__empty" id="locator-empty" hidden>{{'Geen verkooppunten gevonden.'|t}}</p>
+      </div>
+      <div class="fh-locator__map" id="locator-map"></div>
+    </div>
+  </div>
+</div>{# /.fh-locator #}
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function () {
+  function init() {
+    if (typeof L === 'undefined') { return; }
+
+    var dataEl = document.getElementById('florian-dealers');
+    var dealers = [];
+    try { dealers = JSON.parse(dataEl.textContent) || []; } catch (e) { dealers = []; }
+    // Alleen dealers met geldige coördinaten tonen op de kaart.
+    dealers = dealers.filter(function (d) { return typeof d.lat === 'number' && typeof d.lng === 'number'; });
+
+    var itemsEl  = document.getElementById('locator-items');
+    var emptyEl  = document.getElementById('locator-empty');
+    var statusEl = document.getElementById('locator-status');
+    var inputEl  = document.getElementById('locator-input');
+    var formEl   = document.getElementById('locator-form');
+    var geoBtn   = document.getElementById('locator-geo');
+
+    var map = L.map('locator-map', { scrollWheelZoom: false }).setView([52.15, 5.4], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var youMarker = null;
+
+    function haversine(a, b, c, d) {
+      var R = 6371, r = Math.PI / 180;
+      var dLat = (c - a) * r, dLng = (d - b) * r;
+      var s = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(a * r) * Math.cos(c * r) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+    }
+
+    function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    // Markers + popups opbouwen.
+    dealers.forEach(function (d, i) {
+      var route = 'https://www.google.com/maps/dir/?api=1&destination=' + d.lat + ',' + d.lng;
+      var html = '<strong>' + esc(d.name) + '</strong><br>' +
+        (d.street ? esc(d.street) + '<br>' : '') +
+        esc([d.postal, d.city].filter(Boolean).join('  ')) + '<br>' +
+        (d.phone ? '<a href="tel:' + esc((d.tel || d.phone).replace(/\s/g, '')) + '">' + esc(d.phone) + '</a><br>' : '') +
+        (d.email ? '<a href="mailto:' + esc(d.email) + '">' + esc(d.email) + '</a><br>' : '') +
+        (d.website ? '<a href="' + esc(d.website) + '" target="_blank" rel="noopener">Website</a> · ' : '') +
+        '<a href="' + route + '" target="_blank" rel="noopener">Route</a>';
+      d._marker = L.marker([d.lat, d.lng]).addTo(map).bindPopup(html);
+      d._marker.on('click', function () { highlight(i); });
+    });
+
+    function highlight(i) {
+      var lis = itemsEl.querySelectorAll('.fh-locator__item');
+      for (var k = 0; k < lis.length; k++) { lis[k].classList.remove('is-active'); }
+      var target = itemsEl.querySelector('[data-idx="' + i + '"]');
+      if (target) {
+        target.classList.add('is-active');
+        target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    // Lijst renderen. `list` bevat objecten {d, dist?} in de gewenste volgorde.
+    function render(list) {
+      itemsEl.innerHTML = '';
+      emptyEl.hidden = list.length > 0;
+      list.forEach(function (row) {
+        var d = row.d, i = dealers.indexOf(d);
+        var li = document.createElement('li');
+        li.className = 'fh-locator__item';
+        li.setAttribute('data-idx', i);
+        var dist = (typeof row.dist === 'number')
+          ? '<span class="fh-locator__dist">' + row.dist.toFixed(1) + ' km</span>' : '';
+        var contact = '';
+        if (d.phone || d.email) {
+          contact = '<div class="fh-locator__contact">' +
+            (d.phone ? '<a href="tel:' + esc((d.tel || d.phone).replace(/\s/g, '')) + '"><i data-lucide="phone"></i>' + esc(d.phone) + '</a>' : '') +
+            (d.email ? '<a href="mailto:' + esc(d.email) + '"><i data-lucide="mail"></i>' + esc(d.email) + '</a>' : '') +
+          '</div>';
+        }
+        li.innerHTML =
+          '<div class="fh-locator__item-head"><span class="fh-locator__name">' + esc(d.name) + '</span>' + dist + '</div>' +
+          '<div class="fh-locator__addr">' +
+            (d.street ? esc(d.street) + ', ' : '') + esc([d.postal, d.city].filter(Boolean).join(' ')) +
+          '</div>' +
+          contact;
+        li.addEventListener('click', function (e) {
+          // klik op tel/mailto-link mag de kaart niet laten verspringen
+          if (e.target.closest('a')) { return; }
+          map.setView([d.lat, d.lng], 13);
+          d._marker.openPopup();
+          highlight(i);
+        });
+        itemsEl.appendChild(li);
+      });
+      // nieuw toegevoegde data-lucide iconen (tel/mail) omzetten naar SVG
+      if (window.lucide && window.lucide.createIcons) { window.lucide.createIcons(); }
+    }
+
+    // Standaardvolgorde: alfabetisch op plaats, dan naam.
+    function defaultOrder() {
+      return dealers.slice().sort(function (a, b) {
+        return (a.city || '').localeCompare(b.city || '') || (a.name || '').localeCompare(b.name || '');
+      }).map(function (d) { return { d: d }; });
+    }
+    render(defaultOrder());
+
+    // Sorteer op afstand vanaf een gegeven punt en zoom op de dichtstbijzijnde.
+    function sortByDistance(lat, lng) {
+      if (youMarker) { map.removeLayer(youMarker); }
+      youMarker = L.circleMarker([lat, lng], {
+        radius: 8, color: '#006633', weight: 2, fillColor: '#8bc63e', fillOpacity: 0.9
+      }).addTo(map).bindPopup('Jouw locatie');
+
+      var ranked = dealers.map(function (d) {
+        return { d: d, dist: haversine(lat, lng, d.lat, d.lng) };
+      }).sort(function (a, b) { return a.dist - b.dist; });
+
+      render(ranked);
+
+      var group = L.featureGroup([youMarker].concat(ranked.slice(0, 3).map(function (r) { return r.d._marker; })));
+      map.fitBounds(group.getBounds().pad(0.25));
+
+      if (ranked.length) {
+        statusEl.textContent = 'Dichtstbijzijnde: ' + ranked[0].d.name + ' (' + ranked[0].dist.toFixed(1) + ' km).';
+        highlight(dealers.indexOf(ranked[0].d));
+      }
+    }
+
+    // Live filteren op naam/plaats/postcode terwijl je typt.
+    inputEl.addEventListener('input', function () {
+      var q = inputEl.value.trim().toLowerCase();
+      if (!q) { render(defaultOrder()); return; }
+      var hits = dealers.filter(function (d) {
+        return (d.name + ' ' + (d.city || '') + ' ' + (d.postal || '')).toLowerCase().indexOf(q) !== -1;
+      }).map(function (d) { return { d: d }; });
+      render(hits);
+    });
+
+    // Zoeken (submit): postcode/plaats geocoderen → sorteren op afstand.
+    formEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var q = inputEl.value.trim();
+      if (!q) { return; }
+      statusEl.textContent = 'Zoeken…';
+      var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=nl,be&q=' + encodeURIComponent(q);
+      fetch(url, { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.length) {
+            sortByDistance(parseFloat(res[0].lat), parseFloat(res[0].lon));
+          } else {
+            statusEl.textContent = 'Geen resultaat voor "' + q + '". Probeer een postcode of plaatsnaam.';
+          }
+        })
+        .catch(function () { statusEl.textContent = 'Zoeken mislukt, probeer het later opnieuw.'; });
+    });
+
+    // Geolocatie-knop.
+    geoBtn.addEventListener('click', function () {
+      if (!navigator.geolocation) { statusEl.textContent = 'Locatie wordt niet ondersteund door je browser.'; return; }
+      statusEl.textContent = 'Je locatie ophalen…';
+      navigator.geolocation.getCurrentPosition(
+        function (pos) { sortByDistance(pos.coords.latitude, pos.coords.longitude); },
+        function () { statusEl.textContent = 'Kon je locatie niet bepalen. Geef toestemming of zoek op postcode.'; }
+      );
+    });
+
+    // Lucide-iconen in dit blok activeren (mocht de globale init al gelopen zijn).
+    if (window.lucide && window.lucide.createIcons) { window.lucide.createIcons(); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

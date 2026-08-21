@@ -1,0 +1,48 @@
+{% set more_link = (more_link is defined ? more_link : '/blog') %}
+{% set more_btn = (more_btn is defined ? more_btn : 'meer') %}
+{% set show_title = (show_title is defined ? show_title : true) %}
+{% set show_text = (show_text is defined ? show_text : false) %}
+{% set show_date = (show_date is defined ? show_date : false) %}
+{% set show_excerpt = (show_excerpt is defined ? show_excerpt : false) %}
+
+{% if filter_tag %}
+    {% set filtered_posts = [] %}
+    {% for post in blog %}
+        {% if post.tags[filter_tag] is defined %}
+            {% set filtered_posts = filtered_posts|merge([post]) %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+    {% set filtered_posts = blog %}
+{% endif %} 
+
+<div class="blog-list">
+    {% for blog in filtered_posts|reverse %}
+        <a href="{{blog.url}}">
+            <div class="blogpost">
+                <div class="blogpost-image" style="background: url({{blog.image.filename|replace({'inline':'blogpost'})|image({"w": 620, "h": 200, "c": 1})}}) center center no-repeat; background-size: cover;">
+                    <div class="blogpost-title text-center">
+                        <div class="blogpost-title-inner">
+                            {% if show_title %}
+                                <h2 class="blogpost-big-title">{{blog.title}}</h2>
+                            {% endif %}
+                            {% if show_text %}
+                                <h4 class="blogpost-small-title">{{blog.subtitle}}</h4>
+                            {% endif %}
+                            {% if show_date %}
+                                <span class="text-muted">{{blog.publish_date|date("d F Y")}}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if show_excerpt %}
+                    <div class="blogpost-excerpt">
+                        {{get_excerpt(blog.content, 200, 0)}}
+                    </div>
+                {% endif %}
+            </div>
+        </a>
+    {% endfor %}
+</div>
+<a href="{{more_link}}" class="btn btn-primary pull-right">{{more_btn|t}} <i class="fa fa-angle-double-right"> </i></a>
+<div class='clearfix'></div>

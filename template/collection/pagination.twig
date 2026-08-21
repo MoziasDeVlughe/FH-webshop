@@ -1,0 +1,30 @@
+{% if (has_app('filters') and sort is not empty) or pagination.is_relevant %}
+    <div class="row collection-sort-row">
+        <div class="col-sm-6 active-filters-box">
+            {% if show_active_filters == true %}
+            <p class="text-muted">{{pagination.item_count}} {{"artikelen"|t}} &nbsp;</p>
+                {% if localizedActiveFilters is not empty %}
+                    {% for filter in localizedActiveFilters %}
+                        {% for attribute in filter if attribute.link is defined%}
+                            <button data-af-href="{{attribute.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div" class="btn btn-info btn-sm"><span class="filter-tag">{{attribute.label|t}} <i data-lucide="x" class="size-16"></i></span></button>
+                        {% endfor %}
+                    {% endfor %}
+                        <a data-af-href="{% if base_link is defined %}{{base_link}}{% else %}{{pagination.buttons.0.link_clean}}{% endif %}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div" class="btn btn-sm btn-link"><small><i data-lucide="trash-2" class="size-16"></i> {{"Verwijder alle"|t}}</small></a>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-sm-6 text-right">
+            {% if pagination.is_relevant %}
+                <nav>
+                    <ul class="pagination pagination-sm">
+                        {% for button in pagination.buttons %}
+                            {% if button.label != '&gt;&gt;' and button.label != '&lt;&lt;'%}
+                                <li {% if button.active %}class="active"{% endif %}><a {% if show_active_filters != true or button.label == '&gt;' or button.label == '&lt;' %}data-af-{% endif %}href="{% if has_app('filter_urls') and clean_filter is not null%} {{button.link_clean}} {% else %} {{button.link}} {%endif%}">{{button.label}}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

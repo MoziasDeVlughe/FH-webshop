@@ -1,0 +1,375 @@
+{% set tabindex = 1 %}
+
+<fieldset id="step-1" class="active">
+    <div class="modal fade" tabindex="-1" role="dialog" id="forgotPassModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{'Wachtwoord vergeten'|t}}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{'Er is een link naar je emailadres gestuurd om je wachtwoord opnieuw in te stellen.'|t}}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-inverse" data-dismiss="modal">{{'OK'|t}}</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="col-xs-12">
+        <div class="row">
+            {% if cart.coupon.code is not empty %}
+                <div class="col-xs-12">
+                    <div class="alert alert-success">
+                        {{' Coupon code {code} is actief.'|t({'{code}' : cart.coupon.code })}}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div id="alert-email-sent" class="alert-container checkout-validation" style="display:none;">
+        <div class="alert-row row">
+            <div class="col-xs-12 no-padding">
+               <div class="alert alert-success"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-8 col-sm-push-2  col-md-8 col-md-push-2   col-lg-8 col-lg-push-2   col-xl-6 col-xl-push-3">
+        <div class="panel panel-primary panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    {% if account.is_logged_in %}
+                        <hr class="light">
+                        <div class="form-group">
+                            <strong>{{'Ingelogd als:'|t}}</strong> {{postdata.customer.email}}
+                            <input type="hidden" name="customer[email]" value="{{postdata.customer.email}}" />
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="customer_email" class="control-label">{{'E-mailadres'|t}} <span class="required">*</span></label>
+                            <div class="validation-container">
+                                <input type="email" name="customer[email]" class="form-control required phoenix-input" data-parsley-group="group-step-1" value="{{postdata.customer.email|e}}" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="customer_email" data-url="{{cart.coupon.url}}" data-path="{{account.state_url}}">
+                            </div>
+                            <div class="field-error-container"></div>
+                        </div>
+                        <div class="state email-validated" style="display: none;">
+                            <div class="state-message">
+                                {{'Welkom terug! Vul hieronder je wachtwoord in en je kunt verder met bestellen.'|t}}
+                            </div>
+                        </div>
+                        <div class="state email-default" style="display: none;">
+                            <div class="state-message">
+                                {{'Je e-mailadres is nog niet bij ons bekend. Vul hieronder je gegevens in om je bestelling af te ronden.'|t}}
+                            </div>
+                        </div>
+                        {% if account.is_logged_in is not defined or account.is_logged_in == false %}
+                            <div class="password-check-group" style="display: none">
+                                <div class="form-group">
+                                    <div class="radio af">
+                                        <label>
+                                            <input type="radio" name='login_check' id="login_check_0" class="login-check" value="0" checked tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}">
+                                            <div class="radio-button"></div>
+                                            {{"Doorgaan zonder in te loggen"|t}}
+                                        </label>
+                                    </div>
+                                    <div class="radio af">
+                                        <label>
+                                            <input type="radio" name='login_check' id="login_check_1" class="login-check" value="1">
+                                            <div class="radio-button"></div>
+                                            {{"Inloggen met wachtwoord"|t}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="password-group" style="display: none;">
+                            <div class="form-group">
+                                <div class='validation-container'>
+                                    <input type="password" name="account_password" class="form-control" placeholder="Wachtwoord" />
+                                </div>
+                                <div class="field-error-container hidden text-danger">{{'Het wachtwoord is niet juist.'|t}}</div>
+                            </div>
+                            <div class="form-group">
+                                <span class="btn btn-primary btn-checkout-action btn-login" data-path="{{account.url}}">
+                                    {{'Inloggen'|t}}
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <span class="forgot-link" data-path="{{account.forgot_url}}">{{'Wachtwoord vergeten?'|t}}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <hr class="light">
+                    <div class="form-group">
+                        <label>{{'Aanhef'|t}}</label>
+                        <input id="account_is_female" type="hidden" value="" name="customer[is_female]">
+                        <div class="radio af">
+                            <label for="account_is_female_0">
+                                <input class="phoenix-input" type="radio" name="customer[is_female]" id="account_is_female_0" value="0" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" {% if postdata.customer.is_female == false %} checked {% endif %} >
+                                <div class="radio-button"></div>
+                                {{'Man'|t}}  
+                            </label> 
+                        </div>
+                        
+                        <div class="radio af">
+                            <label for="account_is_female_1"> 
+                                <input class="phoenix-input" type="radio" name="customer[is_female]" id="account_is_female_1" value="1" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" {% if postdata.customer.is_female == true %} checked {% endif %} >
+                                <div class="radio-button"></div>
+                                {{'Vrouw'|t}}
+                            </label> 
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer_first_name" class="control-label">{{'Voornaam'|t}} <span class="required">*</span></label>
+                        <div class="validation-container">
+                            <input type="text" name="customer[first_name]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="customer_first_name" data-parsley-group="group-step-1" value="{{postdata.customer.first_name|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer_last_name" class="control-label" >{{'Achternaam'|t}} <span class="required">*</span></label>
+                        <div class="validation-container">
+                            <input type="text" name="customer[last_name]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="customer_last_name" data-parsley-group="group-step-1" value="{{postdata.customer.last_name|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="input-append form-group date" id="dp3">
+                        <label for="customer_birth_date" class="control-label">{{'Geboortedatum'|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                        <input class="form-control datepicker phoenix-input hidden" size="16" type="text" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-date-end-date="0d" data-date-start-date="01-01-1900" id="customer_birth_date" name="date_holder" data-date="12-02-2012" data-parsley-pattern="^(0?[1-9]|[12][0-9]|3[01])\-(0?[1-9]|1[012])\-(\d{4})$"  data-date-format="dd-mm-yyyy" data-date-viewmode="years" tabindex="3" data-customer-birthdate="{{postdata.customer.birth_date|e}}" placeholder="dd-mm-jjjj">
+                        <input class="form-control datefield phoenix-input hidden" type="date" name="date_holder" data-parsley-group="group-step-1" data-parsley-nofuturedates="{{"now"|date('Y-m-d')}}" placeholder="dd-mm-jjjj">
+                        <input type="hidden" name="customer[birth_date]" value="" class="date_parser">
+                    </div>
+                    <div class="form-group">
+                        <label for="shipping_address_telephone" class="control-label">{{'Telefoonnummer'|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                        <div class="validation-container">
+                            <input type="tel" name="shipping[address][telephone]" class="form-control phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_telephone"  value="{{postdata.customer.phone_numbers.primary.number|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    {#<div class="form-group">#}
+                    {#    <label class="control-label" for="customer_vat_number">BTW nummer</label>#}
+                    {#    <input type="tel" class="form-control" id="customer_vat_number" name="customer[btwnummer]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" placeholder="{{'BTW nummer'|t}}">#}
+                    {#</div>#}
+                    <div class="form-group">
+                        <label for="shipping_address_company" class="control-label">{{'Bedrijf'|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" name="shipping[address][company]" class="form-control" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_company" value="{{postdata.shipping.address.company|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    
+                    {% for field in extra_fields %}
+                        <div class="form-group">
+                            <label for="shipping_address_{{field.name}}" class="control-label optional">{{field.label}}</label>
+                            <div class="validation-container">
+                                <input type="text" name="customer[{{field.name}}]" class="form-control phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_{{field.name}}" value="{{field.value|e}}">
+                            </div>
+                            <div class="field-error-container"></div>
+                        </div>
+                    {% endfor %}
+                    {#<div class="form-group">#}
+                    {#    <label for="shipping_address_vat" class="control-label optional">BTW nummer</label>#}
+                    {#    <div class="validation-container">#}
+                    {#        <input type="text" name="customer[btwnummer]" class="form-control phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_vat" value="">#}
+                    {#    </div>#}
+                    {#    <div class="field-error-container"></div>#}
+                    {#</div>#}
+                </div>
+            </div>
+            <div class="form-group country-switch-shipping">
+                <label class="control-label">{{'Land'|t}}</label>
+                <div class="radio af">
+                    <label class="radio-inline" for="address-shipping-is-nl1">
+                      <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl1" class="address-country-select phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" value="1" data-type="shipping" {% if postdata.shipping.isNL == 1 or postdata.shipping.isNL is not defined %}checked{% endif %}>
+                      <div class="radio-button"></div>
+                      {{'Nederland'|t}}
+                    </label>
+                </div>
+                <div class="radio af">
+                    <label class="radio-inline" for="address-shipping-is-nl2">
+                      <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl2" class="address-country-select phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" value="0" data-type="shipping" {% if postdata.shipping.isNL is defined and postdata.shipping.isNL == 0 %}checked{% endif %}>
+                      <div class="radio-button"></div>
+                      {{'Anders'|t}}
+                    </label>
+                </div>
+                <div class="field-error-container"></div>
+            </div>
+            <div id="shipping-postal-code-container" class="shipping-container">
+                <div class="collapse country-collapsable">
+                    <div class="form-group">
+                        <select name="shipping[address][country][id]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_country_id" value="{{postdata.shipping.address.country.id|e}}">
+                            {% for country in countries %}
+                                <option value="{{country.id}}" {% if postdata.shipping.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xs-12 col-sm-4 col-md-5">
+                        <label for="shipping_address_postal_code1" class=" control-label">{{'Postcode'|t}} <span class="required">*</span></label>
+                        <div class="validation-container">
+                            <input 
+                                type="text" 
+                                name="shipping[address][postal_code]" 
+                                class="form-control required address-check-field phoenix-input" 
+                                data-type="shipping" 
+                                tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" 
+                                id="shipping_address_postal_code1" 
+                                data-parsley-group="group-step-1" 
+                                data-parsley-validation-threshold="4" 
+                                data-parsley-minlength="3"
+                                data-parsley-zipcode-exceptions="#shipping_address_country_id" 
+                                data-parsley-error-message="{{'Helaas bezorgen wij niet op jouw postcode, neem contact op voor de mogelijkheden.'|t}}" 
+                                value="{{postdata.shipping.address.postal_code|e}}"
+                                >
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group col-xs-7 col-sm-4">
+                        <label for="shipping_address_house_number" class="col-sm- control-label">{{'Huisnummer'|t}} <span class="required">*</span></label>
+                        <div class="validation-container">
+                            <input type="number" name="shipping[address][house_number]" class="form-control input-small required address-check-field phoenix-input" data-type="shipping" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_house_number" data-parsley-group="group-step-1" value="{{postdata.shipping.address.house_number|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group col-xs-5 col-sm-4 col-md-3">
+                        <label for="shipping_address_house_number_suffix" class="col-sm- control-label">{{'Toevoeging'|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" name="shipping[address][house_number_suffix]" class="form-control input-small phoenix-input" data-parsley-validate-if-empty data-type="shipping" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_house_number_suffix" value="{{postdata.shipping.address.house_number_suffix|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                </div>
+                <span class="address-validation-message" data-type="shipping" data-success-message="{{"Dit adres klopt."|t}}" data-error-message="{{"Dit adres klopt niet, controleer de velden."|t}}" data-loading-message="{{"Adres ophalen."|t}}"></span>
+                <div id="shipping_address_postal_code_result_container">
+                    <div class="form-group">
+                        <div class="postal-code-result" id="shipping_address">
+                            <div class="form-group">
+                                <label for="shipping_address_street" class="control-label">{{'Straat'|t}} <span class="required">*</span></label>
+                                <input type="text" name="shipping[address][street]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_street" data-parsley-group="group-step-1" value="{{postdata.shipping.address.street|e}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping_address_city" class="control-label">{{'Woonplaats'|t}} <span class="required">*</span></label>
+                                <input type="text" name="shipping[address][city]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="shipping_address_city"  data-parsley-group="group-step-1" value="{{postdata.shipping.address.city|e}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="same-address-check">
+                <div class="form-group">
+                    <div class="checkbox af">
+                        <label for="same-billing-address">
+                            <input type="checkbox" value="1" id="same-billing-address" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" class="phoenix-input" name="billing[is_shipping]" {% if (postdata.billing.is_shipping is not defined) or postdata.billing.is_shipping == 1 %}checked{% endif %}>
+                            <div class="checkbox-button"></div>
+                           {{'Factuuradres gelijk aan bezorgadres'|t}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="billing-complete-container" class="collapse" aria-expanded="false">
+                <div class="form-group country-switch-billing">
+                    <label for="billing[isNL]" class="control-label">{{'Land'|t}} </label>
+                    <div class="inline-radio-group">
+                        <div class="radio af">
+                            <label class="radio-inline">
+                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl1" class="address-country-select phoenix-input" tabindex="{{tabindex}}" data-type="billing" value="1" {% if postdata.billing.isNL == 1 or postdata.billing.isNL is not defined %}checked{% endif %}>
+                                <div class="radio-button"></div>
+                                {{'Nederland'|t}}
+                            </label>
+                        </div>
+                        <div class="radio af">
+                            <label class="radio-inline">
+                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl2" class="address-country-select phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-type="billing" value="0" {% if postdata.billing.isNL == 0 and postdata.billing.isNL is defined %}checked{% endif %}>
+                                <div class="radio-button"></div>
+                                {{'Anders'|t}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse country-collapsable">
+                    <div class="form-group">
+                        <select name="billing[address][country][id]" class="form-control required phoenix-input" id="billing_address_country_id" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" value="{{postdata.billing.address.country.id|e}}">
+                            {% for country in countries %}
+                                <option value="{{country.id}}" {% if postdata.billing.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                        {#<div class="form-group">#}
+                        {#    <label for="billing_address_company" class="control-label">Bedrijf</label>#}
+                        {#    <input type="text" name="billing[address][company]" class="form-control" tabindex="12" id="billing_address_company" value="{{postdata.billing.address.company}}" >#}
+                        {#</div>#}
+                <div class="form-group">
+                    <label for="billing_address_company" class="control-label">{{'Bedrijf'|t}}</label>
+                    <div class="validation-container">
+                        <input type="text" name="billing[address][company]" class="form-control" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_company" value="{{postdata.billing.address.company|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div id="billing-postal-code-container" class="billing-container">
+                    <div class="row">
+                        <div class="form-group col-xs-12 col-sm-4 col-md-5">
+                            <label for="billing_address_postal_code1" class="control-label">{{'Postcode'|t}} <span class="required">*</span></label>
+                            <input type="text" name="billing[address][postal_code]" class="form-control required address-check-field phoenix-input" data-type="billing" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_postal_code1"data-parsley-group="group-step-1" value="{{postdata.billing.address.postal_code|e}}">
+                        </div>
+                        <div class="form-group col-xs-7 col-sm-4">
+                            <label for="billing_address_house_number" class="control-label">{{'Huisnummer'|t}} <span class="required">*</span></label>
+                            <input type="text" name="billing[address][house_number]" class="form-control required input-small address-check-field phoenix-input" data-type="billing" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_house_number" data-parsley-group="group-step-1" value="{{postdata.billing.address.house_number|e}}">
+                        </div>
+                        <div class="form-group col-xs-5 col-sm-4 col-md-3">
+                            <label for="billing_address_house_number_suffix" class="col-sm- control-label">{{'Toevoeging'|t}}</label>
+                            <input type="text" name="billing[address][house_number_suffix]" class="form-control input-small address-check-field phoenix-input" data-type="billing" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_house_number_suffix" value="{{postdata.billing.address.house_number_suffix|e}}">
+                        </div>
+                    </div>
+                    <span class="address-validation-message" data-type="billing" data-success-message="{{"Dit adres klopt."|t}}" data-error-message="{{"Dit adres klopt niet, controleer de velden."|t}}" data-loading-message="{{"Adres ophalen."|t}}"></span>
+                    <div id="billing_address_postal_code_result_container">
+                        <div class="form-group">
+                            <div class="postal-code-result" id="billing_address_postal_code_result">
+                                <div class="form-group">
+                                    <label for="billing_address_street" class="control-label">{{'Straat'|t}} <span class="required">*</span></label>
+                                    <input type="text" name="billing[address][street]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_street" data-parsley-group="group-step-1" value="{{postdata.billing.address.street|e}}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="billing_address_city" class="control-label">{{'Woonplaats'|t}} <span class="required">*</span></label>
+                                <input type="text" name="billing[address][city]" class="form-control required phoenix-input" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" id="billing_address_city" data-parsley-group="group-step-1" value="{{postdata.billing.address.city|e}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if has_app('newsletter') %}
+                <hr>
+                {% for newsletterId, newsletterRow in newsletters|default(pluginData.newsletter) if (postdata.plugin.newsletter[newsletterId]|default(account.pluginData.newsletter[newsletterId].is_subscribed|default(0)) == 0) and (newsletter is not defined or newsletterRow == newsletter) %}
+                    <div class="form-group">
+                        <div class="checkbox af">
+                            <label for="newsletter-{{newsletterId}}">
+                                <input type="checkbox" value="1" id="newsletter-{{newsletterId}}" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" class="" name="plugin[newsletter][{{newsletterId}}]">
+                                <div class="checkbox-button"></div>
+                               {{'Inschrijven voor {niewsbrief-label}'|t({'{niewsbrief-label}' : newsletterRow.label })}}
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <hr>
+            {% include "checkout/terms.twig" %}
+            <hr>
+
+            <div class="row">
+                <div class="col-xs-7 col-xs-push-5 col-sm-6 col-sm-push-6">
+                    <button type="button" data-next-step="step-2" class="btn btn-primary btn-checkout-step checkout-next pull-right" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-step-type="shipping">{{'VOLGENDE STAP'|t}}</button>
+                </div>
+                <div class="col-xs-5 col-xs-pull-7 col-sm-6 col-sm-pull-6">
+                    <button type="button" class="btn btn-checkout-step btn-prev-step btn-primary-inverse btn-full-width" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}">
+                        {{'Terug'|t}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

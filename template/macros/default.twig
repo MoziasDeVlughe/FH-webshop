@@ -1,0 +1,35 @@
+{# type: macro #}
+
+{% macro menu_items(items) %}
+    {% for item in items %}
+        <li {% if item.active %}class="active"{% endif %}>
+            <a href="{{item.url}}">{{item.label}}</a>
+            {% if item.items and item.active %}
+                {% set sub = true %}
+                <ul class="nav nav-pills nav-stacked">
+                    {{_self.menu_items(item.items, sub)}}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+{% macro activeSortingLabel(template, sort, default ) %}
+    {% set active = default %}
+    {% for option in sort.options|reverse %}
+        {% if option.active %}
+            {% set active = option.label %}
+        {% endif %}
+    {% endfor %}
+    {{ template|replace({'%active%' : active})|t }}
+{% endmacro %}
+
+{% macro activePaginationLabel(template, pagination, default ) %}
+    {% set active = default %}
+    {% for option in pagination.options|reverse %}
+        {% if option.active %}
+            {% set active = option.label %}
+        {% endif %}
+    {% endfor %}
+    {{ template|replace({'%active%' : active})|t }}
+{% endmacro %}

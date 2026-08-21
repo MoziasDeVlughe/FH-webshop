@@ -1,0 +1,13 @@
+<div class="container">
+    <h1>{{"Mijn spaarsaldo"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig' with {'active': 'loyalty'} %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10" >
+            <p>{{"Bij ons spaar je met jouw persoonlijke account bij iedere aankoop voor shoptegoed. Je spaarsaldo zal twee keer per jaar aan het begin van elk nieuw seizoen als shoptegoed worden uitgekeerd."|t}}</p>
+            <strong>{{"Aantal gespaarde punten:"}}</strong> {{customer.loyalty_points|round(0, 'floor')}}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="wishlist-modal-content" id="wishlist-content">
+    
+    {#<div class="row">#}
+    {#    <div class="col-xs-12">#}
+    {#        <h3>#}
+    {#            {{name}}#}
+    {#        </h3>#}
+    {#    </div>#}
+    {#</div>#}
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="product-image text-center">
+                <img src="{{image_default.thumbs.400|image({"w": 400, "h": 400})}}" alt="{{name}}">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h3>
+                {{name}}
+            </h3>
+            <div class="product-variants text-center">
+                {% if link is not empty %}
+                    <div class="row">
+                        <div class="col-xs-3">
+                                <img src="{{image_default.thumbs.100|image({"w": 100, "h": 100})}}" alt="{{name}}">
+                        </div>
+                        {% for color in link.links %}
+                            <div class="col-xs-3">
+                                <span data-wl-product="{{color.wish_list_url}}" data-wl-ajax-element="#wishlist-modal .modal-body" data-wl-ajax-input="#wishlist-content > *">
+                                    <img src="{{color.image.thumbs.100|image({"w": 100, "h": 100})}}">
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="product-options">
+                {% if has_options %}
+                    <div class="product-options">
+                        {% for attribute in attributes %}
+                            <div class="form-group">
+                                <div class="text-uppercase"><strong>{{attribute.label}}</strong></div>
+                                <div class="product-options-item">
+                                    {% for option in attribute.options %}
+                                        <button class="btn btn-primary btn-sm{% if option.active %} active{% endif %} product-option" data-wl-product="{{option.url}}" data-wl-ajax-element="#wishlist-modal .modal-body" data-wl-ajax-input="#wishlist-content > *">{{option.label}}</button>
+                                    {% endfor %} 
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr>
+    <button type="button" data-af-href="{{add_to_wishlist_url}}" class="btn btn-primary btn-block">
+        {{'VOEG TOE AAN WISHLIST'|t}}
+    </button>
+</div>

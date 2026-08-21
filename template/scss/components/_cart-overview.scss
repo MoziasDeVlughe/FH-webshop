@@ -1,0 +1,98 @@
+html.static {
+    overflow: hidden;
+}
+
+#cart-overview {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1;
+    width: 80%;
+    max-width: 400px;
+    padding: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #fff;
+    transform-origin: right top;
+    @include transform(scale(.96));
+    @include opacity(0);
+    @include transition(.1s ease-in-out);
+    @include border-bottom-radius($border-radius-base);
+    
+    @include af-xs {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    &.open {
+        @include opacity(1);
+        @include transform(scale(1));
+        pointer-events: all;
+        
+        @include af-xs {
+            width: 100%;
+        }
+    }
+    
+    .cart-overview-header {
+        display: inline-block;
+        width: 100%;
+        height: 63px;
+        background-color: #fff;
+        box-shadow: 0 1px 5px #ccc;
+    }
+    
+    .cart-overview-inner {
+        position: relative;
+        z-index: -1;
+        max-height: 55vh;
+        padding: 20px;
+        margin-top: -5px;
+        overflow-y: auto;
+        
+        @include af-xs {
+            height: calc(100% - 139px);
+            margin-top: -6px;
+        }
+    }
+    
+    .cart-overview-buttons {
+        width: 100%;
+        @include box-shadow(0 -1px 5px #ccc);
+        
+        .btn {
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 0;
+        }
+    }
+}
+
+.cart-overview-item {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ecf0f1;
+    
+    &:last-child {
+        border: 0;
+    }
+}
+
+.cart-overview-underlay, .page-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+    overflow: visible;
+    pointer-events: none;
+    background: #000;
+    @include opacity(0);
+    @include transition(opacity .1s ease-in-out);
+    
+    &.active {
+        @include opacity(.5);
+        pointer-events: all;
+    }
+}

@@ -1,0 +1,51 @@
+.panel.panel-default {
+	.panel-footer {
+		background-color: transparent;
+	}
+}
+#checkout-v4 {
+	&.stepped {
+		.checkout-step {
+			display: none;
+		}
+		&[data-active-step="1"] #step-1 {
+			display: block;
+		}
+		&[data-active-step="2"] #step-2 {
+			display: block;
+		}
+		&[data-active-step="3"] #step-3 {
+			display: block;
+		}
+		&[data-active-step="4"] #step-4 {
+			display: block;
+		}
+	}
+	
+	.validating-organisation {
+	    position: fixed;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    @include justify-content(center);
+	    @include align-items(center);
+	    background-color: rgba(#333, .4);
+	    transition: .2s ease;
+	    display: none;
+	    z-index: 10000;
+	    
+	    &-message {
+	        width: 90%;
+	        max-width: 420px;
+	        background-color: #fff;
+	        padding: 24px;
+	        transition: .2s ease;
+	    }
+	    
+	    &.validating {
+	        @include flexbox;
+	        
+	    }
+	}
+}

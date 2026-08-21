@@ -1,0 +1,54 @@
+.product-grid {
+    margin-right: -15px;
+    margin-left: -15px;
+    @include transition(filter .1s ease, -moz-opacity .1s ease, -khtml-opacity .1s ease, opacity .1s ease);
+
+    &.loading-ajax {
+        @include opacity(0);
+    }
+}
+
+.product-grid.grid {
+    @include flexbox;
+    @include flex-wrap(wrap);
+
+    .product-grid-item {
+        @include flexbox;
+        @include flex-direction(column);
+        @include justify-content(space-between);
+        margin-bottom: 30px;
+
+        .product- {
+
+            &image {
+                @include flex(1);
+
+                @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+                    @include flex(0 0 auto);
+                }
+            }
+
+            &info {
+                .product-action {
+                    margin-top: 10px;
+                    &-buttons {
+                        margin-top: 15px;
+                        form {
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+            
+            &label {
+                position: absolute;
+                top: 8px;
+                left: 8px;
+            }
+        }
+    }
+
+    .list-visible {
+        display: none;
+    }
+}

@@ -1,0 +1,41 @@
+<div id="share-content">
+    <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="social-modal">{{'Leuk dat je dit artikel wilt delen!'|t}}</h4>
+    </div>
+    <div class="modal-body text-center">
+        <div class="row">
+            <div class="col-md-4 col-xs-3  text-center">
+                <a data-af-href="https://www.facebook.com/sharer/sharer.php?u={{url}}&t=" target="_blank" title="Share on Facebook" class="social-share" >
+                    <i class="fa fa-facebook-official fa-4x"></i>
+                </a>
+            </div>
+            <div class="col-md-4 col-xs-3 text-center">
+                <a data-af-href="http://pinterest.com/pin/create/button/?url={{url}}&description={{name|replace({" ": "%20"})}}%20bij%20Confettifeest&media={{image_default.filename}}" class="social-share" target="_blank" title="{{"Share on Pinterest"|t}}" >
+                    <i class="fa fa-pinterest fa-4x"></i>
+                </a>
+            </div>
+            <div class="col-md-4 visible-xs visible-sm col-xs-3 text-center">
+                <a data-af-href="whatsapp://send?text={{url}}">
+                    <i class="fa fa-whatsapp fa-4x"></i>
+                </a>
+            </div>
+            <div class="col-md-4 col-xs-3 text-center">
+                <a data-af-href="mailto:?subject=&body={{url}}" target="_self" title="Send email">
+                    <i class="fa fa-envelope fa-4x"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer text-center">
+       {{' Kopieer deze link om op je website te plaatsen of om te gebruiken in een bericht'|t}}
+        <div class="form-group">
+            <div class="input-group">
+                <input class="form-control" value="{{url}}" id="copy-field" readonly data-clipboard-text="{{url}}">
+                <div class="input-group-btn">
+                    <button type="button" class="copy-to-clipboard btn btn-secondary" data-clipboard-target="#copy-field" data-toggle="tooltip" data-trigger="click" data-placement="bottom" title="{{'Gekopieerd!'|t}}">{{'Kopieer'|t}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

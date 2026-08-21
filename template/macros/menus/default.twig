@@ -1,0 +1,17 @@
+{% set class = (class is defined ? class : "nav navbar-nav") %}
+
+<ul class="{{class}}">
+    {% if not menu %}
+    <li>
+        <strong>
+            No menu defined for 'mmenu' macro
+        </strong>
+    </li>
+    {% else %}
+        {% for menuitem in menu.items %}
+            <li{% if menuitem.active %} class="active"{% endif %}>
+                <a href="{{menuitem.url}}" title="{{menuitem.title}}">{{menuitem.label}}</a>
+            </li>
+        {% endfor %}
+    {% endif %}
+</ul>

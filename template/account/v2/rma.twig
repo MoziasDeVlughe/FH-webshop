@@ -1,0 +1,63 @@
+<div class="container">
+    <h1>{{rma_type.label|capitalize}}</h1>
+    <hr>
+    <div class="row rma-overview">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig' with {'active': 'rma-' ~ (rma_type.key) } %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <div class="row">
+                <div class="col-sm-3 col-xs-4">
+                    <strong>{{"Ordernummer"|t}}</strong>
+                </div>
+                <div class="col-sm-3 col-xs-4">
+                    <strong>{{"Datum"|t}}</strong>
+                </div>
+                <div class="col-sm-3 col-xs-4">
+                    <strong>{{"Bedrag"|t}}</strong>
+                </div>
+                <div class="col-sm-3 hidden-xs">
+                    
+                </div>
+            </div>
+            <hr>
+            {% if sales is not empty %}
+                {% for sale in sales %}
+                    {% set sale_rma_types = [] %}
+                        {% for rma in sale.rmas %}
+                            {% set sale_rma_types = [rma.type_name]|merge(sale_rma_types) %}
+                        {% endfor %}
+                        {% if rma_type.label in sale_rma_types or sale.can_rma %}
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-4">
+                                {{sale.order_number}}
+                            </div>
+                            <div class="col-sm-3 col-xs-4">
+                                {{sale.order_date|date("d-m-Y")}}
+                            </div>
+                            <div class="col-sm-3 col-xs-4">
+                                {{sale.total|price(false, '&euro;')}}
+                            </div>
+                            <div class="col-sm-3 hidden-xs">
+                                {% if((date(sale.order_date) > date('-30days')) and sale.can_rma ) %}
+                                    <a href="{{sale.rma_url}}" class=" btn btn-sm btn-default">{{"bekijk details"|t}}</a>
+                                {% endif %}
+                                {% if sale.rmas|length > 0 %}
+                                    {% for rma in sale.rmas %}
+                                        {% if rma.type_name == rma_type.label %}
+                                        <a href="{{rma.form_url}}" class=" btn btn-sm btn-default">{{"download"|t}}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+            <h2 class="text-center">
+                {{"Geen retouren gevonden."|t}}
+            </h2>
+            {% endif %}
+        </div>
+    </div>
+</div>

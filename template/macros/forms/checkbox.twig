@@ -1,0 +1,9 @@
+{% macro checkbox_button(config) %}
+    <div class="checkbox af">
+        <label for="{{id}}">
+            <input type="checkbox" name="{{name}}" id="{{id}}" value="{{value}}"/>
+            <div class="checkbox-button"></div>
+            <span>{{label}}</span>
+        </label>
+    </div>
+{% endmacro %}

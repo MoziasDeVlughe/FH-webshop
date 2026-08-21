@@ -1,0 +1,490 @@
+// typography utility-classes
+.text-underline {
+    text-decoration: underline;
+}
+
+.text-through {
+    text-decoration: line-through;
+}
+
+.text-undecorated {
+    text-decoration: none;
+}
+
+.text-black {
+    color: #000;
+}
+
+.background-grey{
+    background-color: $gray-lighter;
+}
+.background-secondary{
+    background-color: $brand-secondary;
+}
+// display utility classes
+.d-block {
+    display: block;
+}
+
+.d-inline-block {
+    display: inline-block;
+}
+
+.width {
+    width: 70%;
+    @media (max-width: $screen-sm) {
+            width: 100%;
+        }
+    }
+
+.d-none {
+    display: none;
+}
+
+.d-grid {
+    display: grid;
+}
+
+.d-flex {
+    @include flexbox;
+    &-imp {
+        display: -webkit-box !important;
+    	display: -webkit-flex !important;
+    	display: -moz-flex !important;
+    	display: -ms-flexbox !important;
+    	display: flex !important;
+    }
+}
+
+.btn {
+    border-radius: 0 !important;
+}
+
+.spacing {
+    line-height: 2;
+}
+
+.d-inline-flex {
+    @include inline-flex;
+}
+
+.gap-8 {
+    gap: 8px;
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.object-fit-contain {
+    object-fit: contain;
+}
+.pos-relative {
+    position: relative;
+}
+.pos-absolute {
+    position: absolute;
+}
+
+
+
+@each $breakpoint in map-keys($breakpoints-map) {
+	$infix: breakpoint-infix($breakpoint, $breakpoints-map);
+	
+	
+	@include media-breakpoint-up($breakpoint, $breakpoints-map) {
+		
+		// flexbox utility-classes
+        .flex#{$infix}-row {
+            @include flex-direction(row);
+        }
+        .flex#{$infix}-row-reverse {
+            @include flex-direction(row-reverse);
+        }
+        .flex#{$infix}-column {
+            @include flex-direction(column);
+        }
+        .flex#{$infix}-column-reverse {
+            @include flex-direction(column-reverse);
+        }
+        
+        .flex#{$infix}-wrap {
+            @include flex-wrap(wrap);
+        }
+        .flex#{$infix}-nowrap {
+            @include flex-wrap(nowrap);
+        }
+        .flex#{$infix}-wrap-reverse {
+            @include flex-wrap(wrap-reverse);
+        }
+        
+        //   - justify-content
+        .justify-content#{$infix}-start {
+            @include justify-content(flex-start);
+        }
+        .justify-content#{$infix}-end {
+            @include justify-content(flex-end);
+        }
+        .justify-content#{$infix}-center {
+            @include justify-content(center);
+        }
+        .justify-content#{$infix}-between {
+            @include justify-content(space-between);
+        }
+        .justify-content#{$infix}-around {
+            @include justify-content(space-around);
+        }
+        
+        
+        //   - align-items
+        .align-items#{$infix}-start {
+            @include align-items(flex-start);
+        }
+        .align-items#{$infix}-end {
+            @include align-items(flex-end);
+        }
+        .align-items#{$infix}-center {
+            @include align-items(center);
+        }
+        .align-items#{$infix}-stretch {
+            @include align-items(stretch);
+        }
+        .align-items#{$infix}-baseline {
+            @include align-items(baseline);
+        }
+       
+       
+        //   - align-self
+        .align-self#{$infix}-auto {
+            @include align-self(auto);
+        }
+        .align-self#{$infix}-start {
+            @include align-self(flex-start);
+        }
+        .align-self#{$infix}-end {
+            @include align-self(flex-end);
+        }
+        .align-self#{$infix}-center {
+            @include align-self(center);
+        }
+        .align-self#{$infix}-baseline {
+            @include align-self(baseline);
+        }
+        .align-self#{$infix}-stretch {
+            @include align-self(stretch);
+        }
+        
+        
+        
+        .flex-shrink#{$infix}-0 {
+            @include flex-shrink(0);
+        }
+        .flex-shrink#{$infix}-1 {
+            @include flex-shrink(1);
+        }
+        
+        .flex-grow#{$infix}-0 {
+            @include flex-grow(0);
+        }
+        .flex-grow#{$infix}-1 {
+            @include flex-grow(1);
+        }
+	}
+}
+
+//   - spacing
+@each $breakpoint in map-keys($breakpoints-map) {
+	$infix: breakpoint-infix($breakpoint, $breakpoints-map);
+	
+	
+    @include media-breakpoint-up($breakpoint, $breakpoints-map) {
+	    @each $prop, $abbrev in (margin: m, padding: p) {
+    		@each $size, $length in $spacing-map {
+    		    
+    		    .#{$abbrev}#{$infix}-#{$size} { 
+    		        #{$prop}: $length !important; 
+    		    }
+    		    
+                .#{$abbrev}t#{$infix}-#{$size},
+                .#{$abbrev}y#{$infix}-#{$size} {
+                    #{$prop}-top: $length !important;
+                }
+                
+                .#{$abbrev}r#{$infix}-#{$size},
+                .#{$abbrev}x#{$infix}-#{$size} {
+                    #{$prop}-right: $length !important;
+                }
+                
+                .#{$abbrev}b#{$infix}-#{$size},
+                .#{$abbrev}y#{$infix}-#{$size} {
+                    #{$prop}-bottom: $length !important;
+                }
+                
+                .#{$abbrev}l#{$infix}-#{$size},
+                .#{$abbrev}x#{$infix}-#{$size} {
+                    #{$prop}-left: $length !important;
+                }
+    		}
+	    }
+	    
+	    .m#{$infix}-auto { 
+	        margin: auto !important; 
+	    }
+	    
+        .mt#{$infix}-auto,
+        .my#{$infix}-auto {
+            margin-top: auto !important;
+        }
+        
+        .mr#{$infix}-auto,
+        .mx#{$infix}-auto {
+            margin-right: auto !important;
+        }
+        
+        .mb#{$infix}-auto,
+        .my#{$infix}-auto {
+            margin-bottom: auto !important;
+        }
+        
+        .ml#{$infix}-auto,
+        .mx#{$infix}-auto {
+            margin-left: auto !important;
+        }
+	}
+}
+
+
+.h- {
+
+    &10 {
+        height: 10px;
+    }
+    
+    &15 {
+        height: 15px;
+    }
+
+    &20 {
+        height: 20px;
+    }
+
+    &25 {
+        height: 25px;
+    }
+
+    &50 {
+        height: 50px;
+    }
+    
+    &pr-100 {
+        height: 100%;
+    }
+}
+
+// icon size utility classes
+.icon {
+    &-10 {
+        width: 10px;
+        height: 10px;
+    }
+    &-15 {
+        width: 15px;
+        height: 15px;
+    }
+    &-20 {
+        width: 20px;
+        height: 20px;
+    }
+    &-25 {
+        width: 25px;
+        height: 25px;
+    }
+    &-30 {
+        width: 30px;
+        height: 30px;
+    }
+    &-40 {
+        width: 40px;
+        height: 40px;
+    }
+    &-50 {
+        width: 50px;
+        height: 50px;
+    }
+    &-75 {
+        width: 75px;
+        height: 75px;
+    }
+    &-w {
+        &-10 {
+            width: 10px;
+        }
+        &-15 {
+            width: 15px;
+        }
+        &-20 {
+            width: 20px;
+        }
+        &-25 {
+            width: 25px;
+        }
+        &-30 {
+            width: 30px;
+        }
+        &-40 {
+            width: 40px;
+        }
+        &-50 {
+            width: 50px;
+        }
+        &-75 {
+            width: 75px;
+        }
+    }    
+    
+    &-h {
+        &-10 {
+            height: 10px;
+        }
+        &-15 {
+            height: 15px;
+        }
+        &-20 {
+            height: 20px;
+        }
+        &-25 {
+            height: 25px;
+        }
+        &-30 {
+            height: 30px;
+        }
+        &-40 {
+            height: 40px;
+        }
+        &-50 {
+            height: 50px;
+        }
+        &-75 {
+            height: 75px;
+        }
+    }
+}
+
+
+.w- {
+    &25 {
+        width: 25%;
+    }
+    &50 {
+        width: 50%;
+    }
+    &33{
+        width: 33%;
+    }
+    &70{
+        width: 70%;
+    }
+    &75 {
+        width: 75%;
+    }
+    &100 {
+        width: 100%;
+    }
+    &fit-content {
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+    }
+}
+
+//   - flex widths
+@each $breakpoint in map-keys($breakpoints-map) {
+	$infix: breakpoint-infix($breakpoint, $breakpoints-map);
+	
+	
+	@include media-breakpoint-up($breakpoint, $breakpoints-map) {
+		@each $size, $width in $flex-widths {
+		    .flex#{$infix}-#{$size} {
+		        @include flex(0 0 percentage($width / 100));
+		    }
+		}
+		
+		.flex#{$infix}-fill {
+		    @include flex(100%);
+		}
+		
+        @for $i from 1 through $grid-columns {
+            .grid-columns#{$infix}-#{$i} {
+                grid-template-columns: repeat(#{$i}, 1fr);
+            }
+            
+            .start#{$infix}-#{$i} { grid-column-start: #{$i}; }
+            .end#{$infix}-#{$i}   { grid-column-end: #{$i}; }
+        }
+	}
+	
+	
+}
+//  - Font sizing
+@each $breakpoint in map-keys($breakpoints-map) {
+	$infix: breakpoint-infix($breakpoint, $breakpoints-map);
+	
+	
+	@include media-breakpoint-up($breakpoint, $breakpoints-map) {
+        @for $i from 8 through 100 {
+          .font-size#{$infix}-#{$i} {
+            font-size: #{$i}px;
+          }
+        }
+        
+        @for $i from 1 through 10 {
+          .letter-spacing#{$infix}-#{$i} {
+            letter-spacing: #{$i}px;
+          }
+        }
+        
+        @for $i from 100 through 900 {
+          @if ($i % 50 == 0) {   // only numbers divisible by 50
+            .font-weight#{$infix}-#{$i} {
+              font-weight: $i;
+            }
+          }
+        }
+	}
+	
+	
+}
+
+
+
+
+
+
+.column-count {
+    &-2 {
+        column-count: 2;
+    }
+    &-3 {
+        column-count: 3;
+    }
+    &-4 {
+        column-count: 4;
+    }
+    &-5 {
+        column-count: 5;
+    }
+}
+
+
+// rotate transform
+.rotate- {
+    &90 {
+        @include transform(rotate(90deg));
+    }
+    &180 {
+        @include transform(rotate(180deg));
+    }
+    &n-90 {
+        @include transform(rotate(-90deg));
+    }
+}

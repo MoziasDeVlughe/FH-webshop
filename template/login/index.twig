@@ -1,0 +1,105 @@
+<main class="container mb-80 py-80" id="auth-container">
+    {% if pluginData['af-sid'].email %}
+        <div class="d-flex flex-wrap justify-content-center">
+            <div class="flex-100 flex-md-50 flex-lg-40 d-flex flex-column align-items-center"> {# border-fs-paper-1 #}
+                <div class="w-100"> {#  py-16 px-24 #}
+                    <h1 class="mt-0 mb-32">{{'Organisaties'|t}}</h1>
+                    <div class="card">
+                        <div class="card-content d-flex justify-content-between align-items-center gap-24" onClick="${handleSwitchOrganisation(organisation?.id)}">
+                            <div class="d-flex flex-column w-75">
+                                <strong class="w-75">
+                                    <div class="skeleton-box w-100"></div>
+                                </strong>
+                                <span class="w-50">
+                                    <div class="skeleton-box w-100"></div>
+                                </span>
+                            </div>
+                            <i class="icon-chevron-right text-muted"></i>
+                        </div>
+                        <div class="card-content d-flex justify-content-between align-items-center gap-24" onClick="${handleSwitchOrganisation(organisation?.id)}">
+                            <div class="d-flex flex-column w-75">
+                                <strong class="w-75">
+                                    <div class="skeleton-box w-100"></div>
+                                </strong>
+                                <span class="w-50">
+                                    <div class="skeleton-box w-100"></div>
+                                </span>
+                            </div>
+                            <i class="icon-chevron-right text-muted"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="d-flex flex-wrap justify-content-center loading-ajax">
+            <div class="flex-100 flex-md-50 flex-lg-40 d-flex flex-column align-items-center"> {# border-fs-paper-1 #}
+                <div class="border-fs-paper-1 px-24 py-20 w-100"> {# py-16 px-24 #}
+                    <h1 class="mt-0 mb-32 h2">{{'Inloggen'|t}}</h1>
+                    <div class="form-group">
+                        <label for="email">
+                            {{'E-mailadres'|t}}
+                        </label>
+                        <input class="form-control" disabled type="mail" name="email" id="email" required />
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex justify-content-between">
+                            <label for="password">
+                                {{'Wachtwoord'|t}}
+                            </label>
+                            <a class="small">
+                                {{'Wachtwoord vergeten?'|t}}
+                            </a>
+                        </div>
+                        <input class="form-control" disabled type="password" name="password" id="password" required />
+                    </div>
+                    <button class="btn btn-primary btn-block btn-pill" disabled type="submit">
+                        {{'Inloggen'|t}}
+                    </button>
+                    {#<button type="button" disabled class="btn btn-link btn-block btn-sm mt-40">{{'Account aanvragen'|t}}</button>#}
+                    <button type="button" disabled class="btn btn-link btn-block btn-sm mt-40">{{'Nieuw bij {name}? Klik hier'|t({'{name}': properties.name})}}</button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</main>
+
+{#<div class="container">#}
+{#    <div class="row">#}
+{#        <div class="col-md-4 col-md-offset-4">#}
+{#            <div class="panel panel-primary">#}
+{#                <div class="panel-heading">#}
+{#                    <i class="fa fa-sign-in-alt"></i> {{"Inloggen"|t}}#}
+{#                </div>#}
+{#                <div class="panel-body">#}
+{#                    <form method="post" id="login-form" class="form-validate">#}
+{#                        <div class="form-group">#}
+{#                            <label class="control-label" for="account_email">{{"E-mail"|t}}</label>#}
+{#                            <div class="validation-container">#}
+{#                                <input type="email" class="form-control" id="account_email" name="account[email]"  value="{{post.account.email}}" placeholder="{{"Voer je e-mailadres in"|t}}" data-parsley-type="email" data-parsley-required="true">#}
+{#                            </div>#}
+{#                             <div class="field-error-container"></div>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <label for="account_password">{{"Wachtwoord"|t}}</label>#}
+{#                            <div class="validation-container">#}
+{#                                <input type="password" class="form-control" id="account_password" name="account[password]" placeholder="{{"Voer je wachtwoord in"|t}}" data-parsley-required="true" data-parsley-minlength="4">#}
+{#                            </div>#}
+{#                             <div class="field-error-container"></div>#}
+{#                        </div>#}
+{#                        <div class="form-group text-center">#}
+{#                            <div class="row">#}
+{#                                <div class="col-xs-12">#}
+{#                                    <input type="submit" class="btn btn-primary col-xs-12" value="{{"Log in"|t}}"/>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <a href="/login/forgot">{{"Wachtwoord vergeten"|t}}</a>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}

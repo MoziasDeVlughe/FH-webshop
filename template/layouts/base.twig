@@ -1,0 +1,81 @@
+{# type: layout #}
+
+{% set use_quickview    = true %}
+{% set use_share        = true %}
+
+{% if type == "collection" or type == "search" or type == "product" or type == "cart" or type == "wishlist" or is_home %}
+
+    {% include "layouts/modals/wishlistModalBase.twig" %}
+    
+    {% if use_quickview %}
+        {% include "layouts/modals/quickViewModalBase.twig" %}
+    {% endif %}
+    
+    {% include "layouts/modals/addResponseModalBase.twig" %}
+    
+    {% if use_share %}
+        {% include "layouts/modals/shareModalBase.twig" %}
+    {% endif %}
+{% endif %}
+
+{% import 'macros/menus.twig' as macro_menus %}
+
+{{macro_menus.mmenu({
+    "menu"                  : menus.default,
+    "search_url"            : search_url,
+    "account_logged_in"     : account.is_logged_in,
+    "account_logout_url"    : account.logout_url,  
+    "home_url"              : home_url
+})}}
+
+{% if type == "checkout" %}
+    {% include 'layouts/checkoutHeader.twig' %}
+{% else %}
+    {% include 'layouts/header.twig' %}
+{% endif %}
+<div class="page-wrap">
+    {% if type != 'collection' %}
+        <div class="page-overlay"></div>
+    {% endif %}
+    {% if alerts is not empty or type == 'cart' %}
+        <div class="container alert-row">
+            {% for alert in alerts %}
+                <div class="alert alert-{{alert.type}} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {% if "is niet geldig" in alert.message and "De coupon code" in alert.message %}
+                        {{"Deze vouchercode voldoet niet aan de voorwaarden"|t}}
+                    {% else %}
+                        {{alert.message}}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <main id="content" class="main-page content {{type}}">
+        {% if title|lower == "contact" %}
+            {% include 'page/contact.twig' %}
+        {% elseif title|lower == "merken" %}
+            {% include 'page/merken.twig' %}
+        {% elseif title|lower == "galerij" %}
+            {% include 'page/gallery.twig' %}
+        {% elseif title|lower == "faq" or title|lower == "veel gestelde vragen" %}
+            {% include 'page/FAQ.twig' %}
+        {% elseif title|lower == "sizechart" or title|lower == "maattabel" %}
+            {% include 'page/sizecharts.twig' %}
+        {% elseif title|lower == "verkooppunten" or title|lower == "verkooplocaties" or title|lower == "waar te koop" %}
+            {% include 'page/verkooplocaties.twig' %}
+        {% else %}
+            {{content}}
+        {% endif %}
+    </main>
+    {% if type == "checkout" %}
+        {% include 'layouts/checkoutFooter.twig' %}
+    {% else %}
+        {% include 'layouts/footer.twig' %}
+    {% endif %}
+</div>
+<div data-href="#0" class="cd-top btn btn-default">
+    {#<i class="fa fa-angle-up"></i>#}
+    <i data-lucide="chevron-up" class="size-20 ml-auto"></i>
+</div>
+

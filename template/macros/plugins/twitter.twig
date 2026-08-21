@@ -1,0 +1,7 @@
+{% set theme = (theme is defined ? theme : 'light') %}
+{% set title = (title is defined ? title : 'Afosto') %}
+{% set twitter_url = (twitter_url is defined ? twitter_url : 'https://twitter.com/afosto') %}
+{% set height = (height is defined ? height : 500) %}
+
+
+<a class="twitter-timeline" data-height="{{height}}" data-theme="{{theme}}" href="{{twitter_url}}">Tweets by {{title}}</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>

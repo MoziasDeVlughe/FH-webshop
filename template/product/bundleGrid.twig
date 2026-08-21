@@ -1,0 +1,100 @@
+
+{% if pluginData.bundle.bundles %}
+    <div class="h2">
+        {{'Bundels'|t}}
+    </div>
+    <div id="product-grid" class="no-switch grid clearfix">
+        {% for deal in pluginData.bundle.bundles %}
+            <div class="product-grid-item combi-cards col-xs-12 col-md-6">
+                <div class="product-grid-item-inner panel panel-default panel-body">
+                    <form action="{{home_url}}cart/add-multiple" method="POST" class="grid-product-form" id="grid-product-form-{{loop.index}}" data-cart-url="{{home_url}}cart">
+                        <input type="hidden" name="bundle_name" value="{{deal.name}}" />
+                        <input type="hidden" name="bundle_original_price" value="{{deal.original_price}}" />
+                        <input type="hidden" name="bundle_price" value="{{deal.price}}" />
+                        <input type="hidden" name="bundle_discount" value="{{'[percentage]% korting'|t({"[percentage]": deal.total_discount})}}" />
+                        <div class="combi-card-top">
+                            <div class="combi-card-name">
+                                <strong>
+                                    {{deal.name}}
+                                </strong>
+                            </div>
+                            <div class="combi-card-images d-flex align-items-center">
+                                {% for item in deal.products %}
+                                    {#{% for i in 1..item.amount %}#}
+                                    <div class="d-flex flex-column">
+                                        <a 
+                                            data-toggle="tooltip" 
+                                            data-placement="bottom" 
+                                            role="button"
+                                            tabindex="0"
+                                            title="{{item.product.name}}" 
+                                            href="{{item.product.url}}"
+                                            class="lazyload-wrapper lazyload-square d-block icon-50"
+                                        >
+                                            <img class="lazyload" data-src="{{item.product.image_default.thumbs.50|image({"w": 50, "h": 50})}}" alt="Afbeelding van {{item.product.name}}" title="Afbeelding van {{item.product.name}}">
+                                        </a>
+                                        
+                                        {% set is_nested = '1' %}
+                                        {% if loop.index0 == 0 %}
+                                            {% set is_nested = '0' %}
+                                        {% endif %}
+                                        <input type="hidden" name="item[{{loop.index0}}][is_nested]" value="{{is_nested}}"/>
+                                        <input type="hidden" name="item[{{loop.index0}}][quantity]" value="{{item.amount}}"/>
+                                        {% if item.product.attributes|length < 1 %}
+                                            <input type="hidden" name="item[{{loop.index0}}][product_id]" value="{{item.product.id}}"/>
+                                        {% else %}
+                                            {% for attribute in item.product.attributes %}
+                                                <select name="item[{{loop.index0}}][product_id]">
+                                                    {% for option in attribute.options %}
+                                                    <option value="{{option.price.child_id}}">
+                                                        {{option.label}}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    {#    {% if not loop.last %}#}
+                                    {#        <strong class="text-muted mx-5">+</strong>#}
+                                    {#    {% endif %}#}
+                                    {#{% endfor %}#}
+                                    {% if not loop.last %}
+                                        <strong class="text-muted mx-5">+</strong>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <hr class="my-10">
+                        </div>
+                        <div class="combi-card-bottom d-flex justify-content-between align-items-center">
+                            <div class="combi-card-bottom-left">
+                                
+                                {% if deal.original_price != deal.price %}
+                                    <strong class="text-success">
+                                        {{'[percentage]% korting'|t({"[percentage]": deal.total_discount})}}
+                                    </strong>
+                                {% endif %}
+                            </div>
+                            <div class="combi-card-bottom-right d-flex align-items-center">
+                                <div class="combi-card-price text-right">
+                                    {% if deal.original_price != deal.price %}
+                                        <small>
+                                            <s>
+                                                {{deal.original_price|price}}
+                                            </s>
+                                        </small><br>
+                                    {% endif %}
+                                    <strong class="text-success"> {{deal.price|price}}</strong>
+                                </div>
+                                {% if deal.price > 0 %}
+                                    <button type="submit" class="btn btn-sm btn-primary ml-10">
+                                        {{"In winkelwagen"|t}}
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

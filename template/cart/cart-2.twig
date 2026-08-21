@@ -1,0 +1,80 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+<div id="cart-container" class="mt-24">
+    <section id="contentcart" class="container mb-20 cart-version-flex loading-ajax">
+        <div class="mb-15">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <h1 class="my-0 cart-title">
+                    {{'Winkelwagen'|t}} 
+                </h1>
+                
+            </div>
+            <div class="clearfix"></div>
+        </div>
+            <div class="d-flex flex-wrap flex-md-nowrap mx-n15">
+                <div class="cart-grid px-15 d-flex flex-column">
+                    <div class="cart-grid-header">
+                        <div class="cart-grid-header-action">
+                        </div>
+                        <div class="cart-grid-header-information">
+                            <span>
+                                {{'Informatie'|t}}
+                            </span>
+                        </div>
+                        <div class="cart-grid-header-single-price">
+                            <span>
+                                {{'Stuksprijs'|t}}
+                            </span>
+                        </div>
+                        <div class="cart-grid-header-quantity">
+                            <span>
+                                {{'Aantal'|t}}
+                            </span>
+                        </div>
+                        <div class="cart-grid-header-subtotal">
+                            <span>
+                                {{'Subtotaal'|t}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cost-summary px-15">
+                    <div class="cost-summary-inner">
+                        <strong class="h4">
+                            {{'Checkout'|t}}
+                        </strong>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h6 my-5 text-muted">
+                                {{'Subtotaal'|t}}
+                            </span>
+                            <span class="h5 my-5 text-uppercase text-muted">
+                                -
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h6 my-5 text-muted">
+                                {{'Totaal excl. BTW'|t}}
+                            </span>
+                            <span class="h5 my-5 text-muted">
+                                -
+                            </span>
+                        </div>
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-20">
+                            <span class="h6 my-0 text-muted">
+                                {{'Totaal'|t}}
+                            </span>
+                            <span class="h4 my-0 text-muted">
+                                -
+                            </span>
+                        </div>
+                        
+                        <a class="btn btn-success btn-block disabled" href="{{checkout_url}}" title="{{'Verder met bestellen'|t}}">
+                            {{'Verder met bestellen'|t}}
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </section>
+</div>

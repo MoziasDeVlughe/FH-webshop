@@ -1,0 +1,2217 @@
+<!-- twig/layouts/storefrontScripts.twig -->
+
+
+
+<!-- Styling voor de error meldingen d.m.v. toastify-js -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+<script type="module">
+    import 'https://esm.sh/preact/debug';
+    import { h, render, Fragment } from 'https://esm.sh/preact';
+    import { useEffect, useState, useRef } from 'https://esm.sh/preact/hooks';
+    import { html } from 'https://esm.sh/htm/preact';
+    import Toastify from 'https://esm.sh/toastify-js';
+    import { createStorefrontClient } from 'https://esm.sh/@afosto/storefront@3';
+    import { getDomain } from 'https://esm.sh/tldts';
+    import { UserRoundX, UserRoundCheck, X, ShoppingCart, Heart, Plus, Minus, ChevronRight, Facebook, Mail, ReceiptText, IdCard, MapPin, SlidersHorizontal, LogOut, CircleCheck, CircleX } from 'https://esm.sh/lucide-preact';
+    
+    const getErrorMessage = error => {
+      const errorResponse = error?.response || {};
+      const errorResponseData = errorResponse?.data || {};
+      const errorResponseError = errorResponseData?.error || {};
+      const gqlResponseErrors = errorResponse?.errors || [];
+      const [firstGqlError] = gqlResponseErrors || [];
+      const gqlErrorExtensions = firstGqlError?.extensions || {};
+      const pointers = errorResponseError?.details?.pointers || firstGqlError?.extensions?.pointers;
+      const [firstPointer] = pointers || [];
+    
+      return (
+        firstPointer?.message ||
+        errorResponseError?.message ||
+        errorResponseData?.message ||
+        firstGqlError?.message
+      );
+    };
+    
+    const formatPrice = (value) => {
+        const intl = Intl.NumberFormat(`${document.documentElement.lang}-${document.documentElement.lang.toUpperCase()}`, {
+            style: 'currency',
+            currency: document.body.dataset.afCurrencyIso,
+        });
+        const decimal = intl.formatToParts(value / 100).find(part => part.type === 'decimal').value;
+    
+    
+        return intl.format(value / 100).replace(`${decimal}00`, `${decimal}-`);
+    };
+    
+    const CouponForm = ({ coupons }) => {
+        const [value, setValue] = useState('');
+        const [errorMessage, setErrorMessage] = useState(null);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        
+        const handleAddCouponToCart = async e => {
+            e.preventDefault();
+            try {
+                setIsSubmitting(true);
+                const updatedCart = await window.Storefront.addCouponToCart(value);
+                
+                if (!!updatedCart) {
+                    setValue('');
+                    $('body').trigger('cart:updated', updatedCart);
+                } else {
+                    alert('something went wrong');
+                }
+            } catch (error) {
+                $("#add-response-modal .modal-header .modal-title").html($("#add-response-modal").data("error-title"));
+                $("#add-response-modal .modal-body").addClass('text-center');
+                $("#add-response-modal .modal-body").html('<i class="icon-circle-alert size-96 text-warning"></i><p class="lead mt-15">' + getErrorMessage(error) + '</p>');
+                $("#add-response-modal").modal('show');
+            } finally {
+                setIsSubmitting(false);
+            }
+        };
+        
+        const handleRemoveCouponToCart = async code => {
+            try {
+                setIsSubmitting(true);
+                const updatedCart = await window.Storefront.removeCouponFromCart(code);
+                $('body').trigger('cart:updated', updatedCart);
+            } catch (error) {
+                $("#add-response-modal .modal-header .modal-title").html($("#add-response-modal").data("error-title"));
+                $("#add-response-modal .modal-body").addClass('text-center');
+                $("#add-response-modal .modal-body").html('<i class="icon-circle-alert size-96 text-warning"></i><p class="lead mt-15">' + getErrorMessage(error) + '</p>');
+                $("#add-response-modal").modal('show');
+            } finally {
+                setIsSubmitting(false);
+            }
+        };
+        
+        const handleChange = e => {
+            setValue(e.target.value);
+        };
+        
+        const handleInput = () => {
+            setErrorMessage(null);
+        };
+        
+        return html`
+            <form onSubmit="${handleAddCouponToCart}">
+                <div class="">
+                    ${(coupons || []).map(({ code }, index) => html`
+                    <div class="panel panel-default d-flex justify-content-between align-items-center">
+                        <div class="py-4 px-12">
+                            ${code || null}
+                        </div>
+                        <button class="btn btn-danger btn-sm" type="button" onClick="${() => handleRemoveCouponToCart(code)}">
+                            <${X} />
+                        </button>
+                    </div>
+                    `)}
+                </div>
+                <div class="input-group">
+                    <input class="form-control" placeholder="Coupon code toevoegen" onChange="${handleChange}" onInput="${handleInput}" value="${value}" />
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary" disabled="${isSubmitting}">
+                            <${ChevronRight} class="size-20" />
+                        </button>
+                    </span>
+                </div>
+                ${errorMessage && errorMessage}
+            </form>
+        `;
+    };
+    
+    const ShareCartDialog = () => {
+        const id = window.Storefront.getCartTokenFromStorage();
+        const link = `${window.location.origin}/cart?hash=${id}`;
+        
+        useEffect(() => {
+            if (id) {
+                $('[data-toggle="tooltip"]').tooltip();
+                $('.copy-to-clipboard').tooltip({
+                    container: '.input-group-btn',
+                    trigger: 'click'
+                }).on('mouseout', function(){
+                    $(this).tooltip('hide');
+                });
+                
+                new Clipboard('.copy-to-clipboard');
+                // new Clipboard('#copy-field');
+                
+                $('input[data-clipboard-text]').on('click, focus', function() {
+                    $(this).select();
+                });
+            }
+        }, [id]);
+        
+        return html`
+            <div class="modal fade" tabindex="-1" role="dialog" id="share-cart-dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title">{{'Winkelwagen delen'|t}}</h4>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div class="row">
+                                <div class="col-md-4 col-xs-3">
+                                    <a class="text-black" href="https://www.facebook.com/sharer/sharer.php?u=${link}&t=" rel="noopener noreferrer" target="_blank" title="{{"Share on Facebook"|t}}" >
+                                        <${Facebook} class="size-42" />
+                                    </a>
+                                </div>
+                                <div class="col-md-4 visible-xs visible-sm col-xs-3">
+                                    <a class="text-black" href="whatsapp://send?text=${link}">
+                                        <i class="fab fa-3x fa-whatsapp" />
+                                        
+                                    </a>
+                                </div>
+                                <div class="col-md-4 col-xs-3">
+                                    <a class="text-black" href="mailto:?subject=&body=${link}" rel="noopener noreferrer" target="_self" title="{{"Send email"|t}}">
+                                        <${Mail} class="size-42" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer text-left">
+                            <p class="text-center">
+                                {{' Kopieer deze link om op je website te plaatsen of om te gebruiken in een bericht'|t}}
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input class="form-control" value="${link}" id="copy-cart-url-field" data-clipboard-text="${link}" />
+                                    <div class="input-group-btn">
+                                        <button
+                                            type="button"
+                                            class="copy-to-clipboard btn btn-secondary"
+                                            data-clipboard-target="#copy-cart-url-field"
+                                            data-toggle="tooltip"
+                                            data-placement="bottom"
+                                            title="{{'Gekopieerd!'|t}}"
+                                        >
+                                            {{'Kopieer'|t}}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const CopyCartLink = ({ id }) => {
+        const handleShowShareDialog = () => {
+            $('#share-cart-dialog').modal('show');
+        };
+        
+        return html`
+            <button class="btn btn-link btn-block" data-toggle="modal" data-target="#share-cart-dialog">Winkelwagen delen</button>
+        `;
+    };
+    
+    const CartPageSummary = ({ cart, checkoutUrl, isLoading }) => {
+        const { subtotal, total, totalExcludingVat, vat, adjustments, fees, coupons, id } = cart || {};
+        const { shipping: shippingFees, payment: paymentFees } = fees || {};
+        
+        return html`
+            <div class="cost-summary px-15">
+                <div class="cost-summary-inner">
+                    <strong class="h4">
+                        {{'Checkout'|t}}
+                    </strong>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h6 my-5 text-muted">
+                            {{'Subtotaal'|t}}
+                        </span>
+                        <span class="h5 my-5 text-uppercase${isLoading ? 'text-muted' : ''}">
+                            ${isLoading ? '-' : formatPrice(subtotal || 0)}
+                        </span>
+                    </div>
+                    ${(adjustments || []).map(({ description, amount, isDiscount, isPercentage, outcome }, index) => html`
+                        <div class="d-flex justify-content-between align-items-center${index > 0 ? ' mt-20' : ''}">
+                            <span class="h6 my-5 text-muted">
+                                ${description}${isPercentage ? ` (${amount}%)` : ''}
+                            </span>
+                            <span class="h5 my-5">
+                                ${formatPrice((outcome.amount || 0) * (isDiscount ? -1 : 1) )}
+                            </span>
+                        </div>
+                    `)}
+                    ${(shippingFees || []).map(({ description, total }, index) => html`
+                        <div class="d-flex justify-content-between align-items-center${index > 0 ? ' mt-20' : ''}">
+                            <span class="h6 my-5 text-muted">
+                                ${description}
+                            </span>
+                            <span class="h5 my-5">
+                                ${formatPrice(total)}
+                            </span>
+                        </div>
+                    `)}
+                    ${(paymentFees || []).map(({ description, total }, index) => html`
+                        <div class="d-flex justify-content-between align-items-center${index > 0 ? ' mt-20' : ''}">
+                            <span class="h6 my-5 text-muted">
+                                ${description}
+                            </span>
+                            <span class="h5 my-5">
+                                ${formatPrice(total)}
+                            </span>
+                        </div>
+                    `)}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h6 my-5 text-muted">
+                            {{'Totaal excl. BTW'|t}}
+                        </span>
+                        <span class="h5 my-5${isLoading ? 'text-muted' : ''}">
+                            ${isLoading ? '-' : formatPrice(totalExcludingVat || 0)}
+                        </span>
+                    </div>
+                    ${(vat || []).map(({ rate, amount }, index) => html`
+                        <div class="d-flex justify-content-between align-items-center${index > 0 ? ' mt-20' : ''}">
+                            <span class="h6 my-5 text-muted">
+                                BTW ${rate || 0}%
+                            </span>
+                            <span class="h5 my-5">
+                                ${formatPrice(amount || 0)}
+                            </span>
+                        </div>
+                    `)}
+                    
+                    <hr />
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-32">
+                        <span class="h6 my-0 text-muted">
+                            {{'Totaal'|t}}
+                        </span>
+                        <span class="h4 my-0${isLoading ? 'text-muted' : ''}">
+                            ${isLoading ? '-' : formatPrice(total || 0)}
+                        </span>
+                    </div>
+                    
+                    <${CouponForm} coupons="${coupons}" />
+                    // <${PayPalButton} options="${paypalOptions}" />
+                    
+                    <a class="btn btn-primary btn-block mt-16" href="${checkoutUrl}" title="{{'Verder met bestellen'|t}}">
+                        {{'Verder met bestellen'|t}}
+                    </a>
+                    
+                    <${CopyCartLink} id="${id}" />
+                </div>
+            </div>
+        `;
+    };
+    
+    const ItemsGrid = ({ items, onRemove, onChangeQuantity, isLoading }) => {
+        const increaseQuantity = item => onChangeQuantity(item, item.quantity + 1);
+        const decreaseQuantity = item => onChangeQuantity(item, item.quantity - 1);
+        
+        return html`
+            <div class="cart-grid px-15 d-flex flex-column">
+                <div class="cart-grid-header">
+                    <div class="cart-grid-header-action"></div>
+                    <div class="cart-grid-header-information">
+                        <span>
+                            {{'Informatie'|t}}
+                        </span>
+                    </div>
+                    <div class="cart-grid-header-single-price">
+                        <span>
+                            {{'Stuksprijs'|t}}
+                        </span>
+                    </div>
+                    <div class="cart-grid-header-quantity">
+                        <span>
+                            {{'Aantal'|t}}
+                        </span>
+                    </div>
+                    <div class="cart-grid-header-subtotal">
+                        <span>
+                            {{'Subtotaal'|t}}
+                        </span>
+                    </div>
+                </div>
+                ${!isLoading ? items.map(item => {
+                    const { adjustments, label, sku, total, subtotal, quantity, ids, details, image } = item || {};
+                    const unitPrice = details[0] && details[0].pricing && details[0].pricing.amount || 0;
+                    
+                    return html`
+                        <div class="cart-grid-item-container" key="${sku}">
+                            <div class="cart-grid-item">
+                                <div class="cart-grid-item-action hidden-xs hidden-sm">
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-link text-danger btn-block btn-icon p-10"
+                                        onClick="${() => onRemove(item)}"
+                                    >
+                                        <${X} class="size-24" />
+                                    </button>
+                                </div>
+                                <div class="cart-grid-item-information">
+                                    <div class="cart-grid-item-information-image">
+                                        <a href="{{cartItem.url}}" title="${label || sku}">
+                                            <div class="lazyload-wrapper lazyload-square">
+                                                <img loading="lazy" src="${image}" alt="${'{{'Afbeelding van [name]'|t}}'.replace('[name]', label || sku) }" class="lazyload-cover" />
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="cart-grid-item-information-inner">
+                                        <strong class="h5 cart-grid-item-product-name">
+                                            ${label || sku}
+                                        </strong>
+                                        <div class="visible-xs visible-sm">
+                                            <div class="d-flex">
+                                                <div class="flex-100 d-flex align-items-center">
+                                                    <label class="h6 text-muted d-block mr-10">
+                                                        {{'Aantal'|t}}
+                                                    </label>
+                                                    <div class="quantity-counter">
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn" 
+                                                            onClick="${() => decreaseQuantity(item)}"
+                                                        >
+                                                            <${Minus} class="size-24" />
+                                                        </button>
+                                                        <div class="mx-10">
+                                                            ${quantity}
+                                                        </div>
+                                                        <button 
+                                                            type="button" 
+                                                            class="btn" 
+                                                            onClick="${() => increaseQuantity(item)}"
+                                                        >
+                                                            <${Plus} class="size-24" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="light my-10"/>
+                                            <div class="d-flex align-items-end flex-wrap">
+                                                <div>
+                                                    ${adjustments.length > 0 && html`
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <span class="h6 my-0 text-muted mr-10">
+                                                                {{'Subtotaal'|t}}
+                                                            </span>
+                                                            <span class="h6 my-0">
+                                                                ${formatPrice(subtotal)}
+                                                            </span>
+                                                        </div>
+                                                        ${adjustments.map((adjustment, idx) => html`
+                                                            <div class="">
+                                                                <span class="h6 my-0 text-muted mr-10">
+                                                                 ${adjustment.description} ${adjustment.isPercentage ? `(${adjustment.amount}%)` : ''}
+                                                                </span>
+                                                                <span class="h6 my-0">
+                                                                    ${formatPrice(adjustment.outcome.amount * (adjustment.isDiscount ? -1 : 1))}
+                                                                </span>
+                                                            </div>
+                                                        `)}
+                                                    `}
+                                                    <div class="d-flex justify-content-between align-items-center my-8">
+                                                        <span class="h6 my-0 text-muted mr-10">
+                                                            {{'Totaal'|t}}
+                                                        </span>
+                                                        <span class="h5 my-0">
+                                                            ${formatPrice(total)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-link btn-sm text-danger btn-icon p-5 ml-auto d-flex align-items-center" 
+                                                    onClick="${() => onRemove(item)}"
+                                                >
+                                                    <${X} class="size-16" />
+                                                    <span>
+                                                        {{'Verwijderen'|t}}
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cart-grid-item-single-price hidden-xs hidden-sm text-right">
+                                        <div class="h5">
+                                            ${formatPrice(unitPrice)}
+                                        </div>
+                                    </div>
+                                    <div class="cart-grid-item-quantity hidden-xs hidden-sm">
+                                        <div class="quantity-counter">
+                                             <button 
+                                                type="button" 
+                                                class="btn" 
+                                                onClick="${() => decreaseQuantity(item)}"
+                                            >
+                                                <${Minus} class="size-24" />
+                                            </button>
+                                            <div class="mx-10">
+                                                ${quantity}
+                                            </div>
+                                            <button
+                                                type="button" 
+                                                class="btn" 
+                                                 onClick="${() => increaseQuantity(item)}"
+                                            >
+                                                <${Plus} class="size-24" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="cart-grid-item-subtotal hidden-xs hidden-sm text-right">
+                                        <span class="h5 ${adjustments.length > 0 ? 'text-through text-muted' : ''}">
+                                            ${formatPrice(subtotal)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${(adjustments || []).length > 0 && html`
+                                ${adjustments.map((adjustment, idx) => html`
+                                    <div class="cart-grid-item-adjustments hidden-xs hidden-sm">
+                                        <div class="cart-grid-item-adjustments-description">
+                                         ${adjustment.description} ${adjustment.isPercentage ? `(${adjustment.amount}%)` : ''}
+                                        </div>
+                                        <div class="cart-grid-item-adjustments-outcome">
+                                            ${formatPrice(adjustment.outcome.amount * (adjustment.isDiscount ? -1 : 1))}
+                                        </div>
+                                        <div class="cart-grid-item-adjustments-new-total">
+                                            ${idx + 1 === adjustments.length ? html`
+                                                <span class="h5 my-0">
+                                                    ${formatPrice(total)}
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `)}
+                            `}
+                        </div>
+                    `;
+                }) : ''}
+            </div>
+        `;
+    };
+    
+    const ProductCard = ({ product }) => {
+        
+        
+        return html`
+        <div class="col-xs-6 col-sm-4 col-md-4 col-lg-3 mb-30">
+            <article class="product-grid-item h-pr-100">
+                <div class="product-image">
+                    <a href="${product.url}" title="${product.name}">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img data-src="${product.image_default.thumbs[400]}" alt="Foto van ${product.name}" title="${product.name}" class="lazyload"/>
+                        </div>
+                        <div class="product-name">
+                            <strong>
+                                ${product.name}
+                            </strong>
+                        </div>
+                    </a>
+                </div>
+                <div class="product-info">
+                    
+                    <div class="product-info-description hidden-xs list-visible">
+                        <a data-af-href="${product.url}" class="product-name list-visible" title="${product.name}">
+                            <strong>${product.name}</strong>
+                        </a>
+                    </div>
+                    <div class="product-action">
+                        <div class="product-action-text">
+                            <strong class="product-price">
+                                ${product.has_discount && html`
+                                    <small>
+                                        <s>
+                                            ${formatPrice(product.original_price * 100)}
+                                        </s>
+                                    </small>
+                                    `}
+                                <span>${formatPrice(product.price * 100)}</span>
+                            </strong>
+                            <div class="product-action-buttons">
+                                
+                                ${!product.available && html`
+                                    <button type="button" disabled class="btn btn-primary btn-sm" aria-label="{{'Toevoegen aan winkelwagen'|t}}">
+                                        <${ShoppingCart} class="size-24" />
+                                        <${Plus} class="size-24" />
+                                    </button>
+                                `}
+                                ${product.available && product.price > 0 && html`
+                                    ${product.has_options ? html`
+                                        <div
+                                            class="btn btn-success btn-sm quick-view-link"
+                                            data-qv-product="${product.url}"
+                                            data-qv-ajax-element="#quick-view-modal .modal-content"
+                                            data-qv-ajax-input="#quick-view-content > *"
+                                            data-product-url="${product.url}"
+                                            data-skip-drawer
+                                        >
+                                            <${ShoppingCart} class="size-24" />
+                                            <${Plus} class="size-24" />
+                                        </div>
+                                        ` : html`
+                                        <form
+                                            action="${product.cart_url}"
+                                            method="POST"
+                                            id="product-form-${product.id}"
+                                            data-cart-url="${location.origin}/cart"
+                                            class="grid-product-form"
+                                            data-product-url="${product.url}"
+                                            data-skip-drawer
+                                            data-form-input="[{'product_id' : '${product.id}', 'quantity' : '1', 'price' : '${product.price}'}]"
+                                        >
+                                            <input type="hidden" value="${product.price}" name="price"/>
+                                            <input type="hidden" value="${product.id}" name="product_id"/>
+                                            <input type="hidden" value="${product.sku}" name="sku"/>
+                                            <input type="hidden" value="1" name="quantity"/>
+                                            <button type="submit" class="btn btn-success btn-sm" aria-label="{{'Toevoegen aan winkelwagen'|t}}">
+                                                <${ShoppingCart} class="size-24" />
+                                                <${Plus} class="size-24" />
+                                            </button>
+                                        </form>
+                                    `}
+                                `}
+                                // ${product.product_wishlist_url && html`
+                                //     <button
+                                //         type="button"
+                                //         class="btn btn-sm btn-primary-inverse wishlist-link"
+                                //         data-toggle="modal"
+                                //         data-target="#wishlist-modal"
+                                //         data-wl-product="${product.product_wishlist_url}"
+                                //         data-wl-ajax-element="#wishlist-modal .modal-body"
+                                //         data-wl-ajax-input="#wishlist-content > *"
+                                //         aria-label="{{'Toevoegen aan wishlist'|t}}"
+                                //     >
+                                //         <${Heart} class="size-16" />
+                                //     </button>
+                                // `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    `;
+    };
+    
+    const CrossSellProducts = ({ cartItems }) => {
+        const [crossSellItems, setCrossSellItems] = useState([]);
+        const [isLoading, setIsLoading] = useState(true);
+        
+        useEffect(() => {
+            const fetchCrossSellItems = async (skus) => {
+                try {
+                    const url = new URL(`${window.location.origin}/cart/cross`);
+                    url.searchParams.set('sku', skus.join(','));
+                    const response = await fetch(url.toString(), {
+                        headers: {
+                            Accept: 'application/json'
+                        }
+                    });
+                    const data = await response.json();
+                    setCrossSellItems(data || []);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            
+            if (cartItems.length > 0) {
+                fetchCrossSellItems(cartItems.map(({ sku }) => sku));
+            }
+        }, [cartItems]);
+        
+        if (crossSellItems.length === 0) {
+            return null;
+        }
+        
+        return html`
+            <hr />
+            <h3>
+                {{'Anderen bestelden ook'|t}}
+            </h3>
+            <div class="product-grid grid">
+                ${crossSellItems.map(item => {
+                    return html`
+                        <${ProductCard} key="${item.id}" product="${item || {}}" />
+                    `;
+                })}
+            </div>
+        `;
+    };
+    
+    const CartPage = ()  => {
+        const [cart, setCart] = useState({});
+        const [isLoadingCart, setIsLoadingCart] = useState(true);
+        const [error, setError] = useState(null);
+        const checkoutUrl = cart && cart.checkout && cart.checkout.url || '';
+        
+        const handleRemoveItems = async item => {
+            const updatedCart = await window.Storefront.removeCartItems(item.ids);
+            $('body').trigger('cart:updated', updatedCart);
+            $(document).trigger('af.cart.remove', [[{
+                "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                "product_id": item.sku,
+                "sku": item.sku,
+                "quantity": item.quantity,
+            }]]);
+        };
+
+        const handleChangeQuantity = async (item, quantity) => {
+            try {
+                if (!quantity || quantity === item.quantity) {
+                    return;
+                }
+                
+                let cartResponse;
+                
+                if (quantity > item.quantity) {
+                    cartResponse = await window.Storefront.addCartItems([
+                      {
+                        sku: item.sku,
+                        quantity: quantity - item.quantity,
+                      },
+                    ]);
+                    $(document).trigger('af.cart.add', [[{
+                        "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                        "product_id": item.sku,
+                        "sku": item.sku,
+                        "quantity": quantity - item.quantity,
+                    }]]);
+                } else {
+                    const difference = item.quantity - quantity;
+                    const ids = [...(item.ids || [])].reverse().slice(0, difference);
+                    cartResponse = await window.Storefront.removeCartItems(ids);
+                    $(document).trigger('af.cart.remove', [[{
+                        "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                        "product_id": item.sku,
+                        "sku": item.sku,
+                        "quantity": difference,
+                    }]]);
+                }
+                
+                $('body').trigger('cart:updated', cartResponse);
+            } catch(error) {
+                $("#add-response-modal .modal-header .modal-title").html($("#add-response-modal").data("error-title"));
+                $("#add-response-modal .modal-body").addClass('text-center');
+                $("#add-response-modal .modal-body").html('<i class="icon-circle-alert size-96 text-warning"></i><p class="lead mt-15">' + getErrorMessage(error) + '</p>');
+                $("#add-response-modal").modal('show');
+            }
+        };
+        
+        useEffect(() => {
+            const updateCart = (event, val) => {
+                setCart(val);
+                if (isLoadingCart) {
+                    setIsLoadingCart(false);
+                }
+            };
+            $('body').on('cart:updated', updateCart);
+            
+            return () => {
+                $('body').off('cart:updated', updateCart);
+            }
+        }, []);
+        
+        
+        return html`
+            <section id="contentcart" class="container mb-20 cart-version-flex${isLoadingCart ? ' loading-ajax' : ''}">
+                <div class="mb-15">
+                    <div class="cart-header d-flex align-items-center justify-content-between">
+                        <h1 class="my-0 cart-title">
+                            {{'Winkelwagen'|t}} 
+                        </h1>
+                        ${(cart && cart.items && cart.items.length > 0) && !isLoadingCart && html`
+                        <a class="btn btn-primary visible-sm visible-xs" href="${checkoutUrl}">
+                            {{'Afrekenen'|t}}
+                        </a>`}
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                ${error && html`
+                    <div class="alert alert-warning">${error}</div>
+                `}
+                ${(cart && cart.items && cart.items.length > 0) || isLoadingCart ? html`
+                    <div class="d-flex flex-wrap flex-md-nowrap mx-n15">
+                        <${ItemsGrid} isLoading="${isLoadingCart}" items="${cart.items || []}" onRemove="${handleRemoveItems}" onChangeQuantity="${handleChangeQuantity}" />
+                        <${CartPageSummary} isLoading="${isLoadingCart}" cart="${cart}" checkoutUrl="${checkoutUrl}" />
+                    </div>
+                    <${CrossSellProducts} cartItems="${cart?.items || []}" />
+                ` : html`
+                    <h3 class="text-center text-warning">
+                        {{'Uw winkelwagen is leeg.'|t}}
+                        <br />
+                        <br />
+                        <a class="center btn btn-primary" href="{{home_url}}">{{'Bekijk onze producten'|t}}</a>
+                    </h3>
+                `}
+            </section>
+        `;
+    };
+    
+    const CartDrawerItem = ({ item, onRemove, onChangeQuantity }) => {
+        const { label, sku, image, ids, quantity, subtotal, total, adjustments } = item;
+        
+        const increaseQuantity = item => onChangeQuantity(item, item.quantity + 1);
+        const decreaseQuantity = item => onChangeQuantity(item, item.quantity - 1);
+        
+        return html`
+            <div class="cart-overview-item">
+                <div class="cart-overview-item-inner d-flex gap-8">
+                    
+                    <div class="cart-overview-item-delete align-self-center">
+                        <a class="text-primary" onClick="${() => onRemove(item)}">
+                            <${X} class="size-14 text-danger" />
+                        </a>
+                    </div>
+                    <div class="cart-overview-item-image px-5">
+                        <div class="d-block icon-75">
+                            <div class="lazyload-wrapper lazyload-square">
+                                <img class="lazyload lazyload-cover" data-src="${image}" alt="${'{{'Afbeelding van [name]'|t}}'.replace('[name]', label || sku) }"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart-overview-item-group d-flex flex-column justify-content-between flex-fill">
+                        <div class="cart-overview-item-name">
+                                ${label || sku}
+                        </div>
+                        ${adjustments.length > 0 && html`
+                            <div class="d-flex justify-content-between text-muted mt-8">
+                                <small>
+                                    {{'Subtotaal'|t}}
+                                </small>
+                                <small>
+                                    ${formatPrice(subtotal)}
+                                </small>
+                            </div>
+                            ${adjustments.map(adjustment => html`
+                                <div class="d-flex justify-content-between text-muted">
+                                    <small>
+                                    ${adjustment.description}${adjustment.isPercentage ? ` (${adjustment.amount}%)` : ''}
+                                    </small>
+                                    <small>
+                                    ${formatPrice(adjustment.outcome.amount * (adjustment.isDiscount ? -1 : 1))}
+                                    </small>
+                                </div>
+                            `)}
+                        `}
+                        <div class="d-flex justify-content-between${adjustments.length > 0 ? ' mt-12' : ''}">
+                            <div class="cart-overview-item-quantity align-self-end">
+                                <div class="quantity-counter">
+                                    <button 
+                                        type="button" 
+                                        class="btn" 
+                                        aria-label="{{'aantal min 1'|t}}"
+                                        onClick="${() => decreaseQuantity(item)}"
+                                    >
+                                        <${Minus} class="size-24" />
+                                    </button>
+                                    <div class="mx-10">
+                                        ${quantity}
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        class="btn" 
+                                        aria-label="{{'aantal plus 1'|t}}"
+                                        onClick="${() => increaseQuantity(item)}"
+                                    >
+                                        <${Plus} class="size-24" />
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="cart-overview-item-price text-right">
+                                <strong>
+                                    ${formatPrice(total)}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const CartDrawer = () => {
+        const [cart, setCart] = useState(null);
+        const [channel, setChannel] = useState(null);
+        const [isLoadingCart, setIsLoadingCart] = useState(false);
+        const drawerRef = useRef(null);
+        
+        const handleRemoveItems = async item => {
+            const updatedCart = await window.Storefront.removeCartItems(item.ids);
+            setCart(updatedCart);
+            $('body').trigger('cart:updated', updatedCart);
+            $(document).trigger('af.cart.remove', [[{
+                "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                "product_id": item.sku,
+                "sku": item.sku,
+                "quantity": item.quantity,
+            }]]);
+        };
+
+        const handleChangeQuantity = async (item, quantity) => {
+            try {
+                if (!quantity || quantity === item.quantity) {
+                    return;
+                }
+                
+                let cartResponse;
+                
+                if (quantity > item.quantity) {
+                    cartResponse = await window.Storefront.addCartItems([
+                      {
+                        sku: item.sku,
+                        quantity: quantity - item.quantity,
+                      },
+                    ]);
+                    $(document).trigger('af.cart.add', [[{
+                        "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                        "product_id": item.sku,
+                        "sku": item.sku,
+                        "quantity": quantity - item.quantity,
+                    }]]);
+                } else {
+                    const difference = item.quantity - quantity;
+                    const ids = [...(item.ids || [])].reverse().slice(0, difference);
+                    cartResponse = await window.Storefront.removeCartItems(ids);
+                    $(document).trigger('af.cart.remove', [[{
+                        "price": ((item.details?.at(0)?.pricing?.amount || 0) / 100).toFixed(2),
+                        "product_id": item.sku,
+                        "sku": item.sku,
+                        "quantity": difference,
+                    }]]);
+                }
+                
+                setCart(cartResponse);
+                $('body').trigger('cart:updated', cartResponse);
+            } catch(error) {
+                $("#add-response-modal .modal-header .modal-title").html($("#add-response-modal").data("error-title"));
+                $("#add-response-modal .modal-body").addClass('text-center');
+                $("#add-response-modal .modal-body").html('<i class="icon-circle-alert size-96 text-warning"></i><p class="lead mt-15">' + getErrorMessage(error) + '</p>');
+                $("#add-response-modal").modal('show');
+            }
+        };
+        
+        const getCartData = async () => {
+            setIsLoadingCart(true);
+            let tokenIsValid = true;
+            const { search = '', pathname } = window?.location || {};
+            const params = new URLSearchParams(search);
+            const cartToken = params.get('hash');
+            const isCartPage = pathname === '/cart';
+            const intent = isCartPage ? 'VIEW_CART' : null;
+            
+            const cartResponse = await window.Storefront.getCart(cartToken, intent).catch(() => {
+              if (cartToken) {
+                tokenIsValid = false;
+                return window.Storefront.getCart(null, intent);
+              }
+    
+              return Promise.reject(new Error('Cart not found'));
+            });
+    
+            if (cartResponse && tokenIsValid && cartToken) {
+                await window.Storefront.storeCartTokenInStorage(cartToken);
+            }
+                
+            // window.Storefront.getCart().then(response => {
+                setIsLoadingCart(false);
+                $('body').trigger('cart:updated', cartResponse);
+            // });
+        };
+        
+        const getChannelData = async () => {
+            const channelResponse = await window.Storefront.getChannel();
+            
+            setChannel(channelResponse);
+            $('body').trigger('channel:updated', channelResponse);
+        };
+        
+        useEffect(() => {
+            getCartData();
+            getChannelData();
+        }, []);
+        
+        useEffect(() => {
+            const updateCart = (event, val) => {
+                if(!!val) {
+                    setCart(val);
+                }
+                if (isLoadingCart) {
+                    setIsLoadingCart(false);
+                }
+            };
+            $('body').on('cart:updated', updateCart);
+            
+            return () => {
+                $('body').off('cart:updated', updateCart);
+            }
+        }, []);
+        
+        return html`
+            <div class="drawer drawer-right" id="cart-drawer" ref="${drawerRef}">
+                <div class="drawer-header">
+                    <div class="h4 m-0 fw-700">
+                        {{"Winkelwagen"|t}}
+                    </div>
+                    <button class="btn btn-link m-4 p-0 icon-40 mr-n12 d-flex align-items-center" type="button" data-dismiss="drawer" aria-label="{{'Sluit winkelwagen'|t}}">
+                        <${X} class="text-black" />
+                    </button>
+                </div>
+                
+                <div class="drawer-body configurator-drawer-inner p-0">
+            
+                    ${((cart && cart.items) || []).length === 0 ? html`
+                        <div class="text-center">
+                            <${ShoppingCart} class="size-80 text-primary mb-40 mt-40" />
+                            <span class="h4 mb-12">{{"Uw winkelwagen is leeg"|t}}</span>
+                            <p class=" mb-40">{{"Bekijk het aanbod op onze website en voeg producten toe aan je winkelwagen."|t}}</p>
+                            <button type="button" class="btn btn-primary" data-dismiss="drawer">
+                                {{'Verder winkelen'|t}}
+                            </button>
+                        </div>
+                    ` : html`
+                        <div class="cart-preview-items py-8">
+                            ${((cart && cart.items) || []).map(item => html`
+                                <${CartDrawerItem}
+                                    key="${item.sku}"
+                                    item="${item}"
+                                    onRemove="${handleRemoveItems}"
+                                    onChangeQuantity="${handleChangeQuantity}"
+                                />
+                            `)}
+                        </div>
+                    `}
+                </div>
+                ${((cart && cart.items) || []).length ? html`
+                    <div class="drawer-footer drawer-footer-sticky pb-32 px-32">
+                        <hr class="mb-20" />
+                        
+                        ${(cart.fees.shipping || []).map(({ description, total }, index) => html`
+                            <div class="d-flex justify-content-between my-5">
+                                <small>
+                                    ${description}
+                                </small>
+                                <small>
+                                    ${formatPrice(total)}
+                                </small>
+                            </div>
+                        `)}
+                        ${(cart.fees.payment || []).map(({ description, total }, index) => html`
+                            <div class="d-flex justify-content-between my-5">
+                                <small>
+                                    ${description}
+                                </small>
+                                <small>
+                                    ${formatPrice(total)}
+                                </small>
+                            </div>
+                        `)}
+                        
+                        <div class="d-flex justify-content-between py-20">
+                            <span>
+                                {{'Totaal'|t}}
+                            </span>
+                            <span>
+                                ${formatPrice(cart.total)}
+                            </span>
+                        </div>
+                        <hr class="mt-0 mb-32" />
+                        <a class="btn btn-primary btn-block" href="{{cart_url}}">
+                            {{'Afrekenen'|t}}
+                        </a>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    };
+    
+    const AccountDrawer = () => {
+        const [channel, setChannel] = useState(null);
+        const accountLink = channel?.links?.find(({ type }) => type === 'MY_ACCOUNT')?.value;
+        const [account, setAccount] = useState(window.Storefront.getUser());
+        
+        
+        const handleSignOut = () => {
+            window.Storefront.signOut();
+            setAccount(window.Storefront.getUser());
+            location.reload();
+        };
+        
+        useEffect(() => {
+            const updateChannel = (event, val) => {
+                if(!!val) {
+                    setChannel(val);
+                }
+            };
+            $('body').on('channel:updated', updateChannel);
+            
+            return () => {
+                $('body').off('channel:updated', updateChannel);
+            }
+        }, []);
+        
+        return html`
+            <div class="drawer drawer-right" id="account-drawer">
+                <div class="drawer-header">
+                    <div class="h4 m-0 fw-700">
+                        {{"Account"|t}}
+                    </div>
+                    <button class="btn btn-link m-4 p-0 icon-40 mr-n12 d-flex align-items-center" type="button" data-dismiss="drawer" aria-label="{{'Sluit winkelwagen'|t}}">
+                        <${X} class="text-black" />
+                    </button>
+                </div>
+                
+                <div class="drawer-body configurator-drawer-inner px-0 py-16 mx-0">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a href="${accountLink}/account/orders" class="text-black d-flex-imp align-items-center">
+                                <${ReceiptText} class="size-20 mr-12" /> {{"Mijn bestellingen"|t}}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${accountLink}/account/details" class="text-black  d-flex-imp align-items-center">
+                                <${IdCard} class="size-20 mr-12" /> {{"Mijn gegevens"|t}}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${accountLink}/account/addresses" class="text-black  d-flex-imp align-items-center">
+                                <${MapPin} class="size-20 mr-12" /> {{"Mijn adressen"|t}}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="${accountLink}/account/preferences" class="text-black  d-flex-imp align-items-center">
+                                <${SlidersHorizontal} class="size-20 mr-12" /> {{"Mijn voorkeuren"|t}}
+                            </a>
+                        </li>
+                        <li role="separator">
+                            <hr class="my-8" />
+                        </li>
+                        <li>
+                            <a onClick="${handleSignOut}" class="text-black  d-flex-imp align-items-center">
+                                <${LogOut} class="size-20 mr-12" /> {{"Uitloggen"|t}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    };
+    
+    const AccountMenu = () => {
+        const [channel, setChannel] = useState(null);
+        const accountLink = channel?.links?.find(({ type }) => type === 'MY_ACCOUNT')?.value;
+        const [account, setAccount] = useState(window.Storefront.getUser());
+        
+        const handleSignOut = () => {
+            window.Storefront.signOut();
+            setAccount(window.Storefront.getUser());
+            location.reload();
+        };
+        
+        useEffect(() => {
+            const updateChannel = (event, val) => {
+                if(!!val) {
+                    setChannel(val);
+                }
+            };
+            $('body').on('channel:updated', updateChannel);
+            
+            return () => {
+                $('body').off('channel:updated', updateChannel);
+            }
+        }, []);
+        
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        if (account) {
+            return html`
+                <a data-toggle="drawer" data-target="#account-drawer">
+                    <${UserRoundCheck} class="size-20" />
+                    <span class="sr-only hidden-xs account-link-label">${account.givenName}</span>
+                </a>
+            `;
+        }
+        
+        return html`
+            <a data-target="#auth-drawer" data-toggle="drawer">
+                    <${UserRoundX} class="size-20" />
+                <span class="sr-only hidden-xs account-link-label">{{"Inloggen"|t}}</span>
+            </a>
+        `;
+    };
+    
+    const OrganisationSwitch = () => {
+        const [organisations, setOrganisations] = useState([]);
+        const [isLoading, setIsLoading] = useState(true);
+        
+        useEffect(() => {
+            const handleGetOrganisations = async () => {
+                setIsLoading(true);
+                const account = await window.Storefront.getAccountInformation();
+                setOrganisations(account.sharedOrganisations);
+                setIsLoading(false);
+            };
+            
+            handleGetOrganisations();
+        }, []);
+        
+        const handleSwitchOrganisation = id => async () => {
+            try {
+                await window.Storefront.signInAsOrganisation({ organisationId: id });
+                window.Storefront.removeCartTokenFromStorage();
+                
+                location.href = '/';
+            } catch(e) {
+                window.alert(getErrorMessage(e));
+            }
+        };
+        
+        return html`
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="flex-100 flex-md-50 flex-lg-40 d-flex flex-column align-items-center">
+                    <div class="w-100">
+                        <h1 class="mt-0 mb-32">{{'Organisaties'|t}}</h1>
+                        ${!isLoading && organisations.length === 0 && html`
+                            <div class="card card-content">
+                                Je account is nog niet gekoppeld aan een organisatie. Hierdoor kun je nog niet bestellen.
+                            </div>
+                        `}
+                        ${(isLoading || (!isLoading && organisations.length > 0)) && html`
+                            <div class="card">
+                                ${isLoading && [1,2].map((organisation) => {
+                                    return html`
+                                        <div class="card-content w-100 d-flex justify-content-between align-items-center gap-24">
+                                            <div class="d-flex flex-column w-75">
+                                                <strong class="w-75">
+                                                    <div class="skeleton-box w-100"></div>
+                                                </strong>
+                                                <span class="w-50">
+                                                    <div class="skeleton-box w-100"></div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `;
+                                })}
+                                ${!isLoading && organisations.map((organisation) => {
+                                    return html`
+                                        <button class="card-content w-100 d-flex justify-content-between align-items-center gap-24" onClick="${handleSwitchOrganisation(organisation?.id)}">
+                                            <div class="d-flex flex-column">
+                                                <strong>
+                                                    ${organisation.name}
+                                                </strong>
+                                                <span>
+                                                    ${organisation.administration?.email}
+                                                </span>
+                                            </div>
+                                            <${ChevronRight} class="text-muted" />
+                                        </button>
+                                    `;
+                                })}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const SignInForm = ({ onRegister, onPasswordReset, formOnly }) => {
+        const [channel, setChannel] = useState(null);
+        const [serverError, setServerError] = useState(null);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const accountLink = channel?.links?.find(({ type }) => type === 'MY_ACCOUNT')?.value;
+        
+        const allowAccountRequest = false;
+        
+        const handleSignIn = async (e) => {
+            e.preventDefault();
+            try {
+                setServerError(null);
+                if ($(e.target).parsley().isValid()) {
+                    setIsSubmitting(true);
+                    const formData = new FormData(e.target);
+                    const body = Object.fromEntries(formData);
+                    
+                    await window.Storefront.signIn(body);
+                    const response = await window.Storefront.getAccountInformation();
+                    
+                    if (response.sharedOrganisations.length === 1) {
+                        await window.Storefront.signInAsOrganisation({ organisationId: response.sharedOrganisations.at(0).id });
+                    }
+                    if (location.pathname === '/login') {
+                        location.href = '/';
+                    } else {
+                        location.reload();
+                    }
+                }
+            } catch (e) {
+                setServerError(getErrorMessage(e));
+                setIsSubmitting(false);
+            }
+        };
+        
+        useEffect(() => {
+            window.formValidation();
+        }, []);
+        
+        useEffect(() => {
+            const updateChannel = (event, val) => {
+                if(!!val) {
+                    setChannel(val);
+                }
+            };
+            $('body').on('channel:updated', updateChannel);
+            
+            return () => {
+                $('body').off('channel:updated', updateChannel);
+            }
+        }, []);
+        
+        if (formOnly) {
+            return html`
+                <form id="sign-in-form" class="form-validate" onSubmit="${handleSignIn}">
+                    ${serverError && html`<p class="text-danger">${serverError}</p>`}
+                    <div class="form-group">
+                        <label for="email-fo">
+                            {{'E-mailadres'|t}}
+                        </label>
+                        <input class="form-control" type="mail" name="email" id="email-fo" required />
+                    </div>
+                    <div class="form-group">
+                        <div class="d-flex justify-content-between">
+                            <label for="password-fo">
+                                {{'Wachtwoord'|t}}
+                            </label>
+                            <a class="small" onClick="${onPasswordReset}">
+                                {{'Wachtwoord vergeten?'|t}}
+                            </a>
+                        </div>
+                        <input class="form-control" type="password" name="password" id="password-fo" required />
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block ${isSubmitting ? ' btn-loading' : ''}" type="submit" disabled="${isSubmitting}">
+                        {{'Inloggen'|t}}
+                    </button>
+                    ${allowAccountRequest && html`
+                        <a
+                            class="btn btn-link btn-block btn-sm mt-40"
+                            href="/login?action=sign-up"
+                        >
+                            {{'Nieuw bij {name}? Klik hier'|t({'{name}': properties.name})}}
+                        </a>
+                    `}
+                    ${!allowAccountRequest && html`
+                        <a
+                            class="btn btn-link btn-block btn-sm mt-40"
+                            href="${accountLink}"
+                        >
+                            {{'Nieuw bij {name}? Klik hier'|t({'{name}': properties.name})}}
+                        </a>
+                    `}
+                </form>
+            `;
+        }
+        
+        return html`
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="flex-100 flex-md-50 flex-lg-40 d-flex flex-column align-items-center">
+                    <div class="border-fs-paper-1 px-24 py-20 w-100">
+                        <h1 class="mt-0 mb-32 h2">{{'Inloggen'|t}}</h1>
+                        <form id="sign-in-form" class="form-validate" onSubmit="${handleSignIn}">
+                            ${serverError && html`<p class="text-danger">${serverError}</p>`}
+                            <div class="form-group">
+                                <label for="email">
+                                    {{'E-mailadres'|t}}
+                                </label>
+                                <input class="form-control" type="mail" name="email" id="email" required />
+                            </div>
+                            <div class="form-group">
+                                <div class="d-flex justify-content-between">
+                                    <label for="password">
+                                        {{'Wachtwoord'|t}}
+                                    </label>
+                                    <a class="small" onClick="${onPasswordReset}">
+                                        {{'Wachtwoord vergeten?'|t}}
+                                    </a>
+                                </div>
+                                <input class="form-control" type="password" name="password" id="password" required />
+                            </div>
+                            
+                            <button class="btn btn-primary btn-block ${isSubmitting ? ' btn-loading' : ''}" type="submit" disabled="${isSubmitting}">
+                                {{'Inloggen'|t}}
+                            </button>
+                            ${allowAccountRequest && html`
+                                <button
+                                    type="button"
+                                    class="btn btn-link btn-block btn-sm mt-40"
+                                    onClick="${onRegister}"
+                                >
+                                    {{'Nieuw bij {name}? Klik hier'|t({'{name}': properties.name})}}
+                                </button>
+                            `}
+                            ${!allowAccountRequest && html`
+                                <a
+                                    class="btn btn-link btn-block btn-sm mt-40"
+                                    href="${accountLink}"
+                                >
+                                    {{'Nieuw bij {name}? Klik hier'|t({'{name}': properties.name})}}
+                                </a>
+                            `}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const SignUpForm = ({ onLogin }) => {
+        const [serverError, setServerError] = useState(null);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [submitSuccess, setSubmitSuccess] = useState(false);
+        const [isFetchingCountries, setIsFetchingCountries] = useState(false);
+        const [countries, setCountries] = useState([]);
+        const [countryValue, setCountryValue] = useState('NL');
+        const [smallBusinessValue, setSmallBusinessValue] = useState(false);
+        
+        const handleSignUp = async (e) => {
+            e.preventDefault();
+            try {
+                setServerError(null);
+                if ($(e.target).parsley().isValid()) {
+                    setIsSubmitting(true);
+                    const formData = new FormData(e.target);
+                    const body = Object.fromEntries(formData);
+                    
+                    const data = new URLSearchParams();
+                    for (const pair of formData) {
+                        data.append(pair[0], pair[1]);
+                    }
+
+                    
+                    const response = await fetch('/form/aanvraag/', {
+                        method: "POST",
+                        body: data,
+                        headers: {
+                            accept: 'application/json',
+                        }
+                    });
+                    const responseData = await response.json();
+                    
+                    
+                    if (response.ok && responseData?.content?.success) {
+                        setSubmitSuccess(true);
+                    } else {
+                        setServerError('Controleer de velden.');
+                    }
+                }
+            } catch (e) {
+                setServerError(getErrorMessage(e));
+                setIsSubmitting(false);
+            }
+        };
+        
+        const handleChangeCountry = e => {
+            setCountryValue(e.target.value);
+        };
+        
+        const handleChangeSmallBusiness = e => {
+            setSmallBusinessValue(e.target.checked);
+        };
+        
+        useEffect(() => {
+            window.formValidation();
+            grecaptcha.render($('.g-recaptcha')[0], { sitekey: $('.g-recaptcha').data('sitekey') });
+        }, []);
+        
+        useEffect(() => {
+            const getCountries = async () => {
+                setIsFetchingCountries(true);
+                try {
+                const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2');
+                const data = await response.json();
+                const formattedData = data.map(({ name, cca2 }) => ({ name: name.common, cca2 }));
+                const sortedData = formattedData.sort((a, b) => a.name.localeCompare(b.name));
+                
+                console.log(sortedData);
+                
+                setCountries(sortedData);
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    setIsFetchingCountries(false);
+                }
+            };
+            
+            getCountries();
+        }, []);
+        
+        return html`
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="flex-100 flex-md-75 flex-lg-50 d-flex flex-column align-items-center">
+                    <div class="border-fs-paper-1 px-24 py-20 w-100">
+                    
+                        ${submitSuccess && html`
+                            <h1 class="mt-0 mb-32 h2">{{'Account aangevraagd'|t}}</h1>
+                            <p>Je aanvraag is door ons ontvangen. Wij nemen zo snel mogelijk contact met je op.</p>
+                            <button type="button" onClick="${onLogin}" class="btn btn-primary btn-block btn-sm mt-32">{{'Inloggen'|t}}</button>
+                        `}
+                        ${!submitSuccess && html`
+                            <h1 class="mt-0 mb-32 h2">{{'Account aanvragen'|t}}</h1>
+                            <form id="sign-in-form" class="form-validate" onSubmit="${handleSignUp}">
+                                ${serverError && html`<p class="text-danger">${serverError}</p>`}
+                                <div class="form-group">
+                                    <label for="company">
+                                        {{'Bedrijf'|t}}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input class="form-control" type="text" name="company" id="company" required />
+                                </div>
+                                
+                                <div class="d-grid grid-cols-sm-2 w-full gap-16">
+                                    <div class="form-group">
+                                        <label for="first-name">
+                                            {{'Voornaam'|t}}
+                                        </label>
+                                        <input class="form-control" type="text" name="first-name" id="first-name" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="last-name">
+                                            {{'Achternaam'|t}}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input class="form-control" type="text" name="last-name" id="last-name" required />
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    <label for="email">
+                                        {{'E-mailadres'|t}}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input class="form-control" type="mail" name="email" id="email" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone-number">
+                                        {{'Telefoonnummer'|t}}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input class="form-control" type="tel" name="phone-number" id="phone-number" required />
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    <label for="country">
+                                        {{'Land'|t}}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <select
+                                        class="form-control"
+                                        name="country"
+                                        id="country"
+                                        required
+                                        onChange="${handleChangeCountry}"
+                                    >
+                                        ${countries.map(({ cca2, name }) => html`
+                                            <option value="${cca2}" selected="${cca2 === 'NL'}">${name}</option>
+                                        `)}
+                                    </select>
+                                </div>
+                                <div class="d-grid grid-cols-1 grid-cols-sm-12 w-full gap-16">
+                                    <div class="form-group col-span-sm-6">
+                                        <label for="thoroughfare">
+                                            {{'Straat'|t}}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input class="form-control" type="text" name="thoroughfare" id="thoroughfare" required />
+                                    </div>
+                                    <div class="form-group col-span-sm-3">
+                                        <label for="premise-number">
+                                            {{'Huisnummer'|t}}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input class="form-control" type="text" name="premise-number" id="premise-number" required />
+                                    </div>
+                                    <div class="form-group col-span-sm-3">
+                                        <label for="premise-number-suffix">
+                                            {{'Toevoeging'|t}}
+                                        </label>
+                                        <input class="form-control" type="text" name="premise-number-suffix" id="premise-number-suffix" />
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid grid-cols-1 grid-cols-sm-12 w-full gap-16">
+                                    <div class="form-group col-span-sm-4">
+                                        <label for="postal-code">
+                                            {{'Postcode'|t}}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input class="form-control" type="text" name="postal-code" id="postal-code" required />
+                                    </div>
+                                    <div class="form-group col-span-sm-8">
+                                        <label for="locality">
+                                            {{'Plaats'|t}}
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input class="form-control" type="text" name="locality" id="locality" required />
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="d-grid grid-cols-1 grid-cols-sm-12 w-full gap-16 mb-16">
+                                    <div class="form-group col-span-sm-6 mb-0">
+                                        <label for="vat-number">
+                                            {{'BTW-nummer'|t}}
+                                             ${!smallBusinessValue && html`<span class="text-danger">*</span>`}
+                                        </label>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            name="vat-number"
+                                            id="vat-number"
+                                            required="${!smallBusinessValue}"
+                                            disabled="${smallBusinessValue}"
+                                        />
+                                    </div>
+                                    <div class="col-span-sm-6 pt-sm-28">
+                                        <div class="checkbox af d-inline-block">
+                                            <label for="small-business">
+                                                <input
+                                                    type="checkbox"
+                                                    name="small-business"
+                                                    id="small-business"
+                                                    onChange="${handleChangeSmallBusiness}"
+                                                />
+                                                <div class="checkbox-button" />
+                                                {{'Kleine onderneming'|t}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group${countryValue.toLowerCase() !== 'nl' ? ' sr-only' : ''}">
+                                    <label for="coc-number">
+                                        {{'KVK-nummer'|t}}
+                                        ${countryValue.toLowerCase() === 'nl' && html`<span class="text-danger">*</span>`}
+                                    </label>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        name="coc-number"
+                                        id="coc-number"
+                                        required="${countryValue.toLowerCase() === 'nl'}"
+                                    />
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    <label for="website">
+                                        {{'Website'|t}}
+                                    </label>
+                                    <input class="form-control" type="text" name="website" id="website" />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="main-activity">
+                                        {{'Hoofdactiviteit'|t}}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control" name="main-activity" id="main-activity" required>
+                                        <option selected disabled>{{'Selecteer een optie...'|t}}</option>
+                                        <option value={{'"Repair business'|t}}">{{'Repair business'|t}}</option>
+                                        <option value="{{'Wholesaler'|t}}">{{'Wholesaler'|t}}</option>
+                                        <option value="{{'Webshop'|t}}">{{'Webshop'|t}}</option>
+                                        <option value="{{'Remaining'|t}}">{{'Remaining'|t}}</option>
+                                        <option value="{{'Repairman without C.o.C. registration'|t}}">{{'Repairman without Chamber of Commerce registration'|t}}</option>
+                                    </select>
+                                </div>
+                                
+                                
+                                {{call("recaptcha")|first}}
+                                
+                                <button class="btn btn-primary btn-block mt-16 ${isSubmitting ? ' btn-loading' : ''}" type="submit" disabled="${isSubmitting}">
+                                    {{'Account aanvragen'|t}}
+                                </button>
+                                
+                                <button type="button" onClick="${onLogin}" class="btn btn-link btn-block mt-40">{{'Inloggen'|t}}</button>
+                            </form>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const PasswordResetForm = ({ onCancel, formOnly }) => {
+        const [serverError, setServerError] = useState(null);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [isSubmitted, setIsSubmitted] = useState(false);
+        const [usedEmailAddress, setUsedEmailAddress] = useState('');
+        
+        
+        
+        const handleRequeestPasswordReset = async (e) => {
+            e.preventDefault();
+            try {
+                setServerError(null);
+                if ($(e.target).parsley().isValid()) {
+                    setIsSubmitting(true);
+                    const formData = new FormData(e.target);
+                    const body = Object.fromEntries(formData);
+                    
+                    const response = await window.Storefront.requestPasswordReset(body);
+                    setUsedEmailAddress(body.email);
+                    setIsSubmitted(true);
+                }
+            } catch (e) {
+                setServerError(getErrorMessage(e));
+            } finally {
+                setIsSubmitting(false);
+            }
+        };
+        
+        useEffect(() => {
+            window.formValidation();
+        }, []);
+        
+        if (formOnly) {
+            return html`
+                ${isSubmitted && html`
+                    <p>{{'Er is een e-mail verstuurd naar het adres ${usedEmailAddress}. Hierin vind je een link om een nieuw wachtwoord in te stellen.'|t}}</p>
+                    <button
+                            class="btn btn-primary btn-block mt-32"
+                            type="button"
+                            onClick="${onCancel}"
+                        >
+                            {{'Log in'|t}}
+                        </button>
+                `}
+                ${!isSubmitted && html`
+                    <p>{{'Voer je e-mailadres in en je ontvangt van ons een e-mail om je nieuwe wachtwoord in te stellen.'|t}}</p>
+                    <form id="sign-in-form" class="form-validate" onSubmit="${handleRequeestPasswordReset}">
+                        ${serverError && html`<p class="text-danger">${serverError}</p>`}
+                        <div class="form-group">
+                            <label for="email-pr-fo">
+                                {{'E-mailadres'|t}}
+                            </label>
+                            <input class="form-control" type="mail" name="email" id="email-pr-fo" required />
+                        </div>
+                        <button
+                            class="btn btn-primary btn-block ${isSubmitting ? ' btn-loading' : ''}"
+                            type="submit"
+                            disabled="${isSubmitting}"
+                        >
+                            {{'Verstuur'|t}}
+                        </button>
+                        <button
+                            class="btn btn-link btn-block mt-32 ${isSubmitting ? ' btn-loading' : ''}"
+                            type="button"
+                            onClick="${onCancel}"
+                            disabled="${isSubmitting}"
+                        >
+                            {{'Annuleren'|t}}
+                        </button>
+                    </form>
+                `}
+            `;
+        }
+        
+        return html`
+            <div class="d-flex flex-wrap justify-content-center">
+                <div class="flex-100 flex-md-50 flex-lg-40 d-flex flex-column align-items-center">
+                    <div class="border-fs-paper-1 px-24 py-20 w-100">
+                        <h1 class="mt-0 mb-32 h2">{{'Wachtwoord vergeten'|t}}</h1>
+                        ${isSubmitted && html`
+                            <p>{{'Er is een e-mail verstuurd naar het adres ${usedEmailAddress}. Hierin vind je een link om een nieuw wachtwoord in te stellen.'|t}}</p>
+                            <button
+                                    class="btn btn-primary btn-block mt-32"
+                                    type="button"
+                                    onClick="${onCancel}"
+                                >
+                                    {{'Log in'|t}}
+                                </button>
+                        `}
+                        ${!isSubmitted && html`
+                            <p>{{'Voer je e-mailadres in en je ontvangt van ons een e-mail om je nieuwe wachtwoord in te stellen.'|t}}</p>
+                            <form id="sign-in-form" class="form-validate" onSubmit="${handleRequeestPasswordReset}">
+                                ${serverError && html`<p class="text-danger">${serverError}</p>`}
+                                <div class="form-group">
+                                    <label for="email">
+                                        {{'E-mailadres'|t}}
+                                    </label>
+                                    <input class="form-control" type="mail" name="email" id="email" required />
+                                </div>
+                                <button
+                                    class="btn btn-primary btn-block ${isSubmitting ? ' btn-loading' : ''}"
+                                    type="submit"
+                                    disabled="${isSubmitting}"
+                                >
+                                    {{'Verstuur'|t}}
+                                </button>
+                                <button
+                                    class="btn btn-link btn-block mt-32 ${isSubmitting ? ' btn-loading' : ''}"
+                                    type="button"
+                                    onClick="${onCancel}"
+                                    disabled="${isSubmitting}"
+                                >
+                                    {{'Annuleren'|t}}
+                                </button>
+                            </form>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const AuthPortal = () => {
+        const [action, setAction] = useState(new URLSearchParams(window.location.search).get('action') || 'sign-in');
+        
+        if ('{{pluginData['af-sid'].email}}' !== '') {
+            return html`
+                <${OrganisationSwitch} />
+            `;
+        }
+        
+        return html`
+            ${action === 'sign-in' && html`<${SignInForm} onRegister="${() => setAction('sign-up')}" onPasswordReset="${() => setAction('password-reset')}" />`}
+            ${action === 'sign-up' && html`<${SignUpForm} onLogin="${() => setAction('sign-in')}" />`}
+            ${action === 'password-reset' && html`<${PasswordResetForm} onCancel="${() => setAction('sign-in')}" />`}
+        `;
+    };
+    
+    const AuthDrawer = () => {
+        const [action, setAction] = useState('sign-in');
+        
+        return html`
+            <div class="drawer drawer-right" id="auth-drawer">
+                <div class="drawer-header">
+                    <div class="h4 m-0 fw-700">
+                        ${action === 'sign-in' && html`{{"Inloggen"|t}}`}
+                        ${action === 'password-reset' && html`{{"Wachtwoord vergeten"|t}}`}
+                    </div>
+                    <button class="btn btn-link m-4 p-0 icon-40 mr-n12 d-flex align-items-center" type="button" data-dismiss="drawer" aria-label="{{'Sluit winkelwagen'|t}}">
+                        <${X} class="text-black" />
+                    </button>
+                </div>
+                
+                <div class="drawer-body configurator-drawer-inner pt-24 p-0">
+                    ${action === 'sign-in' && html`<${SignInForm} onRegister="${() => setAction('sign-up')}" onPasswordReset="${() => setAction('password-reset')}" formOnly />`}
+                    ${action === 'password-reset' && html`<${PasswordResetForm} onCancel="${() => setAction('sign-in')}" formOnly />`}
+                </div>
+            </div>
+        `;
+    };
+    
+    const StockUpdateSubscribeDialog = () => {
+        const [product, setProduct] = useState(null);
+        const [isSubmitting, setIsSubmitting] = useState(false);
+        const [isSubmitted, setIsSubmitted] = useState(false);
+        const [submittedData, setSubmittedData] = useState(null);
+        const { name, sku } = product || {};
+        
+        const handleSubmit = async (event) => {
+            event.preventDefault();
+            $('#stock-update-email').parsley().removeError('serverError');
+            
+            
+            try {
+                const formIsValid = $('#stock-update-email').parsley().isValid();
+                
+                if (!formIsValid) {
+                    $('#stock-update-email').parsley().validate();
+                    return;
+                }
+                
+                setIsSubmitting(true);
+                const form = event.target;
+                const formData = new FormData(form);
+                const formValues = {};
+            
+                formData.forEach((value, key) => {
+                    formValues[key] = value;
+                });
+                
+                
+                const response = await window.Storefront.createStockUpdateSubscription(formValues);
+                setSubmittedData(formValues);
+                setIsSubmitted(true);
+            } catch (e) {
+                $('#stock-update-email').parsley().addError('serverError', {message: getErrorMessage(e) });
+            }
+        };
+        
+        useEffect(() => {
+            $('#stock-update-email').parsley({
+                successClass: "form-val-success",
+                errorClass: "form-val-error",
+                errorsContainer: function(el) {
+                    return el.$element.parents('.form-group').find('.field-error-container');
+                },
+                classHandler: function(el) {
+                    return el.$element.closest(".validation-container");
+                },
+                errorsWrapper: "<ul class='list-unstyled text-danger'></ul>",
+            });
+                
+            $('body').on('click', '[data-toggle="stock-update"]', function() {
+                $('#stock-update-subscribe-dialog').modal('show');
+                setProduct({
+                    name: $(this).data('name'),
+                    sku: $(this).data('sku'),
+                });
+            });
+            
+            $('#stock-update-subscribe-dialog').on('hidden.bs.modal', () => {
+                $('#stock-update-form').trigger('reset');
+                setIsSubmitted(false);
+                setProduct(null);
+                setSubmittedData(null);
+                setIsSubmitting(false);
+
+                $('#stock-update-email').parsley({
+                    successClass: "form-val-success",
+                    errorClass: "form-val-error",
+                    errorsContainer: function(el) {
+                        return el.$element.parents('.form-group').find('.field-error-container');
+                    },
+                    classHandler: function(el) {
+                        return el.$element.closest(".validation-container");
+                    },
+                    errorsWrapper: "<ul class='list-unstyled text-danger'></ul>",
+                });
+            });
+        }, []);
+        
+        return html`
+            <form id="stock-update-form" novalidate="" onSubmit="${handleSubmit}">
+                <div class="modal fade" tabindex="-1" role="dialog" id="stock-update-subscribe-dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <div class="h4 modal-title">
+                                    ${!isSubmitted && html`
+                                        {{'Blijf op de hoogte'|t}}
+                                    `}
+                                    ${isSubmitted && html`
+                                        <${CircleCheck} class="text-succes mr-12" />
+                                        {{'We houden je op de hoogte'|t}}
+                                    `}
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                ${!isSubmitted && html`
+                                    <p>
+                                        Helaas is <strong>${name}</strong> op dit moment uitverkocht.
+                                        Vul je e-mailadres in en ontvang een bericht zodra het weer op voorraad is.
+                                    </p>
+                                    <div class="form-group">
+                                        <label for="stock-update-email">E-mailadres</label>
+                                        <input type="hidden" name="sku" value="${sku}" />
+                                        <div class="validation-container">
+                                            <input type="email" class="form-control" name="email" id="stock-update-email" required="" />
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                `}
+                                ${isSubmitted && html`
+                                    <p>
+                                        Wanneer <strong>${name}</strong> leverbaar is, ontvang je een e-mailbericht op
+                                        <strong>${submittedData.email}</strong>.
+                                    </p>
+                                `}
+                            </div>
+                            ${!isSubmitted && html`
+                                <div class="modal-footer" id="stock-update-dialog-footer-form">
+                                    <button type="submit" class="btn btn-info" disabled="${isSubmitting}">
+                                        {{'Houd mij op de hoogte'|t}}
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        `;
+    };
+    
+    const StockUpdateActionDialog = () => {
+        const { action, token } = Object.fromEntries(new URLSearchParams(location.search));
+        const [isLoading, setIsLoading] = useState(action !== 'unsubscribe_stock_updates');
+        const [isSuccessful, setIsSuccessful] = useState(false);
+        const [errorMessage, setErrorMessage] = useState(null);
+        
+        const handleApprove = async () => {
+            try {
+                const response = await window.Storefront.approveStockUpdateSubscription(token);
+                console.log(response);
+                setIsSuccessful(response.isSuccessful);
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        const handleUnsubscribe = async () => {
+            try {
+                const response = await window.Storefront.removeStockUpdateSubscription(token);
+                console.log(response);
+                setIsSuccessful(response.isSuccessful);
+            } catch (error) {
+                setErrorMessage(getErrorMessage(error));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        useEffect(() => {
+            $('#stock-update-dialog').modal('show');
+            $('#stock-update-dialog').on('shown.bs.modal', function() {
+                switch(action) {
+                    case 'approve_stock_updates':
+                        handleApprove();
+                        break;
+                    case 'unsubscribe_stock_updates':
+                        break;
+                    default:
+                        setIsLoading(false);
+                        setErrorMessage(`Unknown action ${action} provided`);
+                }
+            });
+        }, []);
+        
+        return html`
+            <div class="modal fade" tabindex="-1" role="dialog" id="stock-update-dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <h4 class="align-items-center d-flex gap-8 modal-title">
+                                ${isLoading && !errorMessage && action === 'approve_stock_updates' && '{{'Aanmelden...'|t}}'}
+                                ${!isLoading && !errorMessage && action === 'approve_stock_updates' && html`
+                                    <${CircleCheck} class="text-success" /> {{'E-mailadres bevestigd'|t}}
+                                `}
+                                
+                                ${action === 'unsubscribe_stock_updates' && !errorMessage && html`
+                                    ${!isLoading && !isSuccessful && !errorMessage && html`
+                                        {{'Weet je zeker dat je wilt uitschrijven?'|t}}
+                                    `}
+                                    ${isLoading && !errorMessage && '{{'Uitschrijven...'|t}}'}
+                                    ${!isLoading && isSuccessful && !errorMessage && html`
+                                        <${CircleCheck} class="text-success" /> {{'Uitgeschreven'|t}}
+                                    `}
+                                `}
+                                
+                                ${!!errorMessage && html`
+                                    <${CircleX} class="text-danger" /> {{'Er is iets mis gegaan'|t}}
+                                `}
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                        ${isLoading && html`
+                            <div class="d-flex justify-content-center py-24">
+                                <i class="fa fa-circle-notch fa-spin fa-2x" />
+                            </div>
+                        `}
+                        ${!isLoading && !errorMessage && action === 'approve_stock_updates' && html`
+                            <p>
+                                Je e-mailadres is bevestigd. Wanneer we jouw producten weer op voorraad hebben sturen we een mail.
+                            </p>
+                        `}
+                        ${!isLoading && !errorMessage && !isSuccessful && action === 'unsubscribe_stock_updates' && html`
+                            <p>
+                                Wanneer je je uitschrijft voor voorraad updates krijg geen e-mails meer met voorraad updates.
+                            </p>
+                        `}
+                        ${!isLoading && !errorMessage && isSuccessful && action === 'unsubscribe_stock_updates' && html`
+                            <p>
+                                Je bent uitgeschreven van voorraad updates. Je ontvangt kun geen e-mails meer over voorraad updates.
+                            </p>
+                        `}
+                        ${!!errorMessage && html`
+                            <p>${errorMessage}</p>
+                        `}
+                        </div>
+                        ${!isLoading && !errorMessage && !isSuccessful && action === 'unsubscribe_stock_updates' && html`
+                            <div class="modal-footer">
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        disable="${isLoading}"
+                                        onClick="${handleUnsubscribe}"
+                                    >
+                                        {{'Uitschrijven'|t}}
+                                    </button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+    
+    const setupStorefront = () => {
+        const client = createStorefrontClient({
+            domain: getDomain(window.location.host),
+            storefrontToken: '{{pluginData.orm.storefront}}',
+            graphQLClientOptions: {
+                headers: {
+                    "Accept-Language": document.documentElement.lang,
+                }
+            }
+        });
+        
+        if (window.visitor_id) {
+            client.setSessionID(window.visitor_id);
+        }
+        
+        const renderCartDrawer = () => {
+            if (!document.getElementById('cart-drawer-container')) {
+                const container = document.createElement('div');
+                container.id = 'cart-drawer-container';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${CartDrawer} />`, document.getElementById('cart-drawer-container'));
+        };
+        
+        const renderShareCartDialog = () => {
+            if (!document.getElementById('share-cart-dialog-container')) {
+                const container = document.createElement('div');
+                container.id = 'share-cart-dialog-container';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${ShareCartDialog} />`, document.getElementById('share-cart-dialog-container'));
+        };
+        
+        const renderCartPage = () => {
+            if (document.getElementById('cart-container')) {
+                return render(html`<${CartPage} />`, document.getElementById('cart-container'));
+            }
+            
+            console.warn('[Afosto Storefront] No element found with id "cart-container" to mount the CartPage on. Add the id to an element or check your storefrontScripts.twig file.')
+        };
+        
+        const renderAccountDisplay = () => {
+            if (document.getElementById('account-display')) {
+                return render(html`<${AccountMenu} />`, document.getElementById('account-display'));
+            }
+            
+            console.warn('[Afosto Storefront] No element found with id "account-display" to mount the AccountMenu on. Add the id to an element or check your storefrontScripts.twig file.')
+        };
+        
+        const renderAccountDrawer = () => {
+            if (!document.getElementById('account-drawer-container')) {
+                const container = document.createElement('div');
+                container.id = 'account-drawer-container';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${AccountDrawer} />`, document.getElementById('account-drawer-container'));
+        };
+        
+        const renderAuthDrawer = () => {
+            if (!document.getElementById('auth-drawer-container')) {
+                const container = document.createElement('div');
+                container.id = 'auth-drawer-container';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${AuthDrawer} />`, document.getElementById('auth-drawer-container'));
+        };
+        
+        const renderAuthPortal = () => {
+            if (document.getElementById('auth-container')) {
+                return render(html`<${AuthPortal} />`, document.getElementById('auth-container'));
+            }
+            
+            console.warn('[Afosto Storefront] No element fount with id "auth-container" to mount the AuthPortal on. Add the id to an element or check your storefrontScripts.twig file.');
+        };
+        
+        const renderStockUpdateSubscribeDialog = () => {
+            if (!document.getElementById('stock-update-subscribe-dialog-wrapper')) {
+                const container = document.createElement('div');
+                container.id = 'stock-update-subscribe-dialog-wrapper';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${StockUpdateSubscribeDialog} />`, document.getElementById('stock-update-subscribe-dialog-wrapper'));
+        };
+        
+        const renderStockUpdateActionDialog = () => {
+            if (!document.getElementById('stock-update-action-dialog-wrapper')) {
+                const container = document.createElement('div');
+                container.id = 'stock-update-action-dialog-wrapper';
+                
+                document.body.appendChild(container);
+            }
+            
+            return render(html`<${StockUpdateActionDialog} />`, document.getElementById('stock-update-action-dialog-wrapper'));
+        };
+        
+        return {
+            ...client,
+            client,
+            renderCartDrawer,
+            renderShareCartDialog,
+            renderCartPage,
+            renderAccountDisplay,
+            renderAccountDrawer,
+            renderAuthDrawer,
+            renderAuthPortal,
+            renderStockUpdateSubscribeDialog,
+            renderStockUpdateActionDialog,
+        };
+    };
+    
+    const afostoStorefront = setupStorefront();
+    window.Storefront = afostoStorefront;
+    
+    const initializeCart = async () => {
+        afostoStorefront.renderCartDrawer();
+        afostoStorefront.renderAccountDisplay();
+        afostoStorefront.renderAuthDrawer();
+        
+        if (!!afostoStorefront.getUser()) {
+            afostoStorefront.renderAccountDrawer();
+        }
+    
+        if ("{{ type }}" === 'cart') {
+            afostoStorefront.renderCartPage();
+            afostoStorefront.renderShareCartDialog();
+        }
+        
+        if ("{{ type }}" === 'product') {
+            afostoStorefront.renderStockUpdateSubscribeDialog();
+        }
+        
+        if ("{{type}}" === 'login') {
+            afostoStorefront.renderAuthPortal();
+        }
+        
+        if (!!location.search.match(/approve_stock_updates|unsubscribe_stock_updates/g)) {
+            afostoStorefront.renderStockUpdateActionDialog();
+        }
+    };
+
+    document.addEventListener("readystatechange", (event) => {
+        if (document.readyState === 'complete') {
+            initializeCart().catch(() => {
+                // Do nothing.
+            })
+        }
+    });
+</script>
+
+
+
+

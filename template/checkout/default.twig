@@ -1,0 +1,710 @@
+{# type: checkout #}
+
+{% import "macros/displays.twig" as af_displays %}
+
+{% if post is empty %}
+    {% set postdata = [] %}
+{% else %}
+    {% set postdata = post %}
+{% endif %}
+
+{% if account is not empty %}
+    {% set customerData = account.customer %}
+    {% set billingData = account.billing %}
+    {% set shippingData = account.shipping %}
+    
+    {% set postdata = replace_recursive({
+        'customer' : customerData,
+        'billing' : billingData,
+        'shipping' : shippingData
+    }, postdata) %}
+{% endif %}
+
+    <div class="container">
+    {% for error in errors %}
+        <div class="alert alert-danger" role="alert">{{error|t}}</div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2  col-md-8 col-md-push-2   col-lg-8 col-lg-push-2   col-xl-6 col-xl-push-3">
+            <h1>
+                {{"Afrekenen"|t}}
+            </h1>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2  col-md-8 col-md-push-2   col-lg-8 col-lg-push-2   col-xl-6 col-xl-push-3">
+            <form id="checkout-form" class="form form-validate" method="POST" data-parsley-validate="" data-postal-code-url="https://app.afosto.com/address/_postcode" data-providers="{{providers|join(',')}}">
+                <fieldset class="panel panel-primary panel-body">
+                    <h2>{{"Mijn gegevens"|t}}</h2>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>{{"Aanhef"|t}}</label>
+                            <div class="form-group">
+                                <input id="account_is_female" type="hidden" value="" name="customer[is_female]">
+                                <div class="radio-inline af">
+                                    <label for="account_is_female_0">
+                                    <input type="radio" name="customer[is_female]" id="account_is_female_0" value="0" {% if postdata.customer.is_female == false %} checked {% endif %} >
+                                    <div class="radio-button"></div>
+                                        {{"Dhr."|t}}
+                                    </label> 
+                                </div>
+                                <div class="radio-inline af">
+                                    <label for="account_is_female_1"> 
+                                    <input type="radio" name="customer[is_female]" id="account_is_female_1" value="1" {% if postdata.customer.is_female == true %} checked {% endif %} >
+                                    <div class="radio-button"></div>
+                                        {{"Mvr."|t}}
+                                    </label> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer_email" class="control-label">{{"E-mail"|t}} <span class="required">*</span></label>
+                                <div class="validation-container">
+                                    <input type="email" name="customer[email]" class="form-control required" value="{{postdata.customer.email}}" tabindex="1" id="customer_email" >
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer_first_name" class="control-label">{{'Voornaam'|t}} <span class="required">*</span></label>
+                                <div class="validation-container">
+                                    <input type="text" name="customer[first_name]" class="form-control required phoenix-input" tabindex="2" id="customer_first_name" value="{{postdata.customer.first_name}}">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="customer_last_name" class="control-label" >{{'Achternaam'|t}} <span class="required">*</span></label>
+                                <div class="validation-container">
+                                    <input type="text" name="customer[last_name]" class="form-control required phoenix-input" tabindex="3" id="customer_last_name" value="{{postdata.customer.last_name}}">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="input-append form-group date" id="dp3">
+                                <label for="customer_birth_date" class="control-label">{{'Geboortedatum'|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                                <input class="form-control datepicker phoenix-input hidden" size="16" type="text" data-date-end-date="0d" id="customer_birth_date" name="date_holder" data-date="12-02-2012" data-parsley-pattern="^(0?[1-9]|[12][0-9]|3[01])\-(0?[1-9]|1[012])\-(\d{4})$"  data-date-format="dd-mm-yyyy" data-date-viewmode="years" tabindex="4" data-customer-birthdate="{{postdata.customer.birth_date}}" placeholder="dd-mm-jjjj">
+                                <input class="form-control datefield phoenix-input hidden" type="date" name="date_holder" placeholder="dd-mm-jjjj"  data-parsley-nofuturedates="{{"now"|date('Y-m-d')}}">
+                                <input type="hidden" name="customer[birth_date]" value="" class="date_parser">
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping_address_telephone" class="control-label">{{'Telefoon nummer'|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                                <div class="validation-container">
+                                    <input type="tel" name="shipping[address][telephone]" class="form-control phoenix-input" tabindex="5" id="shipping_address_telephone"  value="{{postdata.customer.phone_numbers.primary.number}}">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping_address_company" class="control-label">{{"Bedrijf"|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                                <div class="validation-container">
+                                    <input type="text" name="shipping[address][company]" class="form-control" tabindex="6" id="shipping_address_company" value="{{postdata.shipping.address.company}}">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="panel panel-primary panel-body">
+                    <h2>{{"Verzending"|t}}</h2>
+                    <hr>
+                    <div class="row">
+                         <div class="col-md-12">
+                            <div class="form-group country-switch-shipping">
+                                <label class="control-label">{{"Land"|t}} <span class="required">*</span></label>
+                                <div class="radio af">
+                                    <label for="address-shipping-is-nl1">
+                                      <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl1" class="address-country-select" value="1" data-type="shipping" {% if postdata.shipping.isNL == 1 or postdata.shipping.isNL is not defined %}checked{% endif %}> 
+                                      <div class="radio-button"></div>
+                                      {{"Nederland"|t}}
+                                    </label>
+                                </div>
+                                <div class="radio af">
+                                    <label for="address-shipping-is-nl2">
+                                      <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl2" class="address-country-select" value="0" data-type="shipping" {% if postdata.shipping.isNL is defined and postdata.shipping.isNL == 0 %}checked{% endif %}> 
+                                      <div class="radio-button"></div>
+                                      {{"Anders"|t}}
+                                    </label>
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="shipping-postal-code-container" class="shipping-container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12 collapse country-collapsable">
+                                        <div class="form-group">
+                                            <select name="shipping[address][country][id]" class="form-control required phoenix-input" tabindex="6" id="shipping_address_country_id" value="{{postdata.shipping.address.country_id}}">
+                                                {% for country in countries %}
+                                                    <option value="{{country.id}}" {% if postdata.shipping.address.country_id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12 col-sm-4 col-md-5">
+                                        <label for="shipping_address_postal_code1" class=" control-label">{{"Postcode"|t}} <span class="required">*</span></label>
+                                        <div class="validation-container">
+                                            <input type="text" name="shipping[address][postal_code]" class="form-control required address-check-field" data-type="shipping" tabindex="8" id="shipping_address_postal_code1" value="{{postdata.shipping.address.postal_code}}">
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                    <div class="form-group col-xs-7 col-sm-4">
+                                        <label for="shipping_address_house_number" class="col-sm- control-label">{{"Huisnummer"|t}} <span class="required">*</span></label>
+                                        <div class="validation-container">
+                                            <input type="number" name="shipping[address][house_number]" class="form-control input-small required address-check-field" data-type="shipping" tabindex="9" id="shipping_address_house_number" value="{{postdata.shipping.address.house_number}}">
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                    <div class="form-group col-xs-5 col-sm-4 col-md-3">
+                                        <label for="shipping_address_house_number_suffix" class="col-sm- control-label">{{"Toevoeging"|t}}</label>
+                                        <div class="validation-container">
+                                            <input type="text" name="shipping[address][house_number_suffix]" class="form-control input-small address-check-field" data-parsley-validate-if-empty data-type="shipping" tabindex="10" id="shipping_address_house_number_suffix" value="{{postdata.shipping.address.house_number_suffix}}">
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <span class="address-validation-message" data-type="shipping" data-success-message="{{"Dit adres klopt."|t}}" data-error-message="{{"Dit adres klopt niet, controleer de velden."|t}}" data-loading-message="{{"Adres ophalen."|t}}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="shipping_address_postal_code_result_container">
+                            <div class="form-group">
+                                <div class="col-sm-12 postal-code-result" id="shipping_address">
+                                    <div class="form-group">
+                                        <label for="shipping_address_street" class="control-label">{{"Adres"|t}} <span class="required">*</span></label>
+                                        <div class="validation-container">
+                                            <input type="text" name="shipping[address][street]" class="form-control required" tabindex="11" id="shipping_address_street" data-parsley-ui-enabled="false" value="{{postdata.shipping.address.street}}">
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="shipping_address_city" class="control-label">{{"Plaats"|t}} <span class="required">*</span></label>
+                                        <div class="validation-container">
+                                            <input type="text" name="shipping[address][city]" class="form-control required" tabindex="12" id="shipping_address_city" data-parsley-ui-enabled="false" value="{{postdata.shipping.address.city}}">
+                                        </div>
+                                        <div class="field-error-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="sale_shipping_method_id" class="control-label">{{"Selecteer een optie"|t}} <span class="required">*</span></label>
+                                <div class="shipping-methods">
+                                    {% for method in shipping_methods|sort %}
+                                        <div class="row shipping-method-row hidden">
+                                            <div class="col-xs-12">
+                                                <div class="radio af shipping-method" data-country="{{method.iso}}" data-id="{{method.id}}">
+                                                    <label>
+                                                        <div class="radio-label">
+                                                            <input type="radio" {% if loop.first %} required="" data-parsley-required-message="{{'Kies een van de verzendmethodes om verder te gaan.'|t}}" {% endif %} data-parsley-group="group-step-2" name="sale[shipping][method][id]" class="shipping-method-option" id="sale_shipping_method_id_{{method.id}}" data-type="shipping" data-iso="{{method.iso}}" data-name="{{method.name}}" data-cost="{{method.cost}}" data-tax-rate="{{method.tax_rate}}" value="{{method.id}}" {% if postdata.sale.shipping.method.id == method.id or (postdata.sale.shipping.method.id is not defined and loop.parent.loop.first) %}checked{% endif %}>
+                                                            <div class="radio-button"></div>
+                                                            <strong>
+                                                                {{method.name}}
+                                                                {% if method.cost > 0 %}
+                                                                    <span class="method-cost"> ({{method.cost|price}})</span>
+                                                                {% endif %}
+                                                            </strong>
+                                                        </div>
+                                                        {% if 'postnl' in method.name|lower %}
+                                                            {{af_displays.icon({
+                                                                'id'    : 'postnl',
+                                                                'class' : 'shipping-method-icon partner-logo fill-primary'
+                                                            })}}
+                                                        {% elseif 'dpd' in method.name|lower %}
+                                                            {{af_displays.icon({
+                                                                'id'    : 'dpd',
+                                                                'class' : 'shipping-method-icon partner-logo fill-primary'
+                                                            })}}
+                                                        {% endif %}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="panel panel-primary panel-body">
+                        <h2>{{"Betaling"|t}}</h2>
+                        <hr>
+                        <div class="row same-address-check">
+                             <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="checkbox af">
+                                        <label for="same-billing-address">
+                                            <input type="checkbox" value="1" id="same-billing-address" name="billing[is_shipping]" {% if (postdata.billing is not defined and postdata.billing.is_shipping is not defined) or postdata.billing.is_shipping == 1 %}checked{% endif %}>
+                                            <div class="checkbox-button"></div>
+                                            {{"Factuuradres gelijk aan verzendadres"|t}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="billing-complete-container">
+                            <div class="row">
+                                 <div class="col-md-12">
+                                    <div class="form-group country-switch-billing">
+                                        <label for="billing[isNL]" class="control-label">{{"Land"|t}} <span class="required">*</span></label>
+                                        <div class="inline-radio-group">
+                                            <div class="radio af">
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="billing[isNL]" id="address-billing-is-nl1" class="address-country-select" data-type="billing" value="1" {% if postdata.billing.isNL == 1 or postdata.billing.isNL is not defined %}checked{% endif %}> 
+                                                    <div class="radio-button"></div>
+                                                    {{"Nederland"|t}}
+                                                </label>
+                                            </div>
+                                            <div class="radio af">
+                                                <label class="radio-inline">
+                                                    <input type="radio" name="billing[isNL]" id="address-billing-is-nl2" class="address-country-select" data-type="billing" value="0" {% if postdata.billing.isNL == 0 and postdata.billing.isNL is defined %}checked{% endif %}> 
+                                                    <div class="radio-button"></div>
+                                                    {{"Anders"|t}}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 collapse country-collapsable">
+                                            <div class="form-group">
+                                                <select name="billing[address][country][id]" class="form-control required phoenix-input" tabindex="13" id="billing_address_country_id" value="{{postdata.billing.address.country.id}}">
+                                                    {% for country in countries %}
+                                                        <option value="{{country.id}}" {% if postdata.billing.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="billing_address_company" class="control-label">{{"Bedrijf"|t}}</label>
+                                        <input type="text" name="billing[address][company]" class="form-control" tabindex="13" id="billing_address_company" value="{{postdata.billing.address.company}}" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="billing-postal-code-container" class="billing-container">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        
+                                        <div class="row">
+                                            <div class="form-group col-xs-12 col-sm-4 col-md-5">
+                                                <label for="billing_address_postal_code1" class="control-label">{{"Postcode"|t}} <span class="required">*</span></label>
+                                                <input type="text" name="billing[address][postal_code]" class="form-control required address-check-field" data-type="billing" tabindex="14" id="billing_address_postal_code1" value="{{postdata.billing.address.postal_code}}">
+                                            </div>
+                                            <div class="form-group col-xs-7 col-sm-4">
+                                                <label for="billing_address_house_number" class="control-label">{{"Huisnummer"|t}} <span class="required">*</span></label>
+                                                <input type="text" name="billing[address][house_number]" class="form-control required input-small address-check-field" data-type="billing" tabindex="15" id="billing_address_house_number" value="{{postdata.billing.address.house_number}}">
+                                            </div>
+                                            <div class="form-group col-xs-5 col-sm-4 col-md-3">
+                                            <label for="billing_address_house_number_suffix" class="col-sm- control-label">{{"Toevoeging"|t}}</label>
+                                            <input type="text" name="billing[address][house_number_suffix]" class="form-control input-small address-check-field" data-type="billing" tabindex="16" id="billing_address_house_number_suffix" value="{{postdata.billing.address.house_number_suffix}}">
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="billing_address_postal_code_result_container">
+                                    <div class="form-group">
+                                        <div class="col-sm-12 postal-code-result" id="billing_address_postal_code_result">
+                                            <div class="form-group">
+                                            <label for="billing_address_street" class="control-label">{{"Adres"|t}} <span class="required">*</span></label>
+                                            <input type="text" name="billing[address][street]" class="form-control required" tabindex="17" id="billing_address_street" value="{{postdata.billing.address.street}}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="billing_address_city" class="control-label">{{"Plaats"|t}} <span class="required">*</span></label>
+                                            <input type="text" name="billing[address][city]" class="form-control required" tabindex="18" id="billing_address_city" value="{{postdata.billing.address.city}}">
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% if account.customer.loyalty.points > 0 %}
+                                <div class="redeem-credits">
+                                    <strong>
+                                     {{'Spaarpunten'|t}}
+                                    </strong>
+                                    <br>
+                                    <p>
+                                       {{'Je hebt nu <span class="text-green">{credits} Credits</span> welke je kunt verzilveren bij deze order'|t({'{credits}' : account.customer.loyalty.points})}}
+                                    </p>
+                                    <div>
+                                        
+                                        <label class="redeem-credits-box {% if cart.coupon.is_active %}disabled{% endif %}" for="redeem-credits">
+                                            <div class="credits-checkbox col-xs-2">
+                                                <div class="checkbox af">
+                                                    <label>
+                                                        <input type="checkbox" value="2" id="redeem-credits" name="loyalty[charge_type]" data-balance="{{account.customer.loyalty.balance}}">
+                                                        <div class="checkbox-button"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="credits-tag col-xs-7">
+                                              <span class="no-redeem">{{'Verzilver je Credits'|t}}</span>
+                                              <span class="redeem hidden">{{'Je Credits zijn verzilverd'|t}}</span>
+                                            </div>
+                                            <div class="credits-amount col-xs-3">
+                                                {{account.customer.loyalty.balance|price}}
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% if cart.coupon.is_active %}
+                                    <p>
+                                        <strong>
+                                            {{'Je kan helaas geen credits verzilveren als je een coupon code gebruikt.'|t}}
+                                        </strong>
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                            <div class="form-group">
+                                <div class="space-50"></div>
+                                <label class=" control-label"{{'>Selecteer een optie'|t}} <span class="required">*</span></label>
+                                <div class="payment-methods">
+                                        <div id="payment-method-error"></div>
+                                    {% for method in payment_methods %}
+                                        <div class="row payment-method-row">
+                                            <div class="col-xs-12">
+                                                <div class="radio af">
+                                                    <label {% if method.issuers is not empty %}data-issuers="{{method.code}}-list"{% endif %}>
+                                                        <div class="radio-label">
+                                                            <input type="radio" name="sale[payment][method][id]" {% if loop.first %} required="" data-parsley-errors-container="#payment-method-error" data-parsley-required-message="{{'Kies een van de betaalmethodes om verder te gaan.'|t}}" {% endif %} data-parsley-multiple="payment_methods" id="sale_payment_method_id" class="payment-method-option" data-type="payment" data-name="{{method.name}}" data-code="{{method.code}}" data-cost="{{method.cost}}" data-tax-rate="{{method.tax_rate}}" value="{{method.id}}">
+                                                            <div class="radio-button"></div>
+                                                            {{method.name}}
+                                                            {% if method.cost > 0 %}
+                                                                <span class="method-cost"> ({{method.cost|price}})</span>
+                                                            {% endif %}
+                                                        </div>
+                                                        {% if method.code != 'bill' and method.code != 'instore' and method.code != 'prepaid' %}
+                                                            {{af_displays.icon({
+                                                                'id'    : method.description|lower,
+                                                                'type'  : 'original',
+                                                                'class' : 'payment-menthod-icon partner-logo'
+                                                            })}}
+                                                        {% endif %}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="row-divider"></div>
+                                        </div>
+                                        {% if method.issuers is not empty %}
+                                            <div class="row issuer-list collapse in {{method.code}}-list">
+                                                <div class="col-xs-12">
+                                                    <div class="well">
+                                                        <ul class="list-unstyled">
+                                                            {% for issuer in method.issuers %}
+                                                                <li>
+                                                                    <div class="radio af">
+                                                                        <label>
+                                                                            <input type="radio" value="{{issuer.id}}" name="sale[payment][issuer][id]" id="sale_payment_issuer_id" data-name="{{issuer.name}}">
+                                                                            <div class="radio-button"></div>
+                                                                            {{issuer.name}}
+                                                                        </label>
+                                                                    </div>
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                {#<fieldset class="panel panel-primary panel-body">#}
+                {#    <h2>{{"Betaling"|t}}</h2>#}
+                {#    <hr>#}
+                {#    <div class="row same-address-check">#}
+                {#         <div class="col-md-12">#}
+                {#            <div class="form-group">#}
+                {#                <div class="checkbox af">#}
+                {#                    <label for="same-billing-address">#}
+                {#                        <input type="checkbox" value="1" id="same-billing-address" name="billing[is_shipping]" {% if (postdata.billing is not defined and postdata.billing.is_shipping is not defined) or postdata.billing.is_shipping == 1 %}checked{% endif %}>#}
+                {#                        <div class="checkbox-button"></div>#}
+                {#                        {{"Factuuradres gelijk aan verzendadres"|t}}#}
+                {#                    </label>#}
+                {#                </div>#}
+                {#            </div>#}
+                {#        </div>#}
+                {#    </div>#}
+                {#    <div id="billing-complete-container">#}
+                {#        <div class="row">#}
+                {#             <div class="col-md-12">#}
+                {#                <div class="form-group country-switch-billing">#}
+                {#                    <label for="billing[isNL]" class="control-label">{{"Land"|t}} <span class="required">*</span></label>#}
+                {#                    <div class="inline-radio-group">#}
+                {#                        <div class="radio af">#}
+                {#                            <label class="radio-inline">#}
+                {#                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl1" class="address-country-select" data-type="billing" value="1" {% if postdata.billing.isNL == 1 or postdata.billing.isNL is not defined %}checked{% endif %}> #}
+                {#                                <div class="radio-button"></div>#}
+                {#                                {{"Nederland"|t}}#}
+                {#                            </label>#}
+                {#                        </div>#}
+                {#                        <div class="radio af">#}
+                {#                            <label class="radio-inline">#}
+                {#                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl2" class="address-country-select" data-type="billing" value="0" {% if postdata.billing.isNL == 0 and postdata.billing.isNL is defined %}checked{% endif %}> #}
+                {#                                <div class="radio-button"></div>#}
+                {#                                {{"Anders"|t}}#}
+                {#                            </label>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="row">#}
+                {#                    <div class="col-md-12 collapse country-collapsable">#}
+                {#                        <div class="form-group">#}
+                {#                            <select name="billing[address][country][id]" class="form-control required phoenix-input" tabindex="13" id="billing_address_country_id" value="{{postdata.billing.address.country.id}}">#}
+                {#                                {% for country in countries %}#}
+                {#                                    <option value="{{country.id}}" {% if postdata.billing.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>#}
+                {#                                {% endfor %}#}
+                {#                            </select>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#                <div class="form-group">#}
+                {#                    <label for="billing_address_company" class="control-label">{{"Bedrijf"|t}}</label>#}
+                {#                    <input type="text" name="billing[address][company]" class="form-control" tabindex="13" id="billing_address_company" value="{{postdata.billing.address.company}}" >#}
+                {#                </div>#}
+                {#            </div>#}
+                {#        </div>#}
+                {#        <div id="billing-postal-code-container" class="billing-container">#}
+                {#            <div class="row">#}
+                {#                <div class="col-md-12">#}
+                                    
+                {#                    <div class="row">#}
+                {#                        <div class="form-group col-xs-12 col-sm-4 col-md-5">#}
+                {#                            <label for="billing_address_postal_code1" class="control-label">{{"Postcode"|t}} <span class="required">*</span></label>#}
+                {#                            <input type="text" name="billing[address][postal_code]" class="form-control required address-check-field" data-type="billing" tabindex="14" id="billing_address_postal_code1" value="{{postdata.billing.address.postal_code}}">#}
+                {#                        </div>#}
+                {#                        <div class="form-group col-xs-7 col-sm-4">#}
+                {#                            <label for="billing_address_house_number" class="control-label">{{"Huisnummer"|t}} <span class="required">*</span></label>#}
+                {#                            <input type="text" name="billing[address][house_number]" class="form-control required input-small address-check-field" data-type="billing" tabindex="15" id="billing_address_house_number" value="{{postdata.billing.address.house_number}}">#}
+                {#                        </div>#}
+                {#                        <div class="form-group col-xs-5 col-sm-4 col-md-3">#}
+                {#                        <label for="billing_address_house_number_suffix" class="col-sm- control-label">{{"Toevoeging"|t}}</label>#}
+                {#                        <input type="text" name="billing[address][house_number_suffix]" class="form-control input-small address-check-field" data-type="billing" tabindex="16" id="billing_address_house_number_suffix" value="{{postdata.billing.address.house_number_suffix}}">#}
+                {#                    </div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#            </div>#}
+                {#            <div class="row" id="billing_address_postal_code_result_container">#}
+                {#                <div class="form-group">#}
+                {#                    <div class="col-sm-12 postal-code-result" id="billing_address_postal_code_result">#}
+                {#                        <div class="form-group">#}
+                {#                        <label for="billing_address_street" class="control-label">{{"Adres"|t}} <span class="required">*</span></label>#}
+                {#                        <input type="text" name="billing[address][street]" class="form-control required" tabindex="17" id="billing_address_street" value="{{postdata.billing.address.street}}">#}
+                {#                    </div>#}
+                {#                    <div class="form-group">#}
+                {#                        <label for="billing_address_city" class="control-label">{{"Plaats"|t}} <span class="required">*</span></label>#}
+                {#                        <input type="text" name="billing[address][city]" class="form-control required" tabindex="18" id="billing_address_city" value="{{postdata.billing.address.city}}">#}
+                {#                    </div>#}
+                {#                    </div>#}
+                {#                </div>#}
+                {#            </div>#}
+                {#        </div>#}
+                {#    </div>#}
+                {#    <div class="row">#}
+                {#        <div class="col-xs-12">#}
+                {#            <div class="form-group">#}
+                {#                <label class=" control-label">{{"Selecteer een optie"|t}} <span class="required">*</span></label>#}
+                {#                <div class="payment-methods">#}
+                {#                {% for method in payment_methods|reverse %}#}
+                {#                    <div class="row payment-method-row">#}
+                {#                        <div class="col-xs-12">#}
+                {#                            <div class="radio af">#}
+                {#                                <label {% if method.issuers is not empty %}data-issuers="{{method.code}}-list"{% endif %}>#}
+                {#                                    <div class="radio-label">#}
+                {#                                        <input type="radio" name="sale[payment][method][id]" {% if loop.first %} required="" data-parsley-required-message="{{'Kies een van de betaalmethodes om verder te gaan.'|t}}" {% endif %} data-parsley-multiple="payment_methods" id="sale_payment_method_id" class="payment-method-option" data-type="payment" data-name="{{method.name}}" data-code="{{method.code}}" data-cost="{{method.cost}}" data-tax-rate="{{method.tax_rate}}" value="{{method.id}}">#}
+                {#                                        <div class="radio-button"></div>#}
+                {#                                        {{method.name}}#}
+                {#                                        {% if method.cost > 0 %}#}
+                {#                                            <span class="method-cost"> ({{method.cost|price}})</span>#}
+                {#                                        {% endif %}#}
+                {#                                    </div>#}
+                {#                                    {% if method.code != 'bill' and method.code != 'instore' and method.code != 'prepaid' %}#}
+                {#                                        <img class="img-polaroid image-file pull-right" src="{{image('/image/' ~ method.code ~ '.png')}}" alt="{{'logo van {code}'|t(method.code)}}">                                    #}
+                {#                                    {% endif %}#}
+                {#                                </label>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                        <div class="row-divider"></div>#}
+                {#                    </div>#}
+                {#                    {% if method.issuers is not empty %}#}
+                {#                        <div class="row issuer-list collapse in {{method.code}}-list">#}
+                {#                            <div class="col-xs-12">#}
+                {#                                <div class="well">#}
+                {#                                    <ul class="list-unstyled">#}
+                {#                                        {% for issuer in method.issuers %}#}
+                {#                                            <li>#}
+                {#                                                <div class="radio af">#}
+                {#                                                    <label>#}
+                {#                                                        <input type="radio" value="{{issuer.id}}" name="sale[payment][issuer][id]" id="sale_payment_issuer_id" data-name="{{issuer.name}}">#}
+                {#                                                        <div class="radio-button"></div>#}
+                {#                                                        {{issuer.name}}#}
+                {#                                                    </label>#}
+                {#                                                </div>#}
+                {#                                            </li>#}
+                {#                                        {% endfor %}#}
+                {#                                    </ul>#}
+                {#                                </div>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                    {% endif %}#}
+                {#                {% endfor %}#}
+                {#            </div>#}
+                {#            </div>#}
+                {#        </div>#}
+                {#    </div>#}
+                {#</fieldset>#}
+                <fieldset class="panel panel-primary">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="cart-summary-wrapper">
+                                <div class="col-xs-12 cart-summary">
+                                        <h2>{{"Mijn bestelling"|t}}</h2>
+                                        <div class="row checkout-row">
+                                            <div class="col-md-12">
+                                                <div class="cart-summary-list">
+                                                    {% for item in cart.items %}
+                                                        <div class="row">
+                                                            <div class="col-xs-12 cart-summary-list-item">
+                                                                <div class="row">
+                                                                    <div class="col-xs-12">
+                                                                        {{item.name}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-xs-6">
+                                                                        <i>{{item.quantity}} x {{item.price|price}}</i>
+                                                                    </div>
+                                                                    <div class="col-xs-6 text-right pull-right">
+                                                                        <strong>{{item.subtotal|price}}</strong>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="checkout-table">
+                                        <div class="cart-summary-order-info">
+                                            <div class="row" id="checkout-table-credits">
+                                                <div class="col-sm-6 text-right">
+                                                    <strong>{{'Ingeleverde credits'|t}} </strong>
+                                                </div>
+                                                <div class="col-sm-6 text-right">
+                                                    <span class="credit-total-amount"></span>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row shipping-method-sum" id="checkout-table-shipping-cost">
+                                                <div class="col-sm-6 text-right ">
+                                                    <strong class="shipping-method-name"></strong>
+                                                </div>
+                                                <div class="col-sm-6 text-right">
+                                                    <span class="shipping-cost-total"></span>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row payment-method-sum" id="checkout-table-payment-cost">
+                                                <div class="col-sm-6 text-right ">
+                                                    <strong class="payment-method-name"></strong>
+                                                    <small class="payment-method-issuer"></small>
+                                                </div>
+                                                <div class="col-sm-6 text-right">
+                                                    <span class="payment-cost-total"></span>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            {% for vat in cart.vat %}
+                                                <div class="row rowcheckout-tax-row checkout-tax-row-{{vat.rate}} original-tax-row" data-tax-amount="{{vat.amount}}">
+                                                    <div class="col-sm-6 text-right ">
+                                                        <strong class="payment-method-name">{{"BTW"|t}} ({{vat.rate}}%)</strong>
+                                                    </div>
+                                                    <div class="col-sm-6 text-right">
+                                                        <span class=" vat-amount">{{vat.amount|price}}</span>
+                                                    </div>
+                                                </div>
+                                            <hr>
+                                            {% endfor %}
+                                            {% if cart.coupon.is_active %}
+                                                <div class="row" id="checkout-table-payment-cost">
+                                                    <div class="col-sm-6 text-right ">
+                                                        <strong>{{"coupon"|t}}: {{cart.coupon.code}} ({{cart.coupon.discount_rate}}%)</strong>
+                                                    </div>
+                                                    <div class="col-sm-6 text-right">
+                                                        <span>{{cart.discount|price}}</span>
+                                                    </div>
+                                                </div>
+                                            <hr>
+                                            {% endif %}
+                                            <div class="row checkout-table-total " data-total-amount="{{cart.total}}">
+                                                <div class="col-sm-6 text-right ">
+                                                    <strong>{{"Totaal"|t}}</strong>
+                                                </div>
+                                                <div class="col-sm-6 text-right total-amount">
+                                                    <span class="total-amount">{{cart.total|price}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if captcha.enabled %}
+                            <fieldset>
+                                <h2>{{"Captcha"|t}}</h2>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group captcha-field">
+                                            <label for="sale[captcha]" class="col-sm-2 control-label verifyCaptchaLabelContainer">{{"Captcha"|t}}</label>
+                                            <div class="col-sm-3">
+                                                <div class="verifyCaptchaContainer">
+                                                        {{captcha.img}}
+                                                    <input type="text" name="sale[captcha]" class="center-block" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        {% endif %}
+                        <hr>
+                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#comments" aria-expanded="false" aria-controls="comments">
+                            {{"Opmerking toevoegen"|t}}
+                        </button>
+                        <div class="row">
+                             <div class="col-md-12">
+                                <div class="collapse" id="comments">
+                                    <div class="form-group comment-field">
+                                        <textarea class="form-control" rows="5" name="sale[note][text]">{{post.sale.note.text}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>   
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row checkout-row">
+                            <div class="col-md-12">
+                                <a href="{{cart.url}}" class="btn btn-link">{{"Terug naar winkelmandje"|t}}</a>
+                                <button type="submit" tabindex="19" class="btn btn-success btn-checkout pull-right">{{"Bestellen"|t}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

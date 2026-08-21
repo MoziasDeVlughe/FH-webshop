@@ -1,0 +1,214 @@
+.cart-summary-fixed {
+    @include transform(translate3d(0, 0, 0));
+    
+    @media (max-width: 767px) {
+        position: relative !important;
+    }
+    
+    @media (min-width: 768px) and (max-width: 991px) {
+        top: 150px;
+        left: calc(50% + 15px);
+        width: 345px;
+    }
+    
+    @media (min-width: 992px) and (max-width: 1199px) {
+        top: 150px;
+        left: calc(50% + 15px);
+        width: 455px;
+    }
+    
+    @media (min-width: 1200px) and (max-width: 1560px) {
+        top: 150px;
+        left: calc(50% + 15px);
+        width: 555px;
+    }
+    
+    @media (min-width: 1560px) {
+        top: 150px;
+        left: calc(50% + 15px);
+        width: 750px;
+    }
+    
+    &.affix-bottom {
+        
+        @media (min-width: 768px) {
+            position: relative;
+            left: initial;
+        }
+    }
+    
+    hr {
+        margin-top: 7px;
+        margin-bottom: 7px;
+    }
+    
+}
+
+#checkout-form {
+    
+    textarea {
+        resize: vertical;
+    }
+    
+    .forgot-link {
+        cursor: pointer;
+        
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    
+    .shipping-methods {
+        
+        .shipping-method-row {
+            cursor: pointer;
+            @include transition(background-color .1s ease-in-out);
+            
+            > div > .radio {
+                margin: 0;
+                &:after {
+                    position: absolute;
+                    bottom: -1px;
+                    left: 0;
+                    width: 100%;
+                    height: 1px;
+                    content: "";
+                    background-color: $gray-light;
+                }
+
+                > label {
+                    align-items: center;
+                    justify-content: space-between;
+                    width: 100%;
+                    padding-top: 25px;
+                    padding-bottom: 25px;
+                    @include flexbox;
+
+                    .radio-label {
+                        @include flexbox;
+                    }
+                }
+            }
+
+            &:hover, &.active-method {
+                background-color: rgba(0,0,0,.04);
+            }
+
+            .row-divider {
+                margin: 0 15px;
+                clear: both;
+                border-bottom: 1px solid $gray-light;
+            }
+
+            &:last-child .row-divider {
+                border: 0;
+            }
+
+            img {
+                max-height: 45px;
+
+                @include af-xs {
+                    max-height: 30px;
+                }
+            }
+        }
+    }
+    .payment-methods {
+
+        .payment-method-row {
+            cursor: pointer;
+            @include transition(background-color .1s ease-in-out);
+
+            .radio {
+                margin: 0;
+
+                label {
+                    @include flexbox;
+                    @include align-items(center);
+                    @include justify-content(space-between);
+                    width: 100%;
+                    padding-top: 25px;
+                    padding-bottom: 25px;
+
+                    .radio-label {
+                        @include flexbox;
+                    }
+                }
+            }
+
+            &:hover, &.active-method {
+                background-color: rgba(0,0,0,.04);
+            }
+
+            .row-divider {
+                margin: 0 15px;
+                clear: both;
+                border-bottom: 1px solid $gray-light;
+            }
+
+            &:last-child .row-divider {
+                border: 0;
+            }
+
+            img {
+                max-height: 45px;
+
+                @include af-xs {
+                    max-height: 30px;
+                }
+            }
+        }
+
+        .issuer-list {
+            margin-top: 10px;
+            overflow: hidden;
+            @include transition(height .2s ease-in-out);
+        }
+    }
+
+    .redeem-credits-box {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        max-width: 385px;
+        height: 50px;
+        color: $gray-base;
+        cursor: pointer;
+        border: 1px solid $brand-success;
+        @include flexbox;
+        @include align-items(center);
+
+        &.disabled {
+            pointer-events: none;
+            @include opacity(.3);
+        }
+
+        // .credits-checkbox {
+        //     position: absolute;
+        //     right: 2px;
+        //     top: 2px;
+        //     line-height: 0;
+        //     .checkbox {
+        //         margin-top: 0px;
+        //         margin-bottom: 0px;
+        //         .checkbox-button {
+        //             // width: 46px;
+        //             // height: 46px;
+        //             // margin-right: 0px;
+        //             // border-width: 2px;
+        //             // border-color: #fff;
+        //             // border-radius: $input-border-radius;
+        //             // &::after {
+        //             //     content: "";
+        //             //     top: 13px;
+        //             //     left: 9px;
+        //             //     width: 25px;
+        //             //     height: 10px;
+        //             //     // border-width: 1px;
+        //             //     border-color: #8EC449;
+        //             // }
+        //         }
+        //     }
+        // }
+    }
+}

@@ -1,0 +1,60 @@
+{% set subjects = [] %}
+{% for faq in blocks if "faq_" in faq.identifier %}
+    {% if faq.identifier|split('_')[1] not in subjects %}
+        {% set subjects = subjects|merge([faq.identifier|split('_')[1]]) %}
+    {% endif %}
+{% endfor %}
+
+
+<div class="container">
+    <div class="title-row">
+        <h1>{{title}}</h1>
+        <hr />
+    </div>
+    <div class="row">
+        {% if menus.active is not empty or filters is not empty %}
+            <div class="col-md-3 col-xs-12 sidebar">
+                <ul class="nav nav-pills nav-stacked">
+                    {% for menuitem in menus[menus.active.tag].items %}
+                        <li class="{% if menuitem.active %}active{% endif %}">
+                            <a href="{{menuitem.url}}">{{menuitem.label}}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="{% if menus.active is not empty or filters is not empty %}col-md-9{% endif %} col-xs-12">
+            
+            {% set sorted_blocks = [] %}
+            {% for item in blocks %}
+                {% set sorted_blocks = sorted_blocks|merge({(sorted_blocks.length + 1) : item.identifier}) %}
+            {% endfor %}
+            
+            {% for subject in subjects %}
+                <h2>
+                    {{subject}}
+                </h2>
+                
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    {% for faq in sorted_blocks|sort('natsort') if "faq_" ~ subject in faq %}
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="{{faq}}">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{faq}}_id" aria-expanded="false" aria-controls="{{faq}}">
+                                    <h4 class="panel-title">
+                                            {{blocks[faq].title}}
+                                    </h4>
+                                </a>
+                            </div>
+                            <div id="{{faq}}_id" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+                                    {{blocks[faq].content}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

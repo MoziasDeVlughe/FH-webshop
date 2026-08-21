@@ -1,0 +1,172 @@
+{% import "macros/displays.twig" as af_displays %}
+
+{% set tabindex = 1 %}
+
+<fieldset id="step-3">
+    <div class="col-xs-12 col-sm-8 col-sm-push-2  col-md-8 col-md-push-2   col-lg-8 col-lg-push-2   col-xl-6 col-xl-push-3">
+        <div class="panel panel-primary panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    {% if account.customer.loyalty.points > 0 %}
+                        <div class="redeem-credits">
+                            <strong>
+                             {{'Spaarpunten'|t}}
+                            </strong>
+                            <br>
+                            <p>
+                               {{'Je hebt nu <strong class="text-green">{credits} Credits</strong> welke je kunt verzilveren bij deze order. Omgerekend is dit {money}'|t({'{credits}' : account.customer.loyalty.points, '{money}': account.customer.loyalty.balance|price})}}
+                            </p>
+                            <div>
+                                
+                                <div class="radio af">
+                                    <label>
+                                        <input type="radio" value="0" checked id="redeem-credits-none" name="use_loyalty" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}">
+                                        <div class="radio-button"></div>
+                                        {{'Ik wil niet met spaarpunten betalen'|t}}
+                                    </label>
+                                </div>
+                                <div class="radio af">
+                                    <label>
+                                        <input type="radio" value="1" id="redeem-credits-active" name="use_loyalty" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}">
+                                        <div class="radio-button"></div>
+                                        {{'Ik wil betalen met spaarpunten'|t}}
+                                    </label>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="collapse pl-20" id="loyalty-type-field">
+                                    <div class="radio af">
+                                        <label>
+                                            <input type="radio" value="2" id="redeem-credits-none" name="loyalty[charge_type]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-balance="{{account.customer.loyalty.balance}}" data-rate="{{account.customer.loyalty.rate}}">
+                                            <div class="radio-button"></div>
+                                            {{'Ik wil zo veel mogelijk spaarpunten gebruiken'|t}}
+                                        </label>
+                                    </div>
+                                    <div class="radio af">
+                                        <label>
+                                            <input type="radio" value="1" id="redeem-credits-partial" name="loyalty[charge_type]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-balance="{{account.customer.loyalty.balance}}" data-rate="{{account.customer.loyalty.rate}}">
+                                            <div class="radio-button"></div>
+                                            {{'Ik wil een bepaald aantal spaarpunten gebruiken'|t}}
+                                        </label>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="collapse pl-20" id="loyalty-amount-field">
+                                    <label>
+                                        {{'Hoeveel punten wil je inleveren?'|t}}
+                                    </label>
+                                    <input class="form-control" type="number" name="loyalty[charge_points]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-rate="{{account.customer.loayalty.rate}}" max="{{account.customer.loyalty.balance}}">
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="clearfix"></div>
+                                
+                                <hr>
+                                
+                                {#{{dump(account.customer.loyalty)}}#}
+                                
+                                {#<label class="redeem-credits-box {% if cart.coupon.is_active %}disabled{% endif %}" for="redeem-credits">#}
+                                {#    <div class="credits-checkbox col-xs-2">#}
+                                {#        <div class="checkbox af">#}
+                                {#            <label>#}
+                                {#                <input type="checkbox" value="1" id="redeem-credits" name="loyalty[charge_type]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-balance="{{account.customer.loyalty.balance}}">#}
+                                {#                <div class="checkbox-button"></div>#}
+                                {#            </label>#}
+                                {#        </div>#}
+                                {#    </div>#}
+                                {#    <div class="credits-tag col-xs-7">#}
+                                {#      <span class="no-redeem">{{'Verzilver je Credits'|t}}</span>#}
+                                {#      <span class="redeem hidden">{{'Je Credits zijn verzilverd'|t}}</span>#}
+                                {#    </div>#}
+                                {#    <div class="credits-amount col-xs-3">#}
+                                {#        {{account.customer.loyalty.balance|price}}#}
+                                {#    </div>#}
+                                {#</label>#}
+                                {#<div class="form-group">#}
+                                {#    <label>#}
+                                {#        {{'Hoeveel punten wil je inleveren?'|t}}#}
+                                {#    </label>#}
+                                {#    <input class="form-control" type="number" name="loyalty[charge_points]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}">#}
+                                {#</div>#}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <div class="space-50"></div>
+                        <label class=" control-label"{{'>Selecteer een optie'|t}} <span class="required">*</span></label>
+                        <div class="payment-methods">
+                            <div style="display:none;">{{dump(payment_methods)}}</div>
+                            {% for method in payment_methods %}
+                                {% if method.code != 1813 or (method.code == 1813 and cart.total >= 100 and cart.total <= 3000) %}
+                                    <div class="row payment-method-row">
+                                        <div class="col-xs-12">
+                                            <div class="radio af">
+                                                <label {% if method.issuers is not empty %}data-issuers="{{method.code}}-list"{% endif %}>
+                                                    <div class="radio-label">
+                                                        <input type="radio" name="sale[payment][method][id]" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" {% if loop.first %} required="" data-parsley-required-message="{{'Kies een van de betaalmethodes om verder te gaan.'|t}}" {% endif %} data-parsley-multiple="payment_methods" data-parsley-group="group-step-3" id="sale_payment_method_id_{{method.id}}" class="payment-method-option" data-type="payment" data-name="{{method.name}}" data-code="{{method.code}}" data-cost="{{method.cost}}" data-tax-rate="{{method.tax_rate}}" value="{{method.id}}">
+                                                        <div class="radio-button"></div>
+                                                        {{method.name}}
+                                                        {% if method.cost > 0 %}
+                                                            <span class="method-cost"> ({{method.cost|price}})</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if method.icon %}
+                                                        <img class="lazyload" data-src="{{method.icon.filename|image({"h": 30, "q": 100})}}" alt="{{method.name}}" title="{{method.name}}">
+                                                    {% endif %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="row-divider"></div>
+                                    </div>
+                                    {% if method.issuers is not empty %}
+                                        <div class="row issuer-list collapse in {{method.code}}-list">
+                                            <div class="col-xs-12">
+                                                <div class="well">
+                                                    <ul class="list-unstyled">
+                                                        {% for issuer in method.issuers %}
+                                                            <li>
+                                                                <div class="radio af">
+                                                                    <label>
+                                                                        <input type="radio" value="{{issuer.id}}" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" name="sale[payment][issuer][id]" id="sale_payment_issuer_id_{{issuer.id}}" data-name="{{issuer.name}}">
+                                                                        <div class="radio-button"></div>
+                                                                        {{issuer.name}}
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if captcha.enabled %}
+                <h2>{{'Captcha'|t}}</h2>
+                <hr>
+                <div class="form-group captcha-field">
+                    <label for="sale[captcha]" class="col-sm-2 control-label verifyCaptchaLabelContainer">{{'Captcha'|t}}</label>
+                    <div class="col-sm-3">
+                        <div class="verifyCaptchaContainer">
+                            {{captcha.img}}
+                            <input type="text" name="sale[captcha]" class="center-block" />
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-7 col-xs-push-5 col-sm-6 col-sm-push-6">
+                    <button type="button" data-next-step="step-4" class="btn btn-primary btn-checkout-step checkout-next pull-right" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-step-type="summary">{{'VOLGENDE STAP'|t}}</button>
+                </div>
+                <div class="col-xs-5 col-xs-pull-7 col-sm-6 col-sm-pull-6">
+                    <button type="button" data-previous-step="step-2" class="btn btn-checkout-step btn-primary-inverse btn-prev-step btn-full-width" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-step-type="shipping">
+                        {{'Terug'|t}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

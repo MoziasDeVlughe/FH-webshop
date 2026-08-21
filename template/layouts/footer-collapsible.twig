@@ -1,0 +1,232 @@
+{# type: layout #}
+{% import 'macros/displays.twig' as af_displays %}
+
+{#{% set newsletter = pluginData.newsletter[<nieuwsbrief id>] %}#}
+
+<footer class="footer-collapsible">
+    <section class="contact-footer">
+        <div class="container">
+            <div class="contact-container">
+                <div class="contact-titles">
+                    {{blocks.contact_title.content|replace({
+                        '<strong>': '<span class="contact-title">',
+                        '</strong>': '</span>',
+                        '<em>': '<span class="contact-time">',
+                        '</em>': '</span>',
+                    })}}
+                </div>
+                <div class="contact-labels">
+                    {% for label in blocks %}
+                        {% if "contact_table" in label.identifier %}
+                            {% set cleaned = label.content|replace({
+                                '</td>': '',
+                                '<tr>': '',
+                                '\n': '',
+                                '\t': '',
+                                '<table style="font-size: 14px;">': '',
+                                '</table>': '',
+                                '<tbody>': '',
+                                '</tbody>': ''
+                            })|trim %}
+                            {% set rawRows = cleaned | split('</tr>') %}
+                            {% set tableData = {} %}
+                            {% for row in rawRows %}
+                                {% if row is not empty %}
+                                    {% set cols = row | split('<td>') %}
+                                    {% if cols|length == 3 %}
+                                        {% set key = cols[1]|trim|lower %}
+                                        {% set value = cols[2]|trim %}
+                                            {% if key == 'icon' %}
+                                                {% set value = value|replace({
+                                                    '&lt;': '<',
+                                                    '&gt;': '>',
+                                                    '&quot;': '"',
+                                                    '&amp;': '&'
+                                                }) %}
+                                            {% endif %}
+                                        {% set tableData = tableData | merge({ (key): value }) %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <div class="contact-labels">
+                                <a class="contact-label" {# href="tel:{{tableData.tel}}" #}>
+                                    <i data-lucide="phone" class="size-28"></i>
+                                    <div>
+                                        <span>
+                                            {{'Telefonisch'|t}}
+                                        </span>
+                                        <p>
+                                            {{'Bel naar'|t}} {{tableData.tel}}
+                                        </p>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="size-32 ml-auto"></i>
+                                </a>
+                            </div>
+                            <div class="contact-labels">
+                                <a class="contact-label" {# href="https://web.whatsapp.com/send?phone={{tableData.tel|replace({'+': ''})}}" #}>
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <div>
+                                        <span>
+                                            {{'Whatsapp'|t}}
+                                        </span>
+                                        <p>
+                                            {{'App naar'|t}} {{tableData.tel}}
+                                        </p>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="size-32 ml-auto"></i>
+                                </a>
+                            </div>
+                            <div class="contact-labels">
+                                <a class="contact-label" {# href="mailto:{{tableData.mail}}" #}>
+                                    <i data-lucide="mail" class="size-28"></i>
+                                    <div>
+                                        <span>
+                                            {{'Email'|t}}
+                                        </span>
+                                        <p>
+                                            {{'Mail naar'|t}} {{tableData.mail}}
+                                        </p>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="size-32 ml-auto"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="top-footer">
+        <div class="container">
+            <div class="top-footer-inner">
+                {##}
+                {#USPS are dynamically loaded from tekstblokken. make sure the name contains usps and it will appear in the right places#}
+                {##}
+                {% for usp in blocks %}
+                    {% if "usps" in usp.identifier %}
+                        <span class="usps-item">
+                            {{usp.content}}
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <section class="main-footer">
+        <div class="container">
+            <div class="d-flex flex-wrap mx-n15"> 
+            {% set footer_column_counter = 1 %}
+            
+                <div class="flex-100 flex-md-25 px-15">
+                    <div 
+                        class="h3 footer-column-heading collapsed" 
+                        data-toggle="collapse" 
+                        data-target="#footer-column-{{footer_column_counter}}" 
+                        aria-expanded="false"
+                    >
+                        {{menus.footer.name}}
+                        <div class="collapsible-icon"></div>
+                    </div>
+                    <div class="collapse" id="footer-column-{{footer_column_counter}}{% set footer_column_counter = footer_column_counter + 1 %}">
+                        <ul class="list-unstyled">
+                            {% for menuitem in menus.footer.items %}
+                                <li class="{% if menuitem.active %}active{% endif %}">
+                                    <a href="{{menuitem.url}}" class="">{{menuitem.label}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex-100 flex-md-25 px-15">
+                    <div
+                        class="h3 footer-column-heading collapsed" 
+                        data-toggle="collapse" 
+                        data-target="#footer-column-{{footer_column_counter}}" 
+                        aria-expanded="false"
+                    >
+                        {{"Contact"|t}}
+                        <div class="collapsible-icon"></div>
+                    </div>
+                    <div class="collapse" id="footer-column-{{footer_column_counter}}{% set footer_column_counter = footer_column_counter + 1 %}">
+                        <address>
+                            {{blocks.contact_info.content}}
+                        </address>
+                    </div>
+                </div>
+                <div class="flex-100 flex-md-25 px-15 open-hours-table">
+                    <div
+                        class="h3 footer-column-heading collapsed" 
+                        data-toggle="collapse" 
+                        data-target="#footer-column-{{footer_column_counter}}" 
+                        aria-expanded="false"
+                    >
+                        {{"Openingstijden"|t}}
+                        <div class="collapsible-icon"></div>
+                    </div>
+                    <div class="collapse" id="footer-column-{{footer_column_counter}}{% set footer_column_counter = footer_column_counter + 1 %}">
+                        {{blocks.open_hours.content}}
+                    </div>
+                </div>
+                <div class="flex-100 flex-md-25 px-15">
+                    <div class="h3">
+                        {{"Nieuwsbrief"|t}}
+                        <div class="collapsible-icon"></div>
+                    </div>
+                    <form method="post" name="subscribe" action="" >
+                        <div class="form-group">
+                            <p class="hidden-xs">{{'Blijf op de hoogte van acties en het laatste nieuws door je aan te melden voor de nieuwsbrief.'|t}}</p>
+                            <div class="input-group">
+                                <input type="email" name="email" id="mail" class="form-control" placeholder="{{'e-mailadres'|t}}" aria-label="{{'E-mailadres'|t}}">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary">{{'Verstuur'|t}}</button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                    {#{% if has_app('newsletter') %}#}
+                    {#    {% if newsletter is not defined %}#}
+                    {#        {% set newsletter = pluginData.newsletter|first %}       #}
+                    {#    {% endif %}    #}
+                        {#<form method="post" name="subscribe" action="/newsletter/subscribe/5" >#}
+                        {#    <div class="form-group">#}
+                        {#        <p class="hidden-xs">{{'Blijf op de hoogte van acties en het laatste nieuws door je aan te melden voor de nieuwsbrief.'|t}}</p>#}
+                        {#        <div class="input-group">#}
+                        {#            <input type="email" name="email" id="mail" class="form-control" placeholder="{{'e-mailadres'|t}}">#}
+                        {#            <span class="input-group-btn">#}
+                        {#                <button type="submit" class="btn btn-success">{{'Verstuur'|t}}</button>#}
+                        {#            </span>#}
+                        {#        </div>#}
+                        {#    </div>#}
+                        {#</form>#}
+                    {#{% endif %}#}
+                </div>
+            </div>
+        </div>
+    </section>
+    {#<section class="second-footer">#}
+    {#    <div class="container text-center">#}
+    {#        <ul class="mb-0 list-inline">#}
+    {#            {% for method in properties.payment_methods if method.icon %}#}
+    {#                <li>#}
+    {#                    <img data-src="{{method.icon.filename|image({"h": 25})}}" alt="{{method.name}}" class="lazyload">#}
+    {#                </li>#}
+    {#            {% endfor %}#}
+    {#        </ul>#}
+    {#    </div>#}
+    {#</section>#}
+    <section class="bottom-footer">
+        <div class="container">
+            <div class="d-flex flex-wrap align-item-center">
+                <span>
+                    &copy; {{"now"|date('Y')}} - {{properties.name}}.
+                </span>
+                <a href="https://afosto.com" target="_blank" rel="noopener" class="ml-auto" title="this site is powered by Afosto">
+                    <svg viewBox="0 0 348 44" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-h-20">
+                      <path fill="currentColor" class="powered-icon" d="M340.9 10.2H334c-2.5 0-4.3.6-5.4 1.7-1.1 1-1.7 2.7-1.7 4.8v15.8c0 2 .6 3.7 1.7 4.8 1 1 2.9 1.6 5.4 1.6h6.9c2.5 0 4.3-.5 5.4-1.6 1-1.1 1.6-2.7 1.6-4.8V16.7c0-2.1-.5-3.7-1.6-4.8-1-1.1-3-1.7-5.4-1.7zm-.8 21.1c0 1-.6 1.5-1.6 1.5h-2.1c-1 0-1.6-.5-1.6-1.5V17.8c0-1 .5-1.4 1.6-1.4h2.1c1 0 1.6.5 1.6 1.4v13.5zM321 6.6a1.9 1.9 0 00-.5-1.3 1.8 1.8 0 00-1.2-.5H313v5.4h-2.9v6.1h2.9v16.1c0 4.3 2.4 6.5 7.2 6.5h4.5v-6.2h-2.2c-1 0-1.5-.4-1.5-1.4v-15h3.7v-6h-3.7V6.5zM301.3 22H298c-.6 0-1-.1-1.2-.3-.2-.3-.3-.6-.3-1.1v-3.5c0-.5 0-.8.3-1 .2-.3.6-.4 1.2-.4h.9c.6 0 1 .1 1.2.4.2.2.3.5.3 1v2.1h7.7v-2.5c0-4.3-2.4-6.5-7.3-6.5H296c-4.8 0-7.3 2.2-7.3 6.5V21c0 4.3 2.4 6.4 7.2 6.4h3.3c.6 0 1 0 1.2.3.3.2.4.6.4 1V32c0 1-.6 1.5-1.6 1.5h-1c-1 0-1.5-.5-1.5-1.5v-2h-7.8v2.5c0 4.3 2.4 6.4 7.3 6.4h5c5 0 7.4-2.1 7.4-6.4v-4.2c0-4.2-2.4-6.3-7.2-6.3zM278.7 10.2H272c-2.6 0-4.4.6-5.5 1.7-1 1-1.6 2.7-1.6 4.8v15.8c0 2 .6 3.7 1.6 4.8 1.1 1 3 1.6 5.5 1.6h6.8c2.6 0 4.4-.5 5.5-1.6 1-1.1 1.6-2.7 1.6-4.8V16.7c0-2.1-.5-3.7-1.6-4.8-1.1-1.1-3-1.7-5.5-1.7zm-.8 21.1c0 1-.5 1.5-1.5 1.5h-2.2c-1 0-1.5-.5-1.5-1.5V17.8c0-1 .5-1.4 1.5-1.4h2.2c1 0 1.5.5 1.5 1.4v13.5zM260.5 6.1h2.8V0h-5.1c-4.9 0-7.3 2.1-7.3 6.4v3.8h-2.4v6.2h2.4v20.9a1.6 1.6 0 001.6 1.6h6.5V16.4h3v-6.2h-3V7.6c0-1 .5-1.5 1.5-1.5zM245 31.7V10.2h-6.6a1.2 1.2 0 00-1.1.8l-.1.5V14c-.7-2.3-2.1-3.9-4.7-3.9h-1.4c-4.5 0-6.7 2.2-6.7 6.5v15.8c0 4.3 2.2 6.4 6.7 6.4h1.4c2.5 0 3.8-1.1 4.5-3v1.8a1.2 1.2 0 00.8 1.1l.5.1h9.2v-6.1h-1c-.8 0-1.3-.4-1.5-1.1zm-7.8-9v8.6c0 1-.5 1.5-1.5 1.5h-2c-1 0-1.5-.5-1.5-1.5V17.8c0-1 .5-1.4 1.5-1.4h2c1 0 1.5.5 1.5 1.4v5zM213.4 32.9a6 6 0 01-3.9 5.7c-.6.2-1.3.3-2 .3H192a2.5 2.5 0 01-2.5-2.5c0-.4 0-.7.2-1l.4-.6 2-3.4h9.8a1.8 1.8 0 001.5-1.8c0-.3 0-.5-.2-.8l-.2-.4-3.3-5a3.7 3.7 0 010-4l3-4.9 9.7 14.9.2.2c.6 1 1 2.1 1 3.3zM199.3 9.5a3.8 3.8 0 010 4.1L183.7 39H175l21.2-34.1 3.1 4.7zM3.4 43H0V20.8h3.4v1.6c1.3-1.3 2.8-2 4.5-2 2 0 3.6.7 4.9 2.2a8 8 0 012 5.5 7.7 7.7 0 01-4.2 7 6.3 6.3 0 01-7.2-1.4V43zm8-15a5 5 0 00-1.2-3.4 3.7 3.7 0 00-2.9-1.3c-1.2 0-2.2.4-3 1.3-.7.8-1.1 2-1.1 3.4a5 5 0 001.1 3.3c.8.9 1.8 1.3 3 1.3s2.1-.4 2.9-1.3c.7-.9 1.1-2 1.1-3.3h.1zm6.2-.2c0-2 .8-3.8 2.3-5.3a7.3 7.3 0 015.4-2.2 7.6 7.6 0 015.5 13.1 7.7 7.7 0 01-5.5 2.2 7.5 7.5 0 01-7.7-7.8zm3.4.1c0 1.4.4 2.6 1.2 3.4a4 4 0 003.1 1.3 4 4 0 003.2-1.2c.8-.9 1.1-2 1.1-3.4s-.3-2.6-1.1-3.4a4 4 0 00-3.2-1.3c-1.2 0-2.3.4-3 1.3-.7.9-1.3 2-1.3 3.3zm16.8-7.2l3.8 8.3 4.1-9.6 4.1 9.6 3.8-8.3h3.7l-7.5 15.6-4-9.4-4.1 9.4-7.6-15.6h3.7zm34.5 8H62.1a4 4 0 001.1 2.9c.7.7 1.6 1 2.7 1 .8 0 1.5-.2 2-.6.6-.4 1.2-1.1 1.9-2.2l2.8 1.6-1.4 2c-.5.4-1 .9-1.6 1.2a5 5 0 01-1.8.8l-2 .2c-2.2 0-4-.7-5.3-2a7.8 7.8 0 01-2-5.6c0-2 .6-4 2-5.6 1.2-1.4 3-2.1 5-2.1 2.2 0 3.9.7 5.1 2a8 8 0 011.9 5.6v.8h-.2zM68.9 26c-.5-1.8-1.6-2.7-3.4-2.7-.7 0-1.4.3-2 .7l-.8.9-.6 1.1h6.8zm7.2-5.3h3.3V22c.6-.7 1.1-1 1.6-1.3a3 3 0 011.7-.4c.9 0 1.8.3 2.8.9l-1.5 3a4 4 0 00-2-.7c-1.7 0-2.6 1.4-2.6 4.2v7.5H76V20.7h.1zm24.3 8H90c.1 1.2.5 2.2 1.2 2.9.7.7 1.5 1 2.6 1 .8 0 1.5-.2 2-.6.6-.4 1.2-1.1 1.9-2.2l2.8 1.6-1.4 2-1.5 1.2c-.6.4-1.2.6-1.8.8l-2.1.2c-2.2 0-4-.7-5.2-2a7.8 7.8 0 01-2-5.6c0-2 .6-4 2-5.6a6.3 6.3 0 015-2.1c2.1 0 3.8.7 5 2a8 8 0 011.9 5.6v.8zM97 26c-.5-1.8-1.6-2.7-3.4-2.7-.8 0-1.5.2-2.1.7l-.8.9-.5 1.1H97zm17.7-16h3.4v25.2h-3.4v-1.5a6.2 6.2 0 01-9.4-.3 8 8 0 01-2-5.5 7.7 7.7 0 014.1-7 6.2 6.2 0 017.3 1.5V10zm-8 17.9a5 5 0 001.2 3.4c.8.9 1.7 1.3 2.9 1.3s2.2-.4 3-1.3c.8-.8 1.1-2 1.1-3.3a5 5 0 00-1.1-3.4 3.8 3.8 0 00-3-1.3c-1.1 0-2 .5-2.9 1.3-.7 1-1.1 2-1.1 3.3h-.1zM135.1 10v12.4a6 6 0 014.5-2.1c2 0 3.6.7 5 2.2a8 8 0 011.9 5.4c0 2-.7 4-2 5.5a6.3 6.3 0 01-5 2.2c-1.6 0-3.1-.6-4.4-2v1.6h-3.4V10h3.4zm8 18a5 5 0 00-1.2-3.3 3.6 3.6 0 00-2.9-1.4c-1.2 0-2.2.4-3 1.3-.7.9-1.1 2-1.1 3.3a5 5 0 001.1 3.4c.8.9 1.8 1.3 3 1.3 1.1 0 2.1-.4 2.9-1.3.7-.9 1.1-2 1.1-3.3h.1zm11 4.5l-6.6-11.8h3.9l4.4 8.3 4.1-8.3h3.8l-11.5 22.4h-3.8l5.6-10.6h.1z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+</footer>

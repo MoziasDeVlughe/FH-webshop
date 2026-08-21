@@ -1,0 +1,120 @@
+.rating-container {
+
+    .rating {
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+
+        &-disabled .rating {
+            cursor: not-allowed;
+        }
+
+        &-rtl {
+            float: right;
+
+            .filled-stars {
+                right: 0;
+                left: auto;
+                @include transform(matrix(-1, 0, 0, 1, 0, 0) translate3d(0, 0, 0));
+            }
+
+            &.is-star .filled-stars {
+                right: .06em;
+            }
+
+            &.is-heart .empty-stars {
+                margin-right: .07em;
+            }
+
+            .caption {
+                margin-right: 5px;
+                margin-left: 0;
+            }
+        }
+
+        &-animate .filled-stars {
+            @include transition(width .25s ease);
+        }
+
+        &-xl {
+            font-size: 4.89em;
+        }
+
+        &-lg {
+            font-size: 3.91em;
+        }
+
+        &-md {
+            font-size: 3.13em;
+        }
+
+        &-sm {
+            font-size: 2.5em;
+        }
+
+        &-xs {
+            font-size: 2em;
+        }
+    }
+
+    .caption {
+        display: inline-block;
+        margin-top: -.6em;
+        margin-right: 0;
+        margin-left: 5px;
+        font-size: 60%;
+        color: #999;
+        vertical-align: middle;
+    }
+
+    .star {
+        display: inline-block;
+        margin: 0 3px;
+        text-align: center;
+    }
+
+    .empty-stars {
+        color: #aaa;
+    }
+
+    .filled-stars {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: auto;
+        overflow: hidden;
+        color: $brand-warning;
+        white-space: nowrap;
+    }
+
+    .clear-rating {
+        display: inline-block;
+        font-size: 60%;
+        color: #aaa;
+        vertical-align: middle;
+        cursor: not-allowed;
+
+        &-active {
+            cursor: pointer !important;
+
+            &:hover {
+                color: #843534;
+            }
+        }
+    }
+
+    &.clear-rating {
+        padding-right: 5px;
+    }
+
+}
+
+@media print {
+    
+    .rating-container .clear-rating {
+        display: none;
+    }
+}

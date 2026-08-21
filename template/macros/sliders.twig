@@ -1,0 +1,37 @@
+{# slider macros #}
+
+{# use these macros by importing macros/sliders.twig as af_sliders in your document #}
+
+{# Config expects: slider #}
+{% macro default(config) %}
+	{% include "macros/sliders/default.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro full_width(config) %}
+	{% include "macros/sliders/fullWidth.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: products array #}
+{% macro products(config) %}
+	{% include "macros/sliders/products.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: products array #}
+{% macro homeproducts(config) %}
+	{% include "macros/sliders/homeproducts.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: products array #}
+{% macro collection(config) %}
+	{% include "macros/sliders/collection.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro brands(config) %}
+	{% include "macros/sliders/brands.twig" with config only %}
+{% endmacro %}

@@ -1,0 +1,878 @@
+{% set tabIndex = 1 %}
+    
+{% set sameBillingAddress = true %}
+
+{% for key, value in account.customer.shipping.primary if key != 'id' and sameBillingAddress and account.customer.billing.primary[key] != value %}
+    {% set sameBillingAddress = false %}
+{% endfor %}
+
+
+{% set billingAddresses = account.customer.billing.secondary|default([]) %}
+{% if account.customer.billing.primary %}
+    {% set billingAddresses = billingAddresses|merge([ account.customer.billing.primary|merge({ is_primary: true }) ]) %}
+{% endif %}
+
+{% set shippingAddresses = account.customer.shipping.secondary|default([]) %}
+{% if account.customer.shipping.primary %}
+    {% set shippingAddresses = shippingAddresses|merge([ account.customer.shipping.primary|merge({ is_primary: true }) ]) %}
+{% endif %}
+
+{% set organisationBillingAddresses = account.customer.organisation.billing.secondary|default([]) %}
+{% if account.customer.organisation.billing.primary %}
+    {% set organisationBillingAddresses = organisationBillingAddresses|merge([ account.customer.organisation.billing.primary|merge({ is_primary: true }) ]) %}
+{% endif %}
+
+{% set organisationShippingAddresses = account.customer.organisation.shipping.secondary|default([]) %}
+{% if account.customer.organisation.shipping.primary %}
+    {% set organisationShippingAddresses = organisationShippingAddresses|merge([ account.customer.organisation.shipping.primary|merge({ is_primary: true }) ]) %}
+{% endif %}
+
+<div class="container">
+    <h1>{{'Mijn profiel'|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig' with {'active': 'address'}%}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <div class="account-addresses-container pb-50">
+                <div class="d-flex aling-items-center justify-content-between mt-40 mb-15">
+                    <h3 class="my-0">
+                        {{'Factuuradressen'|t}}
+                    </h3>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-billing-address">
+                        {{'Toevoegen'|t}}
+                    </button>
+                </div>
+                {% if billingAddresses|length == 0 %}
+                    <p class="text-muted">
+                        {{'Geen adressen gevonden.'|t}}
+                    </p>
+                {% endif %}
+                {% for address in billingAddresses %}
+                    <div
+                        class="d-flex flex-column panel panel-default panel-body mb-10"
+                        data-address-id="' + primary.id + '"
+                        data-action="select-address"
+                        data-address-type="' + type + '"
+                    >
+                        <span>{{address.organisation}}</span>
+                        <span>{{address.givenName}} {{address.additionalName}} {{address.familyName}}</span>
+                        <span>{{address.thoroughfare}} {{address.premiseNumber}} {{address.premiseNumberSuffix}}</span>
+                        <span>{{address.postalCode}} {{address.locality}}, {{address.countryCode}}</span>
+                        {% if address.administrativeArea is not empty %}
+                                <span>{{address.administrativeArea}}</span>
+                            {% endif %}
+                        {% if address.is_primary %}
+                            <span class="text-success">{{'Standaard adres'|t}}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="d-flex aling-items-center justify-content-between mt-40 mb-15">
+                    <h3 class="my-0">
+                        {{'Bezorgadressen'|t}}
+                    </h3>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-shipping-address">
+                        {{'Toevoegen'|t}}
+                    </button>
+                </div>
+                {% if shippingAddresses|length == 0 %}
+                    <p class="text-muted">
+                        {{'Geen adressen gevonden.'|t}}
+                    </p>
+                {% endif %}
+                {% for address in shippingAddresses %}
+                    <div
+                        class="d-flex flex-column panel panel-default panel-body mb-10"
+                        data-address-id="' + primary.id + '"
+                        data-action="select-address"
+                        data-address-type="' + type + '"
+                    >
+                        <span>{{address.organisation}}</span>
+                        <span>{{address.givenName}} {{address.additionalName}} {{address.familyName}}</span>
+                        <span>{{address.thoroughfare}} {{address.premiseNumber}} {{address.premiseNumberSuffix}}</span>
+                        <span>{{address.postalCode}} {{address.locality}}, {{address.countryCode}}</span>
+                        {% if address.administrativeArea is not empty %}
+                                <span>{{address.administrativeArea}}</span>
+                            {% endif %}
+                        {% if address.is_primary %}
+                            <span class="text-success">{{'Standaard adres'|t}}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                {% if account.customer.organisation.id %}
+                    <h2>
+                        {{'Organisatie adressen'|t}}
+                    </h2>
+                    <div class="d-flex aling-items-center justify-content-between mt-40 mb-15">
+                        <h3 class="my-0">
+                            {{'Factuur adressen'|t}}
+                        </h3>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-organisation-billing-address">
+                            {{'Toevoegen'|t}}
+                        </button>
+                    </div>
+                    {% if organisationBillingAddresses|length == 0 %}
+                        <p class="text-muted">
+                            {{'Geen adressen gevonden.'|t}}
+                        </p>
+                    {% endif %}
+                    {% for address in organisationBillingAddresses %}
+                        <div
+                            class="d-flex flex-column panel panel-default panel-body mb-10"
+                            data-address-id="' + primary.id + '"
+                            data-action="select-address"
+                            data-address-type="' + type + '"
+                        >
+                            <span>{{address.organisation}}</span>
+                            <span>{{address.givenName}} {{address.additionalName}} {{address.familyName}}</span>
+                            <span>{{address.thoroughfare}} {{address.premiseNumber}} {{address.premiseNumberSuffix}}</span>
+                            <span>{{address.postalCode}} {{address.locality}}, {{address.countryCode}}</span>
+                            {% if address.administrativeArea is not empty %}
+                                <span>{{address.administrativeArea}}</span>
+                            {% endif %}
+                            {% if address.is_primary %}
+                                <span class="text-success">{{'Standaard adres'|t}}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="d-flex aling-items-center justify-content-between mt-40 mb-15">
+                        <h3 class="my-0">
+                            {{'Verzend adressen'|t}}
+                        </h3>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-organisation-shipping-address">
+                            {{'Toevoegen'|t}}
+                        </button>
+                    </div>
+                    {% if organisationShippingAddresses|length == 0 %}
+                        <p class="text-muted">
+                            {{'Geen adressen gevonden.'|t}}
+                        </p>
+                    {% endif %}
+                    {% for address in organisationShippingAddresses %}
+                        <div
+                            class="d-flex flex-column panel panel-default panel-body mb-10"
+                            data-address-id="' + primary.id + '"
+                            data-action="select-address"
+                            data-address-type="' + type + '"
+                        >
+                            <span>{{address.organisation}}</span>
+                            <span>{{address.givenName}} {{address.additionalName}} {{address.familyName}}</span>
+                            <span>{{address.thoroughfare}} {{address.premiseNumber}} {{address.premiseNumberSuffix}}</span>
+                            <span>{{address.postalCode}} {{address.locality}}, {{address.countryCode}}</span>
+                            {% if address.administrativeArea is not empty %}
+                                <span>{{address.administrativeArea}}</span>
+                            {% endif %}
+                            {% if address.is_primary %}
+                                <span class="text-success">{{'Standaard adres'|t}}</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="create-billing-address" tabindex="-1" role="dialog" aria-labelledby="billing-addresses-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<form action="{{home_url}}account/setAddress" class="form-validate" id="account-billing-address-form" data-address-type="billing">
+				<div class="modal-header">
+					<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Nieuw factuuradres'|t}}</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="new-billing-given-name">
+							{{'Voornaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="given_name"
+							   id="new-billing-given-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-additional-name">
+							{{'Tussenvoegsel'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="additional_name"
+							   id="new-billing-additional-name"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-family-name">
+							{{'Achternaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="family_name"
+							   id="new-billing-family-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-organisation">
+							{{'Bedrijfsnaam'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="organisation"
+							   id="new-billing-organisation"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-country-code">
+							{{'Land'|t}}<span class="text-danger">*</span>
+						</label>
+						<select 
+								class="form-control address-check-field"
+								name="country_code"
+								id="new-billing-country-code"
+								data-type="new-billing"
+								required
+								>
+							<option value="NL">{{'Nederland'|t}}</option>
+							<option value="BE">{{'België'|t}}</option>
+							<option value="LU">{{'Luxemburg'|t}}</option>
+						</select>
+					</div>
+					
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-5">
+							<div class="form-group">
+								<label for="new-billing-postal-code">
+									{{'Postcode'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="postal_code"
+									   id="new-billing-postal-code"
+									   data-type="new-billing"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-7 col-sm-4">
+							<div class="form-group">
+								<label for="new-billing-premise-number">
+									{{'Huisnummer'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number"
+									   id="new-billing-premise-number"
+									   data-type="new-billing"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-5 col-sm-4 col-md-3">
+							<div class="form-group">
+								<label for="new-billing-premise-number-suffix">
+									{{'Toevoeging'|t}}
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number_suffix"
+									   id="new-billing-premise-number-suffix"
+									   data-type="new-billing"
+									   />
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="new-billing-thoroughfare">
+							{{'Straat'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="thoroughfare"
+							   id="new-billing-thoroughfare"
+							   data-type="new-billing"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-locality">
+							{{'Plaats'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="locality"
+							   id="new-billing-locality"
+							   data-type="new-billing"
+							   required
+						       />
+					</div>
+					<div class="form-group">
+						<label for="new-billing-administrative-area">
+							{{'Regio'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="administrative-area"
+							   id="new-billing-administrative-area"
+							   />
+					</div>
+					<div class="address-validation-message" data-type="new-billing" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+					<input type="hidden" name="save_address_as" value="contact" />
+					<div class="form-group d-flex">
+						<div class="checkbox af">
+							<label>
+								<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-billing-save-address-as-primary" data-type="new-billing">
+								<div class="checkbox-button"></div>
+								{{'Opslaan als primair adres'|t}}
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" data-action="create-address" data-type="billing">
+						{{'Toevoegen'|t}}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="create-shipping-address" tabindex="-1" role="dialog" aria-labelledby="shipping-addresses-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<form action="{{home_url}}account/setAddress" class="form-validate" id="account-shipping-address-form"  data-address-type="shipping">
+				<div class="modal-header">
+					<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Nieuw bezorgadres'|t}}</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="new-shipping-given-name">
+							{{'Voornaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="given_name"
+							   id="new-shipping-given-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-additional-name">
+							{{'Tussenvoegsel'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="additional_name"
+							   id="new-shipping-additional-name"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-family-name">
+							{{'Achternaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="family_name"
+							   id="new-shipping-family-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-organisation">
+							{{'Bedrijfsnaam'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="organisation"
+							   id="new-shipping-organisation"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-country-code">
+							{{'Land'|t}}<span class="text-danger">*</span>
+						</label>
+						<select 
+								class="form-control address-check-field"
+								name="country_code"
+								id="new-shipping-country-code"
+								data-type="new-shipping"
+								required
+								>
+							<option value="NL">{{'Nederland'|t}}</option>
+							<option value="BE">{{'België'|t}}</option>
+							<option value="LU">{{'Luxemburg'|t}}</option>
+						</select>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-5">
+							<div class="form-group">
+								<label for="new-shipping-postal-code">
+									{{'Postcode'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="postal_code"
+									   id="new-shipping-postal-code"
+									   data-type="new-shipping"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-7 col-sm-4">
+							<div class="form-group">
+								<label for="new-shipping-premise-number">
+									{{'Huisnummer'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number"
+									   id="new-shipping-premise-number"
+									   data-type="new-shipping"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-5 col-sm-4 col-md-3">
+							<div class="form-group">
+								<label for="new-shipping-premise-number-suffix">
+									{{'Toevoeging'|t}}
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number_suffix"
+									   id="new-shipping-premise-number-suffix"
+									   data-type="new-shipping"
+									   />
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-thoroughfare">
+							{{'Straat'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="thoroughfare"
+							   id="new-shipping-thoroughfare"
+							   data-type="new-shipping"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-locality">
+							{{'Plaats'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="locality"
+							   id="new-shipping-locality"
+							   data-type="new-shipping"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-shipping-administrative-area">
+							{{'Regio'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="administrative-area"
+							   id="new-shipping-administrative-area"
+							   />
+					</div>
+					<div class="address-validation-message" data-type="new-shipping" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+					<input type="hidden" name="save_address_as" value="contact" />
+					<div class="form-group d-flex">
+						<div class="checkbox af">
+							<label>
+								<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-shipping-save-address-as-primary" data-type="new-shipping">
+								<div class="checkbox-button"></div>
+								{{'Opslaan als primair adres'|t}}
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">
+						{{'Toevoegen'|t}}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="create-organisation-shipping-address" tabindex="-1" role="dialog" aria-labelledby="organisation-shipping-addresses-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<form action="{{home_url}}account/setAddress" class="form-validate" id="organisation-shipping-address-form"  data-address-type="shipping">
+				<div class="modal-header">
+					<div class="h4 text-center my-0 fw-bold" id="organisation-addresses-label">{{'Nieuw organisatie verzend adres'|t}}</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="new-organisation-shipping-given-name">
+							{{'Voornaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="given_name"
+							   id="new-organisation-shipping-given-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-additional-name">
+							{{'Tussenvoegsel'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="additional_name"
+							   id="new-organisation-shipping-additional-name"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-family-name">
+							{{'Achternaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="family_name"
+							   id="new-organisation-shipping-family-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-organisation">
+							{{'Bedrijfsnaam'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="organisation"
+							   id="new-organisation-shipping-organisation"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-country-code">
+							{{'Land'|t}}<span class="text-danger">*</span>
+						</label>
+						<select 
+								class="form-control address-check-field"
+								name="country_code"
+								id="new-organisation-shipping-country-code"
+								data-type="new-organisation-shipping"
+								required
+								>
+							<option value="NL">{{'Nederland'|t}}</option>
+							<option value="BE">{{'België'|t}}</option>
+							<option value="LU">{{'Luxemburg'|t}}</option>
+						</select>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-5">
+							<div class="form-group">
+								<label for="new-organisation-shipping-postal-code">
+									{{'Postcode'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="postal_code"
+									   id="new-organisation-shipping-postal-code"
+									   data-type="new-organisation-shipping"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-7 col-sm-4">
+							<div class="form-group">
+								<label for="new-organisation-shipping-premise-number">
+									{{'Huisnummer'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number"
+									   id="new-organisation-shipping-premise-number"
+									   data-type="new-organisation-shipping"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-5 col-sm-4 col-md-3">
+							<div class="form-group">
+								<label for="new-organisation-shipping-premise-number-suffix">
+									{{'Toevoeging'|t}}
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number_suffix"
+									   id="new-organisation-shipping-premise-number-suffix"
+									   data-type="new-organisation-shipping"
+									   />
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-thoroughfare">
+							{{'Straat'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="thoroughfare"
+							   id="new-organisation-shipping-thoroughfare"
+							   data-type="new-organisation-shipping"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-locality">
+							{{'Plaats'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="locality"
+							   id="new-organisation-shipping-locality"
+							   data-type="new-organisation-shipping"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-shipping-administrative-area">
+							{{'Regio'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="administrative-area"
+							   id="new-organisation-shipping-administrative-area"
+							   />
+					</div>
+					<div class="address-validation-message" data-type="new-organisation-shipping" data-success-message="adres gevalideerd" data-error-message="{{'Dit adres is niet bij ons bekend, controleer de velden.'|t}}" data-loading-message="{{'Adres controleren...'|t}}"></div>
+					<input type="hidden" name="save_address_as" value="organisation" />
+					<div class="form-group d-flex">
+						<div class="checkbox af">
+							<label>
+								<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-organisation-shipping-save-address-as-primary" data-type="new-organisation-shipping">
+								<div class="checkbox-button"></div>
+								{{'Opslaan als primair adres'|t}}
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">
+						{{'Toevoegen'|t}}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="create-organisation-billing-address" tabindex="-1" role="dialog" aria-labelledby="organisation-billing-addresses-label">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<form action="{{home_url}}account/setAddress" class="form-validate" id="organisation-billing-address-form"  data-address-type="billing">
+				<div class="modal-header">
+					<div class="h4 text-center my-0 fw-bold" id="organisation-billing-addresses-label">{{'Nieuw organisatie factuur adres'|t}}</div>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="new-organisation-billing-given-name">
+							{{'Voornaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="given_name"
+							   id="new-organisation-billing-given-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-additional-name">
+							{{'Tussenvoegsel'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="additional_name"
+							   id="new-organisation-billing-additional-name"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-family-name">
+							{{'Achternaam'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="family_name"
+							   id="new-organisation-billing-family-name"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-organisation">
+							{{'Bedrijfsnaam'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="organisation"
+							   id="new-organisation-billing-organisation"
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-country-code">
+							{{'Land'|t}}<span class="text-danger">*</span>
+						</label>
+						<select 
+								class="form-control address-check-field"
+								name="country_code"
+								id="new-organisation-billing-country-code"
+								data-type="new-organisation-billing"
+								required
+								>
+							<option value="NL">{{'Nederland'|t}}</option>
+							<option value="BE">{{'België'|t}}</option>
+							<option value="LU">{{'Luxemburg'|t}}</option>
+						</select>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-5">
+							<div class="form-group">
+								<label for="new-organisation-billing-postal-code">
+									{{'Postcode'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="postal_code"
+									   id="new-organisation-billing-postal-code"
+									   data-type="new-organisation-billing"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-7 col-sm-4">
+							<div class="form-group">
+								<label for="new-organisation-billing-premise-number">
+									{{'Huisnummer'|t}}<span class="text-danger">*</span>
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number"
+									   id="new-organisation-billing-premise-number"
+									   data-type="new-organisation-billing"
+									   required
+									   />
+							</div>
+						</div>
+						<div class="col-xs-5 col-sm-4 col-md-3">
+							<div class="form-group">
+								<label for="new-organisation-billing-premise-number-suffix">
+									{{'Toevoeging'|t}}
+								</label>
+								<input 
+									   class="form-control address-check-field"
+									   type="text"
+									   name="premise_number_suffix"
+									   id="new-organisation-billing-premise-number-suffix"
+									   data-type="new-organisation-billing"
+									   />
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-thoroughfare">
+							{{'Straat'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="thoroughfare"
+							   id="new-organisation-billing-thoroughfare"
+							   data-type="new-organisation-billing"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-locality">
+							{{'Plaats'|t}}<span class="text-danger">*</span>
+						</label>
+						<input 
+							   class="form-control address-check-field"
+							   type="text"
+							   name="locality"
+							   id="new-organisation-billing-locality"
+							   data-type="new-organisation-billing"
+							   required
+							   />
+					</div>
+					<div class="form-group">
+						<label for="new-organisation-billing-administrative-area">
+							{{'Regio'|t}}
+						</label>
+						<input 
+							   class="form-control"
+							   type="text"
+							   name="administrative-area"
+							   id="new-organisation-billing-administrative-area"
+							   />
+					</div>
+					<div class="address-validation-message" data-type="new-organisation-billing" data-success-message="adres gevalideerd" data-error-message="{{'Dit adres is niet bij ons bekend, controleer de velden.'|t}}" data-loading-message="{{'Adres controleren...'|t}}"></div>
+					<input type="hidden" name="save_address_as" value="organisation" />
+					<div class="form-group d-flex">
+						<div class="checkbox af">
+							<label>
+								<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-organisation-billing-save-address-as-primary" data-type="new-organisation">
+								<div class="checkbox-button"></div>
+								{{'Opslaan als primair adres'|t}}
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">
+						{{'Toevoegen'|t}}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

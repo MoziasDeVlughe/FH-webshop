@@ -1,0 +1,54 @@
+{# product index #}
+{# In this file you determine wich layout should be used for the product page. #}
+{# You can choose exciting layouts or build a new one. #}
+{# to use a layout simply fill in the name of the document between the double qoutes for the code variable. #}
+{# This will search for the file and use that code for the product page, if it doesn't exist it will use the default. #}
+
+{# code options #}
+{#  - default #}
+{#  - layout-1 #}
+{#  - layout-2 #}
+{% set code = "product-1" %}
+
+{% set use_quickview    = true %}
+{% set use_share        = false %}
+
+{{
+    merge_schema({
+        "brand" : {
+            "@context":"http:\/\/schema.org",
+            "@type" : "Thing",
+            "name" :specifications['merk']['options']|first.label,
+        },
+    })
+}}
+
+
+{#{% set localizedSpecifications = [] %}#}
+{#{% for spec_key,spec in specifications if (spec_key[2:1] != '-' or spec_key starts with language) or (spec_key[-3:1] != '-' or spec_key ends with language) %}#}
+{#    {% if (spec_key[2:1] == '-' and spec_key starts with language) %}#}
+{#        {% set localizedSpecifications = localizedSpecifications|merge({(spec_key[3:]) : spec}) %}#}
+{#    {% elseif (spec_key[-3:1] == '-' and spec_key ends with language) %}#}
+{#        {% set localizedSpecifications = localizedSpecifications|merge({(spec_key[:-3]) : spec}) %}#}
+{#    {% else %}#}
+{#        {% set localizedSpecifications = localizedSpecifications|merge({(spec_key) : spec}) %}#}
+{#    {% endif %}#}
+{#{% endfor %}#}
+
+{% if has_app('expected_delivery') and pluginData.expectedDelivery.bestDelivery.id %}
+    {% set days = pluginData.expectedDelivery.bestDelivery.days %}
+    {% set last_call = pluginData.expectedDelivery.bestDelivery.last_call|date("H:i") %}
+    {% set expected_time = pluginData.expectedDelivery.bestDelivery.expected_time|date("d-m") %}
+    {% set delivery_time = pluginData.expectedDelivery.bestDelivery.delivery_time|date("H:i") %}
+    
+    {% set delivery_date_string = 'op [datum]'|t({ "[datum]": pluginData.expectedDelivery.bestDelivery.expected_time|date("d-m") }) %}
+    {% if pluginData.expectedDelivery.bestDelivery.days == 0 %}
+        {% set delivery_date_string = 'vandaag'|t %}
+    {% elseif pluginData.expectedDelivery.bestDelivery.days == 1 %}
+        {% set delivery_date_string = 'morgen'|t %}
+    {% endif %}
+
+    {% set expected_delivery_notification = "Voor [bestel_tijd] besteld, [leverdatum] voor [levertijd] geleverd"|t({ "[bestel_tijd]": last_call, "[leverdatum]": delivery_date_string, "[levertijd]": delivery_time }) %}
+{% endif %}
+
+{% include ['product/'~ code ~ '.twig','product/default.twig'] with {'use_quickview': use_quickview, 'use_share' : use_share } %}

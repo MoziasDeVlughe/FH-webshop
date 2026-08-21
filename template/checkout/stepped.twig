@@ -1,0 +1,105 @@
+{% if post is empty %}
+    {% set postdata = [] %}
+{% else %}
+    {% set postdata = post %}
+{% endif %}
+
+{% if account is not empty %}
+    {% set customerData = account.customer %}
+    {% set billingData = account.billing.address.postal_code  ? account.billing : [] %}
+    {% set shippingData = account.shipping.address.postal_code ? account.shipping : [] %}
+    
+    {% set postdata = replace_recursive({
+        'customer' : customerData,
+        'billing' : billingData,
+        'shipping' : shippingData
+    }, postdata) %}
+{% endif %}
+
+
+{#<!-- Global site tag (gtag.js) - Google Ads: 740632154 -->#}
+{#<script async src="https://www.googletagmanager.com/gtag/js?id=AW-740632154"></script>#}
+{#<script>#}
+{#  window.dataLayer = window.dataLayer || [];#}
+{#  function gtag(){dataLayer.push(arguments);}#}
+{#  gtag('js', new Date());#}
+
+{#  gtag('config', 'AW-740632154');#}
+{#</script>#}
+{#<!-- Event snippet for SSE Aankoop conversion page -->#}
+{#<script>#}
+{#  gtag('event', 'conversion', {#}
+{#      'send_to': 'AW-740632154/-1jHCLOK_7YDENrMlOEC',#}
+{#      'value': 1.0,#}
+{#      'currency': 'EUR',#}
+{#      'transaction_id': '{{"TEST"~ "now"|date("H:i:s")}}'#}
+{#  });#}
+{#</script>#}
+
+
+
+ <script type="text/javascript">
+    
+         var google_conversion_id = "740632154";
+         var google_conversion_language = "en";
+         var google_conversion_format = "3";
+         var google_conversion_order_id = "{{"TEST"~ "now"|date("H:i:s")}}";
+         var google_conversion_color = "ffffff";
+         var google_conversion_label = "-1jHCLOK_7YDENrMlOEC";
+         var google_conversion_value = "1";
+         var google_conversion_currency = "EUR";
+         var google_remarketing_only = false;
+    
+    </script>
+    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+
+            
+
+
+
+<div class="container">
+    <div id="checkout-progress" class="step-1">
+        <div class="checkout-progress-bar">
+            <div class="step step-1 active"><span> 1</span>
+                <div class="fa fa-check"></div>
+                <div class="step-label"> {{'gegevens'|t}}</div>
+            </div>
+            <div class="step step-2"><span> 2</span>
+                <div class="fa fa-check"></div>
+                <div class="step-label"> {{"verzenden"|t}}</div>
+            </div>
+            <div class="step step-3"><span> 3</span>
+                <div class="fa fa-check"></div>
+                <div class="step-label"> {{"betalen"|t}}</div>
+            </div>
+            <div class="step step-4"><span> 4</span>
+                <div class="fa fa-check"></div>
+                <div class="step-label"> {{"afrekenen"|t}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div class="container mb-20">
+    <form 
+        id="checkout-form" 
+        class="form form-validate stepped" 
+        method="POST" 
+        {#data-parsley-validate=""#}
+        data-providers="{{providers|join(',')}}" 
+        data-hour="{{"now"|date("H")}}" 
+        data-af-local="" 
+        data-postal-code-url="https://app.afosto.com/address/_postcode" 
+        data-cart-url="{{cart.url}}" 
+        data-log="{{account.is_logged_in}}" 
+        data-path="{{cart.checkout_url}}" 
+        data-account="{{account.is_logged_in|default(0)}}" 
+        data-klarna-method-id="{{klarnaMethodId}}"
+        data-best-delivery-time="{% if has_app('expected-delivery') and cart.pluginData.expectedDelivery.bestDelivery %}{{cart.pluginData.expectedDelivery.bestDelivery.expected_time}}{% endif %}"
+    >
+        {% include 'checkout/steps/step1.twig' %} 
+        {% include 'checkout/steps/step2.twig' %} 
+        {% include 'checkout/steps/step3.twig' %} 
+        {% include 'checkout/steps/step4.twig' %}
+    </form>
+    </div>

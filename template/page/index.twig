@@ -1,0 +1,27 @@
+{# type: page #}
+{# Styling: scss/_florian-redesign.scss (.fh-page, hergebruikt .fh-collection sidebar) #}
+
+<div class="fh-collection fh-page">
+<div class="container mt-24">
+    <div class="title-row">
+        <h1>{{title}}</h1>
+    </div>
+    <hr />
+    <div class="row">
+        {% if menus.active.items is not empty or filters is not empty %}
+            <div class="col-md-3 col-xs-12 sidebar">
+                {% include 'collection/sidebar.twig' %}
+            </div>
+        {% endif %}
+        <div class="{% if menus.active.items is not empty or filters is not empty %}col-md-9{% endif %} col-xs-12 fh-prose">
+            {{content}}
+        </div>
+    </div>
+    {% if category.products is not empty %}
+        <div id="collection-content">
+            {% include 'collection/filters.twig' with {'pagination' : category.pagination }  %}
+            {% include 'collection/grid.twig' with {'products' : category.products }  %}
+        </div>
+    {% endif %}
+</div>
+</div>{# /.fh-collection.fh-page #}

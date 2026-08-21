@@ -1,0 +1,1463 @@
+{% extends 'config.twig' %}
+
+
+
+{% block configProvider %}
+    <div id="checkout-v4" class="stepped container py-50" data-active-step="1" style="max-width: 800px" data-session-id="{{session_id}}">
+    {#<div id="checkout-v4" class="stepped container py-50" data-active-step="1" style="max-width: 800px" data-session-id="abcdefg">#}
+    	<div id="checkout-progress" class="step-1">
+    		<div class="checkout-progress-bar">
+    			<div class="step step-1 active">
+    				<span>1</span>
+    				<div class="fa fa-check" aria-hidden="true"></div>
+    				<div class="step-label">{{'Gegevens'|t}}</div>
+    			</div>
+    			<div class="step step-2">
+    				<span>2</span>
+    				<div class="fa fa-check" aria-hidden="true"></div>
+    				<div class="step-label">{{'Verzenden'|t}}</div>
+    			</div>
+    			<div class="step step-3">
+    				<span>3</span>
+    				<div class="fa fa-check" aria-hidden="true"></div>
+    				<div class="step-label">{{'Betalen'|t}}</div>
+    			</div>
+    			<div class="step step-4">
+    				<span>4</span>
+    				<div class="fa fa-check" aria-hidden="true"></div>
+    				<div class="step-label">{{'Afrekenen'|t}}</div>
+    			</div>
+    		</div>
+    	</div>
+    	
+    	<div id="step-1" class="checkout-step">
+    		<div class="panel panel-default">
+    			<div class="panel-body">
+    				<div class="user-container">
+    					<form id="account-form" class="form-validate">
+    						<div class="form-group"> 
+    							<label for="account-email">
+    								{{'E-mailadres'|t}}
+    							</label>
+    							<input 
+    								class="form-control account-create-field"
+    								type="email"
+    								name="account_email"
+    								autocomplete="username"
+    								id="account-email"
+    								required
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="hidden" id="login-extra-fields">
+    							<p>
+    								{{'Welkom terug! Login om je opgeslagen gegevens te gebruiken.'|t}}
+    							</p>
+    						 	<div class="form-group">
+    								<label for="account-password">
+    									{{'Wachtwoord'|t}}
+    								</label>
+    								<input
+    									class="form-control"
+    									type="password"
+    									name="account_password"
+    									autocomplete="current-password"
+    									id="account-password"
+    									required
+    								/>
+    							</div>
+    							<div class="form-group">
+    								<button class="btn btn-primary" type="submit" data-action="login">
+    									{{'login'|t}}
+    								</button>
+    							</div>
+    							<hr>
+    						</div>
+    					</form>
+    					<div class="contact-extra-fields contact-extra-fields-container" data-linked-form="#account-form">
+    						<div class="form-group"> 
+    							<label for="account-given-name">
+    								{{'Voornaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control account-create-field"
+    								type="text"
+    								name="account_given_name"
+    								autocomplete="given_name"
+    								id="account-given-name"
+    								required
+    								data-parsley-group="step-1"
+    								data-copy-to="#billing-given-name"
+    							/>
+    						</div>
+    						<div class="form-group"> 
+    							<label for="account-additional-name">
+    								{{'Tussenvoegsel'|t}}
+    							</label>
+    							<input 
+    								class="form-control account-create-field"
+    								type="text"
+    								name="account_additional_name"
+    								autocomplete="additional_name"
+    								id="account-additional-name"
+    								data-parsley-group="step-1"
+    								data-copy-to="#billing-additional-name"
+    							/>
+    						</div>
+    						<div class="form-group"> 
+    							<label for="account-family-name">
+    								{{'Achternaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control account-create-field"
+    								type="text"
+    								name="account_family_name"
+    								autocomplete="family_name"
+    								id="account-family-name"
+    								required
+    								data-parsley-group="step-1"
+    								data-copy-to="#billing-family-name"
+    							/>
+    						</div>
+    					</div>
+    					<div id="created-display" class="panel panel-default panel-body hidden">
+    						<div class="d-flex justify-content-between align-items-center">
+    							<div>
+    								<span id="created-user-fullname"></span><br>
+    								<span id="created-user-email"></span>
+    							</div>
+    							<button class="btn btn-primary-inverse" type="button" data-toggle="modal" data-target="#edit-contact">
+    								{{'Bewerken'|t}}
+    							</button>
+    						</div>
+    					</div>
+    					<div id="user-display" class="panel panel-default panel-body hidden">
+    						<div class="d-flex justify-content-between align-items-baseline">
+    							<div>
+    								{{'Ingelogd als:'|t}} <span id="user-email"></span>
+    							</div>
+    							{#<button class="btn btn-primary" type="button" data-action="logout">#}
+    							{#	uitloggen#}
+    							{#</button>#}
+    						</div>
+    					</div>
+    				</div>
+    				{% if isB2B %}
+        				<hr>
+        			    <h2 id="organisation-heading-static">
+        			        {{'Bedrijf'|t}}
+        			    </h2>
+        				<div class="organisation-container">
+        					<form class="organisation-form" id="organisation-fields">
+        						<div class="form-group">
+        							<label for="organisation-name">{{'Bedrijfsnaam'|t}}<span class="text-danger">*</span></label>
+        							<input class="form-control" type="text" name="name" id="organisation-name" data-copy-to="#billing-organisation" data-parsley-group="step-1">
+        						</div>
+        						<div class="form-group">
+        							<label for="organisation-vat-number">{{'BTW nummer'|t}}<span class="text-danger">*</span></label>
+        							<input class="form-control" type="text" name="number" id="organisation-vat-number" data-parsley-group="step-1" data-invalid-number-message="{{'Vul een geldig btw nummer in'|t}}">
+        						</div>
+        						<div class="form-group">
+        							<label for="organisation-coc-number">{{'KVK-nummer'|t}}</label>
+        							<input
+        							    class="form-control"
+        							    type="text"
+        							    name="coc_number"
+        							    id="organisation-coc-number"
+        							    data-parsley-group="step-1"
+        							    data-parsley-required-if="#organisation-name"
+        							    data-parsley-validate-if-empty="true"
+        							>
+        						</div>
+        						<div class="form-group">
+        							<label for="organisation-country-code">{{'Land'|t}}</label>
+        							<select class="form-control" name="country_code" id="organisation-country-code" data-parsley-group="step-1">
+        								<option value="NL">{{'Nederland'|t}}</option>
+        								<option value="BE">{{'België'|t}}</option>
+        								<option value="LU">{{'Luxemburg'|t}}</option>
+        							</select>
+        						</div>
+        					    <div class="clearfix"></div>
+        					</form>
+        					
+        					<div class="active-organisation hidden"></div>
+        					<div class="organisation-contact hidden account-managers-input" data-parsley-group="step-1">
+        					    <div class="form-group">
+        					        <label for="organisation-contact">
+        					            {{'Contact persoon'|t}}
+        					        </label>
+        					        <input class="form-control" type="email" name="organisation-contact" id="organisation-contact">
+        					    </div>
+        					</div>
+        					<button class="btn btn-primary-inverse show-organisations hidden" type="button" data-toggle="modal" data-target="#organisation-select">
+        						{{'Ander bedrijf'|t}}
+        					</button>
+        				</div>
+        			{% endif %}
+    				<hr>
+    				{#<h2>{{'Telefoonnummer'|t}}</h2>#}
+    				<div class="phonenumber-container">
+    					<div class="row" id="contact-phonenumber-form">
+    						<div class="col-xs-5 col-sm-4 col-md-3">
+    							<div class="form-group">
+    								<label for="contact-phonenumber">{{'Landnummer'|t}}</label>
+    								<select class="form-control" name="contact-phonenumber-country" id="contact-phonenumber-country" data-parsley-group="step-1">
+    									<option {% if language == 'nl' %}selected {% endif %}value="NL">{{'+31 (NL)'|t}}</option>
+    									<option {% if language == 'be' %}selected {% endif %}value="BE">{{'+32 (BE)'|t}}</option>
+    									<option value="LU">{{'+352 (LU)'|t}}</option>
+    								</select>
+    							</div>
+    						</div>
+    						<div class="col-xs-7 col-sm-8 col-md-9">
+    							<div class="form-group">
+    								<label for="contact-phonenumber">{{'Telefoonnummer'|t}}</label>
+    								<input class="form-control" type="tel" name="contact-phonenumber" id="contact-phonenumber" data-parsley-group="step-1" data-parsley-validtel='{ "countryCodeInput": "#contact-phonenumber-country", "numberInput": "#contact-phonenumber" }'>
+    							</div>
+    						</div>
+    					</div>
+    					<div class="active-phonenumber hidden"></div>
+    					<button class="btn btn-primary-inverse show-phonenumber-form hidden" data-toggle="modal" data-target="#change-phonenumber">
+    						{{'Ander telefoonnummer'|t}}
+    					</button>
+    				</div>
+    				{% if not isB2B %}
+        				<hr>
+        				<div id="organisation-heading-button">
+        				    <div class="">
+        				        <div class="checkbox af">
+        				            <label for="toggle-organisation-fields">
+        				                <input type="checkbox" id="toggle-organisation-fields" class="toggle-on-check" data-target="#organisation-info" data-clear-form-on-uncheck="#organisation-fields">
+        				                <div class="checkbox-button"></div>
+        				                {{'Zakelijke bestelling'|t}}
+        				            </label>
+        				        </div>
+        				    </div>
+        			    </div>
+        			    <h2 class="hidden" id="organisation-heading-static">
+        			        {{'Bedrijf'|t}}
+        			    </h2>
+        				<div class="organisation-container">
+        					<form class="organisation-form" id="organisation-fields">
+        			            <div class="collapse" id="organisation-info">
+            						<div class="form-group pt-15">
+            							<label for="organisation-name">{{'Bedrijfsnaam'|t}}<span class="text-danger">*</span></label>
+            							<input class="form-control" type="text" name="name" id="organisation-name" data-copy-to="#billing-organisation" data-parsley-group="step-1">
+            						</div>
+            						<div class="form-group">
+            							<label for="organisation-country-code">{{'Land'|t}}</label>
+            							<select class="form-control" name="country_code" id="organisation-country-code" data-parsley-group="step-1">
+            								<option {% if language == 'nl' %}selected {% endif %}value="NL">{{'Nederland'|t}}</option>
+            								<option {% if language == 'be' %}selected {% endif %}value="BE">{{'België'|t}}</option>
+            								<option value="LU">{{'Luxemburg'|t}}</option>
+            							</select>
+            						</div>
+            						<div class="form-group">
+            							<label for="organisation-vat-number">{{'BTW nummer'|t}}<span class="text-danger">*</span></label>
+            							<input
+            							    class="form-control"
+            							    type="text"
+            							    name="number"
+            							    id="organisation-vat-number"
+            							    data-parsley-group="step-1"
+            							    data-invalid-number-message="{{'Vul een geldig btw nummer in'|t}}"
+            							    data-parsley-required-if="#organisation-name"
+            							    data-parsley-validate-if-empty="true"
+            							>
+            						</div>
+            						<div class="form-group coc-number-container">
+            							<label for="organisation-coc-number">{{'KVK-nummer'|t}}</label>
+            							<input
+            							    class="form-control"
+            							    type="text"
+            							    name="coc_number"
+            							    id="organisation-coc-number"
+            							    data-parsley-group="step-1"
+            							>
+            						</div>
+            					    <div class="clearfix"></div>
+        				        </div>
+        					</form>
+        					
+        					<div class="active-organisation hidden"></div>
+        					<div class="organisation-contact hidden account-managers-input" data-parsley-group="step-1">
+        					    <div class="form-group">
+        					        <label for="organisation-contact">
+        					            {{'Contact persoon'|t}}
+        					        </label>
+        					        <input class="form-control" type="email" name="organisation-contact" id="organisation-contact">
+        					    </div>
+        					</div>
+        					<button class="btn btn-primary-inverse show-organisations hidden" type="button" data-toggle="modal" data-target="#organisation-select">
+        						{{'Ander bedrijf'|t}}
+        					</button>
+        				</div>
+    				{% endif %}
+    				<hr>
+    				<h2>{{'Factuuradres'|t}}</h2>
+    				<div class="address-container" data-address-type="billing">
+    					<form class="address-form" id="billing-address-field">
+    						<div class="form-group">
+    							<label for="billing-given-name">
+    								{{'Voornaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="given_name"
+    								id="billing-given-name"
+    								autocomplete="given-name"
+    								required
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-additional-name">
+    								{{'Tussenvoegsel'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="additional_name"
+    								id="billing-additional-name"
+    								autocomplete="additional-name"
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-family-name">
+    								{{'Achternaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="family_name"
+    								id="billing-family-name"
+    								autocomplete="family-name"
+    								required
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-organisation">
+    								{{'Bedrijfsnaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="organisation"
+    								id="billing-organisation"
+    								autocomplete="organization"
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-country-code">
+    								{{'Land'|t}}
+    							</label>
+    							<select 
+    								class="form-control address-check-field"
+    								name="country_code"
+    								id="billing-country-code"
+    						  		data-type="billing"
+    								autocomplete="country-code"
+    								required
+    								data-parsley-group="step-1"
+    							>
+    								<option value="NL">{{'Nederland'|t}}</option>
+    								<option value="BE">{{'België'|t}}</option>
+    								<option value="LU">{{'Luxemburg'|t}}</option>
+    							</select>
+    						</div>
+    						<div class="row">
+    							<div class="col-xs-12 col-sm-4 col-md-5">
+    								<div class="form-group">
+    									<label for="billing-postal-code">
+    										{{'Postcode'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="postal_code"
+    										id="billing-postal-code"
+    										data-type="billing"
+    										autocomplete="postal-code"
+    										required
+    										data-parsley-group="step-1"
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-7 col-sm-4">
+    								<div class="form-group">
+    									<label for="billing-premise-number">
+    										{{'Huisnummer'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number"
+    										id="billing-premise-number"
+    										data-type="billing"
+    										autocomplete="address-line3"
+    										required
+    										data-parsley-group="step-1"
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-5 col-sm-4 col-md-3">
+    								<div class="form-group">
+    									<label for="billing-premise-number-suffix">
+    										{{'Toevoeging'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number_suffix"
+    										id="billing-premise-number-suffix"
+    										data-type="billing"
+    										data-parsley-group="step-1"
+    									/>
+    								</div>
+    							</div>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-thoroughfare">
+    								{{'Straat'|t}}
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="thoroughfare"
+    								id="billing-thoroughfare"
+    								data-type="billing"
+    								required
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="billing-locality">
+    								{{'Plaats'|t}}
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="locality"
+    								id="billing-locality"
+    								data-type="billing"
+    								required
+    								data-parsley-group="step-1"
+    							/>
+    						</div>
+    						{% if isB2B %}
+        						<div class="form-group">
+        							<label for="billing-administrative-area">
+        								{{'Regio'|t}}
+        							</label>
+        							<input 
+        								class="form-control"
+        								type="text"
+        								name="administrative-area"
+        								id="billing-administrative-area"
+        							/>
+        						</div>
+    						{% endif %}
+    						<div class="address-validation-message" data-type="billing" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+    					</form>
+    					<div class="active-address hidden"></div>
+    					<div
+    						class="billing-address-error text-danger mb-10"
+    						data-no-option-selected-message="Selecteer een adres of maak een aan om verder te gaan."
+    					></div>
+    					<button class="btn btn-primary-inverse show-addresses hidden" data-toggle="modal" data-target="#billing-addresses">
+    						{{'Ander adres'|t}}
+    					</button>
+    				</div>
+    			</div>
+    			<div class="panel-footer d-flex justify-content-between flex-row-reverse">
+    				<button class="btn btn-primary" type="button" data-action="go-to-checkout-step" data-step="2">{{'Volgende'|t}}</button>
+    			</div>
+    		</div>
+    	</div>
+    	<div id="step-2" class="checkout-step">
+    		<div class="panel panel-default">
+    			<div class="panel-body">
+    				<div class="shipping-method-info" data-shipping-type="delivery">
+    					<h2>{{'Verzendadres'|t}}</h2>
+    					<div class="address-container" data-address-type="shipping">
+    						<form class="address-form" id="shipping-address-field">
+    							<div class="checkbox af">
+    								<label>
+    									<input type="checkbox" class="form-control" id="shipping-same-as-billing" data-action="collapse" data-target="#shipping-address-collapse">
+    									<div class="checkbox-button"></div>
+    									{{'Mijn verzendadres is anders dan mijn factuuradres'|t}}
+    								</label>
+    							</div>
+    							<div class="collapse" id="shipping-address-collapse">
+    								<div class="form-group">
+    									<label for="shipping-given-name">
+    										{{'Voornaam'|t}}
+    									</label>
+    									<input 
+    										class="form-control"
+    										type="text"
+    										name="given_name"
+    										id="shipping-given-name"
+    										required
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-additional-name">
+    										{{'Tussenvoegsel'|t}}
+    									</label>
+    									<input 
+    										class="form-control"
+    										type="text"
+    										name="additional_name"
+    										id="shipping-additional-name"
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-family-name">
+    										{{'Achternaam'|t}}
+    									</label>
+    									<input 
+    										class="form-control"
+    										type="text"
+    										name="family_name"
+    										id="shipping-family-name"
+    										required
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-organisation">
+    										{{'Bedrijfsnaam'|t}}
+    									</label>
+    									<input 
+    										class="form-control"
+    										type="text"
+    										name="organisation"
+    										id="shipping-organisation"
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-country-code">
+    										{{'Land'|t}}
+    									</label>
+    									<select 
+    										class="form-control address-check-field"
+    										name="country_code"
+    										id="shipping-country-code"
+    										data-type="shipping"
+    										required
+    										data-parsley-group="step-2"
+    									>
+    										<option value="NL">{{'Nederland'|t}}</option>
+    										<option value="BE">{{'België'|t}}</option>
+    										<option value="LU">{{'Luxemburg'|t}}</option>
+    									</select>
+    								</div>
+    								<div class="row">
+    									<div class="col-xs-12 col-sm-4 col-md-5">
+    										<div class="form-group">
+    											<label for="shipping-postal-code">
+    												{{'Postcode'|t}}
+    											</label>
+    											<input 
+    												class="form-control address-check-field"
+    												type="text"
+    												name="postal_code"
+    												id="shipping-postal-code"
+    												data-type="shipping"
+    												required
+    												data-parsley-group="step-2"
+    											/>
+    										</div>
+    									</div>
+    									<div class="col-xs-7 col-sm-4">
+    										<div class="form-group">
+    											<label for="shipping-premise-number">
+    												{{'Huisnummer'|t}}
+    											</label>
+    											<input 
+    												class="form-control address-check-field"
+    												type="text"
+    												name="premise_number"
+    												id="shipping-premise-number"
+    												data-type="shipping"
+    												required
+    												data-parsley-group="step-2"
+    											/>
+    										</div>
+    									</div>
+    									<div class="col-xs-5 col-sm-4 col-md-3">
+    										<div class="form-group">
+    											<label for="shipping-premise-number-suffix">
+    												{{'Toevoeging'|t}}
+    											</label>
+    											<input 
+    												class="form-control address-check-field"
+    												type="text"
+    												name="premise_number_suffix"
+    												id="shipping-premise-number-suffix"
+    												data-type="shipping"
+    												data-parsley-group="step-2"
+    											/>
+    										</div>
+    									</div>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-thoroughfare">
+    										{{'Straat'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="thoroughfare"
+    										id="shipping-thoroughfare"
+    										data-type="shipping"
+    										required
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="form-group">
+    									<label for="shipping-locality">
+    										{{'Plaats'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="locality"
+    										id="shipping-locality"
+    										data-type="shipping"
+    										required
+    										data-parsley-group="step-2"
+    									/>
+    								</div>
+    								<div class="address-validation-message" data-type="shipping" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+    							</div>
+    						</form>
+    						<div class="active-address hidden"></div>
+    						<div
+    							class="shipping-address-error text-danger mb-10"
+    							data-no-option-selected-message="Selecteer een adres of maak een aan om verder te gaan."
+    						></div>
+    						<button class="btn btn-primary-inverse show-addresses hidden" data-toggle="modal" data-target="#shipping-addresses">
+    							{{'Ander adres'|t}}
+    						</button>
+    					</div>
+    				</div>
+    				<h2>{{'Verzendmethode'|t}}</h2>
+    				<div
+    					class="shipping-method-error text-danger mb-10"
+    					data-no-option-selected-message="Selecteer een optie om verder te gaan."
+    				></div>
+    				<div class="checkout-shipping-methods"></div>
+    				<hr/>
+    				<div class="split-shipment-option-container mt-20" data-option-label="{{'Opsplitsen in meerdere verzendingen toestaan'|t}}"></div>
+    				<hr/>
+    				<div class="desired-delivery-container mt-20">
+    					<label for="desired-delivery-date">
+    						{{'Gewenste leverdatum'|t}}
+    					</label>
+    					<input
+    						class="form-control datepicker"
+    						size="16"
+    						type="text"
+    						tabindex="{{ tabindex }}{% set tabindex = tabindex + 1 %}"
+    						data-date-start-date="{{"now"|date_modify("+1 day")|date("d-m-Y")}}"
+    						id="desired-delivery-date"
+    						name="delivery_at"
+    						data-date="{{"now"|date_modify("+1 day")|date("d-m-Y")}}"
+    						data-parsley-pattern="^(0?[1-9]|[12][0-9]|3[01])\-(0?[1-9]|1[012])\-(\d{4})$"
+    						data-date-format="dd-mm-yyyy"
+    						data-date-viewmode="years"
+    						tabindex="3"
+    						placeholder="dd-mm-jjjj"
+    					>
+    				</div>
+    			</div>
+    			<div class="panel-footer d-flex justify-content-between">
+    				<button class="btn btn-primary-inverse" type="button" data-action="go-to-checkout-step" data-step="1" data-disable-validation>{{'Vorige'|t}}</button>
+    				<button class="btn btn-primary" type="button" data-action="go-to-checkout-step" data-step="3">{{'Volgende'|t}}</button>
+    			</div>
+    		</div>
+    	</div>
+    	<div id="step-3" class="checkout-step">
+    		<div class="panel panel-default">
+    			<div class="panel-body">
+    				<h2>{{'Betaalmethode'|t}}</h2>
+    				<div 
+    					 class="payment-method-error text-danger mb-10"
+    					 data-no-option-selected-message="Selecteer een optie om verder te gaan."
+    				></div>
+    				<div class="checkout-payment-methods" data-on-account-label="{{'Op rekening'|t}}">
+    				</div>
+    			</div>
+    			<div class="panel-footer d-flex justify-content-between">
+    				<button class="btn btn-primary-inverse" type="button" data-action="go-to-checkout-step" data-step="2" data-disable-validation>{{'Vorige'|t}}</button>
+    				<button class="btn btn-primary" type="button" data-action="go-to-checkout-step" data-step="4">{{'Volgende'|t}}</button>
+    			</div>
+    		</div>
+    	</div>
+    	<div id="step-4" class="checkout-step">
+    		<div class="panel panel-default">
+    			<div class="panel-body">
+    				<h2>{{'Overzicht van je bestelling'|t}}</h2>
+    				<div class="row mt-20">
+    					<div class="col-xs-6">
+    						<strong>
+    							{{'Factuuradres'|t}}
+    						</strong>
+    						<div id="summary-active-billing-address" class="mt-5"></div>
+    					</div> 
+    					<div class="col-xs-6">
+    						<strong>
+    							{{'Verzendadres'|t}}
+    						</strong>
+    						<div id="summary-active-shipping-address" class="mt-5"></div>
+    					</div> 
+    				</div>
+    				<div class="row">
+    					<div class="col-xs-6">
+    						<strong>
+    							{{'Betaalmethode'|t}}
+    						</strong>
+    						<div class="summary-payment-method"></div>
+    					</div>
+    					<div class="col-xs-6">
+    						<strong>
+    							{{'Verzendmethode'|t}}
+    						</strong>
+    						<div class="summary-shipping-method" data-split-allowed-message="{{'Opsplitsen in meerdere verzendingen toegestaan'|t}}"></div>
+    					</div>
+    				</div>
+    				{% if isB2B %}
+        				<div class="mt-15">
+        					<div class="form-group">
+        						<label for="order-reference">
+        							{{'Referentie'|t}}
+        						</label>
+        						<input class="form-control" type="text" name="order-reference" id="order-reference">
+        					</div>
+        				</div>
+    				{% endif %}
+    				<hr />
+    				<div class="checkout-summary mt-30">
+                        <div class="checkout-summary-items"></div>
+                        <div
+                            class="checkout-summary-totals"
+                            data-total-label="{{'Totaal'|t}}"
+                            data-subtotal-label="{{'Subtotaal'|t}}"
+                            data-total-discount-label="{{'Korting'|t}}"
+                            data-vat-label="{{'Btw {rate}'|t}}"
+                            data-vat-shifted-no-rate-label="{{'Btw verlegd'|t}}"
+                            data-vat-shifted-label="{{'Btw verlegd {rate}'|t}}"
+                            data-of-which-vat-label="{{'Waarvan {rate} btw'|t}}"
+    					></div>
+    				</div>
+    				{#{% if not isB2B %}#}
+        {#				<hr>#}
+        {#				<div class="checkbox af my-10">#}
+        {#                    <label class="align-items-start">#}
+        {#                        <input type="checkbox" name="accept_terms" id="accept-terms" value="1" required data-parsley-group="step-4" tabindex="{{ tabindex }}{% set tabindex = tabindex + 1 %}">#}
+        {#                        <div class="checkbox-button"></div>#}
+        {#                        <small>#}
+        {#                            {{ blocks.accept_terms.content|replace({ "<p>": "", "</p>": "" }) }}#}
+        {#                        </small>#}
+        {#                    </label>#}
+        {#                </div>#}
+        {#            {% endif %}#}
+    			</div>
+    			<div class="panel-footer d-flex justify-content-between">
+    				<button class="btn btn-primary-inverse" type="button" data-action="go-to-checkout-step" data-step="3" data-disable-validation>{{'Vorige'|t}}</button>
+    				<button class="btn btn-primary" type="button" data-action="finish-checkout">{{'Afrekenen'|t}}</button>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="billing-addresses" tabindex="-1" role="dialog" aria-labelledby="billing-addresses-label">
+    		<div class="modal-dialog" role="document">
+    			<div class="modal-content">
+    				<div class="address-options-container">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="billing-addresses-label">{{'Uw factuur adressen'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="address-options" data-options-type="billing"></div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary" data-action="toggle-new-address-form" data-toggle-to="visible">
+    							{{'Nieuw adres'|t}}
+    						</button>
+    					</div>
+    				</div>
+    				<form class="new-address-container create-address-form hidden form-validate" id="new-billing-address-form" data-address-type="billing">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Nieuw verzend adres'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="form-group">
+    							<label for="new-billing-given-name">
+    								{{'Voornaam'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="given_name"
+    								id="new-billing-given-name"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-additional-name">
+    								{{'Tussenvoegsel'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="additional_name"
+    								id="new-billing-additional-name"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-family-name">
+    								{{'Achternaam'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="family_name"
+    								id="new-billing-family-name"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-organisation">
+    								{{'Bedrijfsnaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="organisation"
+    								id="new-billing-organisation"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-country-code">
+    								{{'Land'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<select 
+    								class="form-control address-check-field"
+    								name="country_code"
+    								id="new-billing-country-code"
+    								data-type="new-billing"
+    								required
+    							>
+    								<option value="NL">{{'Nederland'|t}}</option>
+    								<option value="BE">{{'België'|t}}</option>
+    								<option value="LU">{{'Luxemburg'|t}}</option>
+    							</select>
+    						</div>
+    						
+    						<div class="row">
+    							<div class="col-xs-12 col-sm-4 col-md-5">
+    								<div class="form-group">
+    									<label for="new-billing-postal-code">
+    										{{'Postcode'|t}}<span class="text-danger">*</span>
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="postal_code"
+    										id="new-billing-postal-code"
+    										data-type="new-billing"
+    										required
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-7 col-sm-4">
+    								<div class="form-group">
+    									<label for="new-billing-premise-number">
+    										{{'Huisnummer'|t}}<span class="text-danger">*</span>
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number"
+    										id="new-billing-premise-number"
+    										data-type="new-billing"
+    										required
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-5 col-sm-4 col-md-3">
+    								<div class="form-group">
+    									<label for="new-billing-premise-number-suffix">
+    										{{'Toevoeging'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number_suffix"
+    										id="new-billing-premise-number-suffix"
+    										data-type="new-billing"
+    									/>
+    								</div>
+    							</div>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-thoroughfare">
+    								{{'Straat'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="thoroughfare"
+    								id="new-billing-thoroughfare"
+    								data-type="new-billing"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-billing-locality">
+    								{{'Plaats'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="locality"
+    								id="new-billing-locality"
+    								data-type="new-billing"
+    								required
+    							/>
+    						</div>
+    						{% if isB2B %}
+        						<div class="form-group">
+        							<label for="new-billing-administrative-area">
+        								{{'Regio'|t}}
+        							</label>
+        							<input 
+        								class="form-control"
+        								type="text"
+        								name="administrative-area"
+        								id="new-billing-administrative-area"
+        							/>
+        						</div>
+        					{% endif %}
+    						<div class="address-validation-message" data-type="new-billing" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+    						<div class="address-save-options hidden">
+        						<div class="form-group d-flex align-items-center mb-0">
+        							<div class="checkbox af">
+        								<label>
+        									<input type="checkbox" name="save_address" class="form-control" id="new-billing-save-address" data-type="new-billing" checked>
+        									<div class="checkbox-button"></div>
+        									{{'Adres opslaan als'|t}}
+        								</label>
+        							</div>
+        							<div class="form-group mb-0 ml-10">
+        								<select 
+        									class="form-control input-sm py-0 pr-40"
+        									name="save_address_as"
+        									id="new-billing-save-address-as"
+        									data-type="new-billing"
+        									required
+        								>
+        									<option value="contact">{{'Contact adres'|t}}</option>
+        									<option value="organisation" disabled>{{'Organisatie adres'|t}}</option>
+        								</select>
+        							</div>
+        						</div>
+        						<div class="form-group d-flex">
+        							<div class="checkbox af">
+        								<label>
+        									<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-billing-save-address-as-primary" data-type="new-billing">
+        									<div class="checkbox-button"></div>
+        									{{'Opslaan als primair adres'|t}}
+        								</label>
+        							</div>
+        						</div>
+    						</div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary-inverse" data-action="toggle-new-address-form" data-toggle-to="hidden">
+    							{{'Annuleren'|t}}
+    						</button>
+    						<button type="submit" class="btn btn-primary" data-action="create-address" data-type="billing">
+    							{{'Toevoegen'|t}}
+    						</button>
+    					</div>
+    				</form>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="shipping-addresses" tabindex="-1" role="dialog" aria-labelledby="shipping-addresses-label">
+    		<div class="modal-dialog" role="document">
+    			<div class="modal-content">
+    				<div class="address-options-container">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Uw verzend adressen'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="address-options" data-options-type="shipping"></div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary" data-action="toggle-new-address-form" data-toggle-to="visible">
+    							{{'Nieuw adres'|t}}
+    						</button>
+    					</div>
+    				</div>	
+    				<form class="new-address-container create-address-form hidden form-validate" id="new-shipping-address-form"  data-address-type="shipping">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Nieuw verzend adres'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="form-group">
+    							<label for="new-shipping-given-name">
+    								{{'Voornaam'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="given_name"
+    								id="new-shipping-given-name"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-additional-name">
+    								{{'Tussenvoegsel'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="additional_name"
+    								id="new-shipping-additional-name"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-family-name">
+    								{{'Achternaam'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="family_name"
+    								id="new-shipping-family-name"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-organisation">
+    								{{'Bedrijfsnaam'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="organisation"
+    								id="new-shipping-organisation"
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-country-code">
+    								{{'Land'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<select 
+    								class="form-control address-check-field"
+    								name="country_code"
+    								id="new-shipping-country-code"
+    								data-type="new-shipping"
+    								required
+    							>
+    								<option value="NL">{{'Nederland'|t}}</option>
+    								<option value="BE">{{'België'|t}}</option>
+    								<option value="LU">{{'Luxemburg'|t}}</option>
+    							</select>
+    						</div>
+    						<div class="row">
+    							<div class="col-xs-12 col-sm-4 col-md-5">
+    								<div class="form-group">
+    									<label for="new-shipping-postal-code">
+    										{{'Postcode'|t}}<span class="text-danger">*</span>
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="postal_code"
+    										id="new-shipping-postal-code"
+    										data-type="new-shipping"
+    										required
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-7 col-sm-4">
+    								<div class="form-group">
+    									<label for="new-shipping-premise-number">
+    										{{'Huisnummer'|t}}<span class="text-danger">*</span>
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number"
+    										id="new-shipping-premise-number"
+    										data-type="new-shipping"
+    										required
+    									/>
+    								</div>
+    							</div>
+    							<div class="col-xs-5 col-sm-4 col-md-3">
+    								<div class="form-group">
+    									<label for="new-shipping-premise-number-suffix">
+    										{{'Toevoeging'|t}}
+    									</label>
+    									<input 
+    										class="form-control address-check-field"
+    										type="text"
+    										name="premise_number_suffix"
+    										id="new-shipping-premise-number-suffix"
+    										data-type="new-shipping"
+    									/>
+    								</div>
+    							</div>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-thoroughfare">
+    								{{'Straat'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="thoroughfare"
+    								id="new-shipping-thoroughfare"
+    								data-type="new-shipping"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-locality">
+    								{{'Plaats'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control address-check-field"
+    								type="text"
+    								name="locality"
+    								id="new-shipping-locality"
+    								data-type="new-shipping"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-shipping-administrative-area">
+    								{{'Regio'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="administrative-area"
+    								id="new-shipping-administrative-area"
+    							/>
+    						</div>
+    						<div class="address-validation-message" data-type="new-shipping" data-success-message="adres gevalideerd" data-error-message="Dit adres is niet bij ons bekend, controleer de velden." data-loading-message="Adres controleren..."></div>
+    						<div class="form-group d-flex align-items-center mb-0">
+    							<div class="checkbox af">
+    								<label>
+    									<input type="checkbox" name="save_address" class="form-control" id="new-shipping-save-address" data-type="new-shipping">
+    									<div class="checkbox-button"></div>
+    									{{'Adres opslaan als'|t}}
+    								</label>
+    							</div>
+    							<div class="form-group mb-0 ml-10">
+        							<select 
+    									class="form-control input-sm py-0 pr-40"
+    									name="save_address_as"
+    									id="new-shipping-save-address-as"
+    									data-type="new-billing"
+    									required
+    								>
+    									<option value="contact">{{'Contact adres'|t}}</option>
+    									<option value="organisation" disabled>{{'Organisatie adres'|t}}</option>
+    								</select>
+    							</div>
+    						</div>
+    						<div class="form-group d-flex">
+    							<div class="checkbox af">
+    								<label>
+    									<input type="checkbox" name="save_address_as_primary" class="form-control" id="new-shipping-save-address-as-primary" data-type="new-shipping">
+    									<div class="checkbox-button"></div>
+    									{{'Opslaan als primair adres'|t}}
+    								</label>
+    							</div>
+    						</div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary-inverse" data-action="toggle-new-address-form" data-toggle-to="hidden">
+    							{{'Annuleren'|t}}
+    						</button>
+    						<button type="submit" class="btn btn-primary">
+    							{{'Toevoegen'|t}}
+    						</button>
+    					</div>
+    				</form>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="organisation-select" tabindex="-1" role="dialog" aria-labelledby="organisation-select-label">
+    		<div class="modal-dialog" role="document">
+    			<div class="modal-content">
+    				<div class="organisation-options-container">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="organisation-select-label">{{'Uw bedrijven'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="organisation-options"></div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary" data-action="toggle-new-organisation-form" data-toggle-to="visible">
+    							{{'Nieuw bedrijf'|t}}
+    						</button>
+    					</div>
+    				</div>	
+    				<form class="new-organisation-container create-organisation-form hidden form-validate" id="new-organisation-form">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="shipping-addresses-label">{{'Nieuw bedrijf'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="form-group">
+    							<label for="new-organisation-name">
+    								{{'Bedrijfsnaam'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="name"
+    								id="new-organisation-name"
+    								required
+    							/>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-organisation-country-code">
+    								{{'Land'|t}}
+    							</label>
+    							<select 
+    								class="form-control"
+    								name="country_code"
+    								id="new-organisation-country-code"
+    							>
+    								<option value="NL">{{'Nederland'|t}}</option>
+    								<option value="BE">{{'België'|t}}</option>
+    								<option value="LU">{{'Luxemburg'|t}}</option>
+    							</select>
+    						</div>
+    						<div class="form-group">
+    							<label for="new-organisation-vat-number">
+    								{{'BTW nummer'|t}}<span class="text-danger">*</span>
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="number"
+    								id="new-organisation-vat-number"
+    								required
+    								data-invalid-number-message="{{'Vul een geldig btw nummer in'|t}}"
+    							/>
+    						</div>
+    						<div class="form-group coc-number-container">
+    							<label for="new-organisation-coc-number">
+    								{{'KvK nummer'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="text"
+    								name="coc_number"
+    								id="new-organisation-coc-number"
+    							/>
+    						</div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary-inverse" data-action="toggle-new-organisation-form" data-toggle-to="hidden">
+    							{{'Annuleren'|t}}
+    						</button>
+    						<button type="submit" class="btn btn-primary">
+    							{{'Toevoegen'|t}}
+    						</button>
+    					</div>
+    				</form>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="change-phonenumber" tabindex="-1" role="dialog" aria-labelledby="change-phonenumber-label">
+    		<div class="modal-dialog" role="document">
+    			<div class="modal-content">
+    			    <div class="phonenumber-options-container">
+    			        <div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="change-phonenumber-label">{{'Nieuw telefoonnummer'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    			            <div class="phonenumber-options"></div>
+    			        </div>
+    			        <div class="modal-footer">
+    						<button type="button" class="btn btn-primary" data-action="toggle-new-phonenumber-form" data-toggle-to="visible">
+    							{{'Nieuw telefoonnummer'|t}}
+    						</button>
+    					</div>
+    			    </div>
+    				<form class="new-phonenumber-container hidden create-phonenumber-form form-validate" id="new-phonenumber-form">
+    					<div class="modal-header">
+    						<div class="h4 text-center my-0 fw-bold" id="change-phonenumber-label">{{'Nieuw telefoonnummer'|t}}</div>
+    						<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+    					</div>
+    					<div class="modal-body">
+    						<div class="row" id="contact-phonenumber-form">
+    							<div class="col-xs-5 col-sm-4 col-md-3">
+    								<div class="form-group">
+    									<label for="contact-new-phonenumber-country">{{'Landnummer'|t}}</label>
+    									<select class="form-control" name="country_code" id="contact-new-phonenumber-country" data-parsley-group="step-1">
+    										<option {% if language == 'nl' %}selected {% endif %}value="NL">{{'+31 (NL)'|t}}</option>
+    										<option {% if language == 'be' %}selected {% endif %}value="BE">{{'+32 (BE)'|t}}</option>
+    										<option value="LU">{{'+352 (LU)'|t}}</option>
+    									</select>
+    								</div>
+    							</div>
+    							<div class="col-xs-7 col-sm-8 col-md-9">
+    								<div class="form-group">
+    									<label for="contact-new-phonenumber">{{'Telefoonnummer'|t}}<span class="text-danger">*</span></label>
+    									<input
+    									    class="form-control"
+    									    type="tel"
+    									    name="number"
+    									    id="contact-new-phonenumber"
+    									    required
+    									    data-invalid-number-message="{{'Vul een geldig telefoonnummer in'|t}}"
+    									    data-parsley-validtel='{ "countryCodeInput": "#contact-new-phonenumber-country", "numberInput": "#contact-new-phonenumber" }'
+    									>
+    								</div>
+    							</div>
+    						</div>
+    					</div>
+    					<div class="modal-footer">
+    						<button type="button" class="btn btn-primary-inverse" data-action="toggle-new-phonenumber-form" data-toggle-to="hidden">
+    							{{'Annuleren'|t}}
+    						</button>
+    						<button type="submit" class="btn btn-primary">
+    							{{'Toevoegen'|t}}
+    						</button>
+    					</div>
+    				</form>
+    			</div>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="edit-contact" tabindex="-1" role="dialog" aria-labelledby="edit-contact-label">
+    		<div class="modal-dialog" role="document">
+		        <form id="edit-account-form" class="form-validate">
+        			<div class="modal-content">
+        				<div class="modal-header">
+        					<div class="h4 text-center my-0 fw-bold" id="edit-contact-label">{{'Gegevens bewerken'|t}}</div>
+        					<button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+        				</div>
+        				<div class="modal-body">
+    						<div class="form-group"> 
+    							<label for="edit-account-email">
+    								{{'E-mailadres'|t}}
+    							</label>
+    							<input 
+    								class="form-control"
+    								type="email"
+    								name="account_email"
+    								autocomplete="username"
+    								id="edit-account-email"
+    								required
+    							/>
+    						</div>
+    						<div class="contact-extra-fields-container" data-linked-form="#edit-account-form">
+        						<div class="form-group"> 
+        							<label for="edit-account-given-name">
+        								{{'Voornaam'|t}}
+        							</label>
+        							<input 
+        								class="form-control"
+        								type="text"
+        								name="account_given_name"
+        								autocomplete="given_name"
+        								id="edit-account-given-name"
+        								required
+        								data-copy-to="#billing-given-name"
+        							/>
+        						</div>
+        						<div class="form-group"> 
+        							<label for="edit-account-additional-name">
+        								{{'Tussenvoegsel'|t}}
+        							</label>
+        							<input 
+        								class="form-control"
+        								type="text"
+        								name="account_additional_name"
+        								autocomplete="additional_name"
+        								id="edit-account-additional-name"
+        								data-copy-to="#billing-additional-name"
+        							/>
+        						</div>
+        						<div class="form-group"> 
+        							<label for="edit-account-family-name">
+        								{{'Achternaam'|t}}
+        							</label>
+        							<input 
+        								class="form-control"
+        								type="text"
+        								name="account_family_name"
+        								autocomplete="family_name"
+        								id="edit-account-family-name"
+        								required
+        								data-copy-to="#billing-family-name"
+        							/>
+        						</div>
+    						</div>
+        				</div>
+        				<div class="modal-footer">
+        					<button class="btn btn-primary-inverse" type="button" data-dismiss="modal">
+        						{{'Annuleren'|t}}
+        					</button>
+        					<button class="btn btn-primary" type="submit">
+        						{{'Opslaan'|t}}
+        					</button>
+        				</div>
+        			</div>
+				</form>
+    		</div>
+    	</div>
+    	<div class="modal fade" id="insufficient-balance-error" tabindex="-1" role="dialog" aria-labelledby="insufficient-balance-error-label">
+    		<div class="modal-dialog" role="document">
+    			<div class="modal-content">
+    				<div class="modal-header">
+    					<div class="h4 text-center my-0 fw-bold" id="insufficient-balance-error-label">{{'Onvoldoende balans'|t}}</div>
+    					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    				</div>
+    				<div class="modal-body">
+    				    <p>
+    				        {{'U heeft onvoldoende balans open staan op om rekening te betalen. Kies een andere methode of neem contact op met de verkoper.'|t}}
+    				    </p>
+    				</div>
+    				<div class="modal-footer">
+    					<button type="button" class="btn btn-primary" data-action="go-to-checkout-step" data-step="3" data-disable-validation data-dismiss="modal">
+    						{{'Andere betaalmethode kiezen'|t}}
+    					</button>
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    	
+    	<div class="validating-organisation">
+    	    <div class="validating-organisation-message">
+    	        {{'Organisatie valideren...'|t}}
+    	    </div>
+    	</div>
+    </div>
+    
+{% endblock configProvider %}

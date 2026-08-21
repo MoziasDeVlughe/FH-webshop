@@ -1,0 +1,13 @@
+.text-block-grid {
+    margin-right: -15px;
+    margin-left: -15px;
+    @include flexbox;
+    @include align-items(stretch);
+    @include flex-wrap(wrap);
+
+    .panel-primary {
+        display: inline-block;
+        height: 100%;
+        margin-bottom: 0;
+    }
+}

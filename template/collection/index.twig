@@ -1,0 +1,250 @@
+{# type: collection #}
+
+{% import "macros/default.twig" as sorting %}
+{% import "macros/sliders.twig" as af_sliders %}
+
+{% set h1 = title %}
+{% set excerpt = null %}
+{% set tail = null %}
+{% set limit = 200 %}
+{% set percentage = 150 %}
+
+{# we trying to find a clean filter ( means an own url that is indexable #}
+{% set clean_filter = null %}
+{% for filter in active_filters  if clean_filter == null %}
+   {% if filter.is_clean_url %}
+      {% set clean_filter = filter %}
+    {% endif %}
+{% endfor %}
+
+{# if there is an h1 in the content overide the default one#}
+{% if content %}  
+    {% for part in get_excerpt(content, limit, percentage)|split('</h1>')  if '<h1>' in get_excerpt(content, limit, percentage) %}
+        {% if loop.first %}
+            {% set h1 =  part|replace({'<h1>' : ""}) %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{# to make sure we dont have duplicate content only show the content on a page without clean filters.#}
+{% if clean_filter is null %} 
+   {% for part in get_excerpt(content, limit, percentage)|split('</h1>') if '<h1>' in get_excerpt(content, limit, percentage) %}
+      {% if not loop.first %}
+            {% set excerpt = part %}      
+      {% endif %}
+   {% endfor %}
+   {% if excerpt is null %}
+       {% set excerpt =  get_excerpt(content, limit, percentage)  %}      
+   {% endif %}
+    {% set tail = get_tail(content, limit, percentage) %}
+{% else %}
+{# its a clean url so we want to preppend the h1 with the filter#}
+    {% set h1 = clean_filter.clean_url_label ~' ' ~ h1|slice(0,1)|lower ~ h1|slice(1) %}
+{% endif%}
+
+{# always make sure that the h1 is ucfirst #}
+{% set  h1 = h1|slice(0,1)|capitalize ~ h1|slice(1) %}
+
+
+{% if clean_filter is not null %}
+    {% set  base_link = clean_filter|first.link %}
+{% elseif( active_filters is not empty) %} 
+        {# we only have dirty filters so substr till ? #}
+    {% if '?' in active_filters|first|first.link %} 
+        {% set  base_link = active_filters|first|first.link|split('?')|first %}
+    {% else %}
+        {# we have 2 clean url filters so need to op the last one.#}
+        {% set  base_link = active_filters|first|first.link|replace({(active_filters|last|last.key) ~'/' : ''}) %}
+    {% endif %}
+{% endif %}   
+
+
+
+{% set filter_order = [] %}
+
+
+{% set localizedFilters = [] %}
+{% set localizedActiveFilters = [] %}
+
+{% set un_ordered_localized_filters = [] %}
+{% set un_ordered_localized_active_filters = [] %}
+
+{#normalize filters for the language#}
+{% for filter_key,an_active_filter in active_filters %}
+   
+    {% set language_key = '' %}
+    {% set localized_spec_key = filter_key %}
+    {# search for language properties on the frond and backend#}
+    {% if (filter_key[2:1] == '-' and filter_key[:2] != 'is') %}
+        {% set language_key = (filter_key[:2]) %}
+        {% set localized_spec_key = (filter_key[3:]) %}
+    {% elseif (filter_key[-3:1] == '-' and filter_key[-2] != 'is') %}
+        {% set language_key = (filter_key[-2:]) %}
+        {% set localized_spec_key = (filter_key[:-3]) %}
+    {% endif %}
+    
+    {% set un_ordered_localized_active_filters = un_ordered_localized_active_filters|convolute([language_key|default('global'),localized_spec_key]|join('.'),an_active_filter) %}
+    
+{% endfor %}
+
+{% for filter_key,an_active_filter in filters %}
+    {% set language_key = '' %}
+    {% set localized_spec_key = filter_key %}
+    {# search for language properties on the frond and backend#}
+    {% if (filter_key[2:1] == '-' and filter_key[:2] != 'is') %}
+        {% set language_key = (filter_key[:2]) %}
+        {% set localized_spec_key = (filter_key[3:]) %}
+    {% elseif (filter_key[-3:1] == '-' and filter_key[-2] != 'is') %}
+        {% set language_key = (filter_key[-2:]) %}
+        {% set localized_spec_key = (filter_key[:-3]) %}
+    {% endif %}
+    {% set filter_order = filter_order|convolute(localized_spec_key,loop.index0) %}
+    {% set un_ordered_localized_filters = un_ordered_localized_filters|convolute([language_key|default('global'),localized_spec_key]|join('.'),an_active_filter) %}
+{% endfor %}
+
+
+{% for key,position in filter_order %}
+    {% set normalized_active_filter = false %}
+    
+    {% if language == 'be' %}
+        {% set normalized_active_filter = un_ordered_localized_active_filters[language][key]|default(un_ordered_localized_active_filters['nl'][key]|default(un_ordered_localized_active_filters['global'][key])) %}
+    {% else %}
+        {% set normalized_active_filter = un_ordered_localized_active_filters[language][key]|default(un_ordered_localized_active_filters['global'][key]) %}
+    {% endif %}
+    
+    {% if normalized_active_filter != false %}
+        {% set localizedActiveFilters = localizedActiveFilters|convolute(key,normalized_active_filter) %}
+    {% endif %}
+{% endfor %}
+
+{% for key,position in filter_order %}
+
+    {% if  (key == "date" or key == "price") and false %}
+        {# Hide the accesoirces filter when it is not selected in the hoofdcategorie #}
+    {% else %}
+         {% if language == 'be' %}
+            {%  set localizedFilters = localizedFilters|convolute(key,un_ordered_localized_filters[language][key]|default(un_ordered_localized_filters['nl'][key]|default(un_ordered_localized_filters['global'][key]))) %}
+         {% else %}
+            {%  set localizedFilters = localizedFilters|convolute(key,un_ordered_localized_filters[language][key]|default(un_ordered_localized_filters['global'][key])) %}
+        {% endif %}
+        
+    {% endif %}
+    
+{% endfor %}
+    
+    
+<div class="fh-collection">
+<div id="collection-content" class="mt-24 mb-80">
+    <div class="container">
+        <div class="page-overlay"></div>
+        <div class="row">
+            {% if menus.active.items is not empty or filters is not empty %}
+                <div class="col-md-3 col-xs-12 sidebar">
+                    {% include 'collection/sidebar.twig' %}
+                </div>
+            {% endif %}
+            <div class="{% if menus.active.items is not empty or filters is not empty %}col-md-9{% endif %} col-xs-12 main-page content {{type}}">
+                <div class="hidden-xs hidden-sm">
+                    {% include 'macros/breadcrumbs.twig' %}
+                </div>
+                {% if slider is not empty %}
+                    <div class="main-slider">
+                        {% for slide in slider.slides %}
+                            <div>
+                                <img data-lazy="{{slide.filename|image({"w": 1170, "h": 250})}}" alt="{{slide.title}}" title="{{slide.title}}">
+                                <div class="slide-overlay">
+                                    {% if slide.title is not empty %}
+                                        <div class="slide-title">
+                                            <span>{{slide.title}}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if slide.text is not empty %}
+                                        <div class="slide-subtitle">
+                                            <p class="lead">{{slide.text}}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="title-row d-flex flex-wrap justify-content-between align-items-center">
+                    <h1>{{h1}}</h1>
+                    <div class="btn-toolbar hidden-xs hidden-sm">
+                        {#<div class="btn-group pull-right" role="group">#}
+                        {#    <div class="btn btn-sm btn-primary layout-option" data-layout-option="grid">#}
+                        {#        <i class="fa fa-th"></i>#}
+                        {#    </div>#}
+                        {#    <div class="btn btn-sm btn-primary layout-option" data-layout-option="list">#}
+                        {#        <i class="fa fa-list"></i>#}
+                        {#    </div>#}
+                        {#</div>#}
+                        <div class="dropdown btn-group pull-right">
+                            <button class="btn btn-sm btn-outlined-grey dropdown-toggle" type="button" id="sort-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                <i class="icon-funnel lucide size-16"></i>
+                                {{sorting.activeSortingLabel("%active%", sort, 'Nieuwste'|t)}}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sort-menu">
+                                {% for option in sort.options %}
+                                    <li>
+                                        <a data-af-href="{{option.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > *">{{option.label|t}}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {#{% if pagination.is_relevant %}#}
+                        <div class="dropdown pull-right">
+                            <button class="btn btn-sm btn-outlined-grey dropdown-toggle" type="button" id="pagesize-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                {{sorting.activePaginationLabel("%active% per pagina"|t, pagination)}}  
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="sort-menu">
+                                {% for option in pagination.options %}
+                                    <li>
+                                        <a data-af-href="{{option.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > *"> {{"%active% per pagina"|t({'%active%' : option.label})}}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {#{% endif %}#}
+                    </div>
+                </div>
+
+                {% if excerpt is not empty %}
+                    {{excerpt}}
+                {% endif %}
+                
+                {% include 'collection/pagination.twig' with {'show_active_filters' : true } %}
+                <hr />
+                {#{% if blocks.collection_notification.content is defined %}#}
+                {#    <div class="row">#}
+                {#        <div class="col-xs-12">#}
+                {#            <div class="alert alert-info alert-sm">#}
+                {#                {{blocks.collection_notification.content}}#}
+                {#            </div>#}
+                {#        </div>#}
+                {#    </div>#}
+                {#{% endif %}#}
+                {% include 'collection/grid.twig' %}
+                {% include 'collection/pagination.twig' %}
+                <hr />
+                {{tail}}
+            </div>
+            
+        </div>
+        <div class="visible-xs">
+            {% include 'macros/breadcrumbs.twig' with {'mobile_breadcrumb': true} %} 
+        </div>
+    </div>
+</div>
+<div id="ajax-collection-slider" class="hidden">
+    {% if products is not empty %}
+        {{af_sliders.products({
+            'products'  : products[:16],
+            'class'     : 'collection-slider'
+        })}}
+    {% endif %}
+</div>
+</div>{# /.fh-collection #}

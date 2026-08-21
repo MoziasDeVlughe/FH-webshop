@@ -1,0 +1,18 @@
+{% if slider %}
+    <div class="gallery-container">
+        {% for slide in slider.slides %}
+            <div class="gallery-image">
+                <a href="{{slide.filename|replace({"1170x250/" : ""})|image}}" data-title="{{'klik links en rechts om te navigeren'|t}}" data-lightbox="gallery" >
+                    <img src="{{slide.filename|replace({"1170x250/" : ""})|image({"w": 400})}}" alt="{{slide.title|t}}" title="{{slide.title|t}}">
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h3>
+        {{"Er zijn nog geen afbeeldingen"|t}}
+    </h3>
+    <p>
+        {{"Kies een slider of maak er een aan met afbeeldigen voor je gallerij. De slider dien je mee te geven aan de code."|t}}
+    </p>
+{% endif %}

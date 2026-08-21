@@ -1,0 +1,230 @@
+// global styling
+
+body {
+    font-weight: $font-weight;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.h1, .h2, .h3, .h4, .h5 {
+    display: block;
+}
+
+.flex {
+    @include flexbox;
+}
+
+.cc-window {
+    @include transition(.2s ease !important);
+}
+
+.search-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.mm-slideout {
+    z-index: initial;
+}
+
+table.full-width { 
+    width: 100%;
+}
+
+.plain-fill { 
+    fill: $partner-logo-fill;
+}
+
+.fill-primary {
+
+    .plain-fill { 
+        fill: rgba($brand-primary, .6);
+    }
+}
+
+hr {
+
+    &.light {
+        border-color: $gray-lighter;
+    }
+
+    &.dark {
+        border-color: $gray-dark;
+    }
+}
+
+.text-secondary {
+    color: $brand-secondary;
+}
+
+img {
+    max-width: 100%;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
+.cart {
+
+    .thumbnail {
+        margin-bottom: 0;
+    }
+}
+
+ol.breadcrumb {
+    margin-bottom: 0;
+}
+
+.navbar-brand {
+
+    img {
+        max-height: 22px;
+    }
+}
+
+#content > .container {
+    margin-bottom: 20px;
+}
+
+.row .no-padding {
+    padding: 0;
+}
+
+.text-white {
+    color: #fff;
+}
+
+#maps-container {
+
+    & .gmnoprint, & .gm-style-cc {
+        display: none;
+    }
+}
+
+
+form:not(#product-form) {
+
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        margin: 0;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+}
+
+*[data-af-href]:hover {
+    cursor: pointer;
+}
+
+.cd-top {
+    position: fixed;
+    right: 50px;
+    bottom: 40px;
+    visibility: hidden;
+    opacity: 0;
+    @include transition(.3s ease-in-out);
+    
+    @media (max-width: 767px) {
+        display: none;
+    }
+
+    &.cd-is-visible {
+        bottom: 50px;
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &.cd-fade-out {
+        opacity: .5;
+    }
+}
+
+.collection h1 {
+
+    @include af-xs {
+        font-size: 30px;
+    }
+}
+
+.thumbnail-container .thumbnail {
+    cursor: pointer;
+
+    &.active {
+        border-color: $link-hover-color;
+    }
+}
+
+// price slider
+
+.ui-widget-header {
+    background: $brand-success;
+    border: 1px solid darken($brand-success, 15%) !important;
+}
+
+form {
+
+    .validation-container {
+        position: relative;
+
+        &.form-val-success {
+            &::before {
+                position: absolute;
+                top: 50%;
+                right: 0;
+                display: inline-block;
+                font-family: "Font Awesome 5 Free";
+                font-size: 25px;
+                font-weight: 900;
+                font-style: normal;
+                font-variant: normal;
+                content: "\f058";
+                color: $brand-success;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                @include transform(translate(-50%, -50%));
+            }
+        }
+        
+        &.form-val-error {
+            &::before {
+                position: absolute;
+                top: 50%;
+                right: 0;
+                display: inline-block;
+                font-family: "Font Awesome 5 Free";
+                font-size: 25px;
+                font-weight: 900;
+                font-style: normal;
+                font-variant: normal;
+                content: "\f057";
+                color: $brand-danger;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                @include transform(translate(-50%, -50%));
+            }
+        }
+    }
+}
+
+.mm-slideout {
+    z-index: initial !important;
+}
+
+input:-webkit-autofill {
+    // Expose a hook for JavaScript when auto fill is shown.
+    // JavaScript can capture 'animationstart' events
+    animation-name: onAutoFillStart;
+
+    // Make the backgound color become yellow _really slowly_
+    transition: background-color 50000s ease-in-out 0s;
+}
+
+input:not(:-webkit-autofill) {
+    // Expose a hook for JS onAutoFillCancel
+    // JavaScript can capture 'animationstart' events
+    animation-name: onAutoFillCancel;
+}

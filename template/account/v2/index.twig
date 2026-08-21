@@ -1,0 +1,160 @@
+<div class="container">
+    <h1>{{"Mijn overzicht"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {%include 'account/menu.twig' %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <div class="row">
+                <div class="col-md-12 col-lg-7">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading" data-af-href="/account/orders">
+                            <strong>{{"laatste orders"|t}}</strong>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row hidden-xs">
+                                <div class="col-xs-3">
+                                    <strong>{{"Ordernummer"|t}}</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>{{"Datum"|t}}</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>{{"Bedrag"|t}}</strong>
+                                </div>
+                            </div>
+                            <hr>
+                            {% for sale in sales[:5] %}
+                                <div class="order-list">
+                                    <div class="order-row">
+                                        <div class="row order-row-inner" data-af-href="{{sale.order_url}}">
+                                            <div class="col-xs-6 visible-xs">
+                                                <strong>{{"Ordernummer"|t}}:</strong>
+                                            </div>
+                                            <div class="col-sm-3 col-xs-6">
+                                                {{sale.order_number}}
+                                            </div>
+                                            <div class="col-xs-6 visible-xs">
+                                                <strong>{{"Datum"|t}}:</strong>
+                                            </div>
+                                            <div class="col-sm-3 col-xs-6">
+                                                {{sale.order_date|date("d-m-Y")}}
+                                            </div>
+                                            <div class="col-xs-6 visible-xs">
+                                                <strong>{{"Bedrag"|t}}:</strong>
+                                            </div>
+                                            <div class="col-sm-3 col-xs-6">
+                                                {{sale.total|price(false, '&euro;')}}
+                                            </div>
+                                            <div class="col-xs-12 space-20 visible-xs"></div>
+                                            <div class="col-sm-3 col-xs-12 text-right">
+                                                <a href="{{sale.order_url}}" class="btn btn-sm btn-primary-inverse "><i class="fa fa-search"> </i> {{"Details"|t}}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="panel-footer">
+                            <a class="btn btn-sm btn-primary pull-right" href="/account/orders">{{"Alle orders bekijken"|t}}</a>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-5">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-lg-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading" data-af-href="/account/address">
+                                    <strong>{{"Gegevens"|t}}</strong>
+                                </div>
+                                <div class="panel-body">
+                                    <table class="full-width">
+                                        <tr>
+                                            <td>
+                                                <strong>{{"Naam"|t}} </strong>
+                                            </td>
+                                            <td>
+                                                <span>{{customer.name|e}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>{{"Email"|t}} </strong>
+                                            </td>
+                                            <td>
+                                                <span>{{customer.email|e}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>{{"Geboortedatum"|t}} </strong>
+                                            </td>
+                                            <td>
+                                                <span>{{customer.birth_date|date('d-m-Y')|e}}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>{{"Telefoonnummer"|t}} </strong>
+                                            </td>
+                                            <td>
+                                                <span>{{customer.phone_numbers.primary.number|e}}</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <strong>
+                                                {{'Bezorgadres'|t}}
+                                            </strong>
+                                            <address>
+                                                {{shipping.address.name|e}}<br>
+                                                {{shipping.address.street|e}} {{shipping.address.house_number|e}} {{shipping.address.house_number_suffix|e}} <br>
+                                                {{shipping.address.postal_code|e}} {{shipping.address.city|e}}<br>
+                                                {{shipping.address.country.name}}
+                                                {% for country in countries if country.id == shipping.address.country.id %}
+                                                    {{country.name}}
+                                                {% endfor %}
+                                            </address>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <strong>
+                                                {{'Factuuradres'|t}}
+                                            </strong>
+                                            <address>
+                                                {{billing.address.name|e}}<br>
+                                                {{billing.address.street|e}} {{billing.address.house_number|e}}{{billing.address.house_number_suffix|e}} <br>
+                                                {{billing.address.postal_code|e}} {{billing.address.city|e}}<br>
+                                                {{billing.address.country.name}}
+                                                {% for country in countries if country.id == billing.address.country.id %}
+                                                    {{country.name}}
+                                                {% endfor %}
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <a class="btn btn-sm btn-primary pull-right" href="/account/address">{{"Gegevens wijzigen"|t}}</a>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {#<div class="col-xs-12 col-sm-6 col-lg-12">#}
+                        {#    <div class="panel panel-primary">#}
+                        {#        <div class="panel-heading" data-af-href="/account/loyalty">#}
+                        {#            <strong>{{"Loyaltypunten"|t}}</strong>#}
+                        {#        </div>#}
+                        {#        <div class="panel-body">#}
+                        {#            <div class="img-circle"><h3>{{"{n} punt|{n} punten"|t(customer.loyalty.points)}} = {{(customer.loyalty.balance|price)}}</h3></div>#}
+                        {#        </div>#}
+                        {#    </div>#}
+                        {#</div>#}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

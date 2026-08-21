@@ -1,0 +1,106 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+{% set style = (style is defined ? style ~ ' no-switch' : 'grid') %}
+{% set use_quickview = (use_quickview is defined ? use_quickview : false) %}
+
+<div class="product-container">
+    {% if products is empty %}
+        <p class="empty-message">{{"Geen resultaten."|t}}</p>
+    {% else %}
+        <div class="product-grid {{style}}">
+            {% for product in products %}
+            
+                {{af_displays.product({
+                    "product": product,
+                    "use_quickview": use_quickview,
+                    "class": 'col-xs-6 col-sm-4 col-md-4 col-lg-3'
+                })}}
+            
+            <div class="hidden">
+                <article class="product-grid-item col-xs-6 col-sm-4 col-md-4 col-lg-3">
+                    <div class="product-image">
+                        <a href="{{product.url}}" title="{{product.name}}">
+                            <div class="lazyload-wrapper lazyload-square">
+                                <img data-src="{{product.image_default.thumbs.400|image({"w": 400, "h": 400})}}" alt="{{"Foto van"|t}} {{product.name}}" title="{{product.name}}" class="lazyload"/>
+                            </div>
+                            <div class="product-name">
+                                <strong>
+                                    {{product.name}}
+                                </strong>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        
+                        <div class="product-info-description hidden-xs list-visible">
+                            <a data-af-href="{{product.url}}" class="product-name list-visible" title="{{product.name}}">
+                                <strong>{{product.name}}</strong>
+                            </a>
+                        </div>
+                        <div class="product-action">
+                            <div class="product-action-text">
+                                <strong class="product-price">
+                                    {% if product.has_discount %}
+                                        <small>
+                                            <s>
+                                                {{product.original_price|price(true, '')}}
+                                            </s>
+                                        </small>
+                                    {% endif %}
+                                    <span> {{product.price|price(true, '')}}</span>
+                                </strong>
+                                <div class="product-action-buttons">
+                                    
+                                    {% if not product.available %}
+                                        <button type="button" disabled class="btn btn-primary btn-sm" aria-label="{{'Toevoegen aan winkelwagen'|t}}">
+                                            <i data-lucide="shopping-cart" class="size-24"></i> &nbsp;
+                                            <i data-lucide="plus" class="size-24"></i>
+                                        </button>
+                                    {% elseif product.price > 0 %}
+                                        {% if product.has_options and use_quickview %}
+                                            <div class="btn btn-success btn-sm" class="quick-view-link" data-qv-product="{{product.url}}" data-qv-ajax-element="#quick-view-modal .modal-content" data-qv-ajax-input="#quick-view-content > *" data-product-url="{{product.url}}">
+                                                <i data-lucide="shopping-cart" class="size-24"></i> &nbsp;
+                                                <i data-lucide="plus" class="size-24"></i>
+                                            </div>&nbsp;
+                                        {% else %}
+                                            <form action="{{product.cart_url}}" method="POST" id="product-form-{{product.id}}" data-cart-url="{{home_url}}cart" class="grid-product-form"  data-product-url="{{product.url}}" data-form-input="[{'product_id' : '{{product.id}}', 'quantity' : '1', 'price' : '{{product.price}}'}]">
+                                                <input type="hidden" value="{{ product.price }}" name="price"/>
+                                                <input type="hidden" value="{{ product.id }}" name="product_id"/>
+                                                <input type="hidden" value="{{ product.sku }}" name="sku"/>
+                                                <input type="hidden" value="1" name="quantity"/>
+                                                <button type="submit" class="btn btn-success btn-sm" aria-label="{{'Toevoegen aan winkelwagen'|t}}">
+                                                    <i data-lucide="shopping-cart" class="size-24"></i> &nbsp;
+                                                    <i data-lucide="plus" class="size-24"></i>
+                                                </button>&nbsp;
+                                            </form>
+                                        {% endif %}
+                                        
+                                    
+                                
+                                    {% endif %}
+                                    
+                                    
+                                    
+                                    {#{% if has_app('myWishlist') %}#}
+                                    {#    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#wishlist-modal" class="wishlist-link" data-wl-product="{{product.product_wishlist_url}}" data-wl-ajax-element="#wishlist-modal .modal-body" data-wl-ajax-input="#wishlist-content > *" aria-label="{{'Toevoegen aan wishlist'|t}}">#}
+                                    {#        <i data-lucide="heart" class="size-16"></i> #}
+                                    {#    </button>#}
+                                    {#{% endif %}#}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#{% if product.specifications["label"] %}#}
+                    {#    <div class="product-label label label-success">{{ product.specifications["label"].options|first.label }}</div>#}
+                    {#{% endif %}#}
+                </article>
+            </div>
+                
+                
+                <div class="col-xs-12 list-visible">
+                    <hr />
+                </div>
+            {% endfor %}
+        </div>
+   {% endif %}
+</div>

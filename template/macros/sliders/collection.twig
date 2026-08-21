@@ -1,0 +1,38 @@
+{% import 'macros/sliders.twig' as af_sliders %}
+
+<div class="collection-preview-slider" data-default-url="{{options|first.url}}" data-default-title="{{options|first.title}}">
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            <div class="dropdown">
+                <span class="btn btn-primary category-selection dropdown-toggle" data-toggle="dropdown" id="collection-switch">
+                    {{options|first.title}}
+                    <i class="fa fa-angle-down"></i>
+                </span>
+                <ul class="dropdown-menu" aria-labelledby="collection-switch">
+                    {% for option in options %}
+                        <li>
+                            <a data-ps-collection="{{option.url}}" data-ps-ajax-element=".collection-slider" data-ps-ajax-input="#ajax-collection-slider .collection-slider">
+                                {{option.title|t}}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{af_sliders.products({
+        'products' : products,
+        'class' : 'collection-slider'
+    })}}
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            <div class="space-20"></div>
+            <span data-af-href="{{options|first.url}}" class="btn chester-btn btn-primary serif-type category-selected-more">
+                <strong>
+                    {{"meer"|t}}
+                </strong>
+            </span>
+            <div class="space-50"></div>
+        </div>
+    </div>
+</div>

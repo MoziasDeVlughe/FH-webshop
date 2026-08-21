@@ -1,0 +1,26 @@
+<div class="container">
+    <h1>{{"Het laatste nieuws"|t}}</h1>
+    <hr>
+    
+    <div class="row blog-index">
+        <div class="col-md-3 col-md-push-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>{{"Tags"|t}}</h4>
+                </div>
+                {% if tags is not empty %}
+                    <div class="panel-body">
+                        <ul class="list-unstyled">
+                        {% for tag in tags %}
+                            <li><a href="{{tag.url}}">{{tag.label}}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-9 col-md-pull-3">
+            {% include 'blog/postlist.twig' with {'posts' : posts, 'blogpostclass' : 'col-md-6'}  %}
+        </div>
+    </div>
+</div>

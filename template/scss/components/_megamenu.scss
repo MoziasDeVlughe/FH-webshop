@@ -1,0 +1,149 @@
+#main-navbar-nav {
+    position: relative;
+}
+.mega-menu-container {
+    position: static;
+    margin-left: 15px;
+    // .mega-menu-backdrop {
+    //     position: fixed;
+    //     top: 0;
+    //     left: 0;
+    //     right: 0;
+    //     bottom: 0;
+    //     background-color: rgba(#000, .7);
+    //     pointer-events: none;
+    // }
+
+    .mega-menu-trigger {
+        display: inline-block;
+        height: 60px;
+        padding: 0;
+        cursor: pointer;
+        
+        span {
+            display: block;
+            padding: 10px;
+            margin: 9.5px 0;
+            font-weight: 600;
+            color: $brand-primary;
+            background-color: #fff;
+            border-radius: $border-radius-base;
+            @include transition(.1s ease);
+        }
+        
+        &:hover {
+            
+            & + .mega-menu {
+                height: auto;
+            }
+            
+            span {
+                box-shadow: 0 2px 4px 1px rgba(#555, .6);
+            }
+        }
+    }
+    
+    .mega-menu {
+        position: absolute;
+        top: 60px;
+        left: 15px;
+        z-index: 10;
+        width: calc(100% - 30px);
+        height: 0;
+        
+        &:hover {
+            height: auto;
+            
+            & ~ .mega-menu-trigger {
+                box-shadow: 0 2px 4px 1px rgba(#555, .6);
+            }
+        }
+        
+        .mega-main-menu {
+            width: 250px;
+            margin-bottom: 0;
+            visibility: hidden;
+            background-color: #fff;
+            border: 1px solid darken($brand-primary, 10%);
+            border-top: 0;
+            border-bottom-right-radius: $border-radius-base;
+            border-bottom-left-radius: $border-radius-base;
+            @include opacity(0);
+            
+            &-item {
+                position: static;
+                
+                > a {
+                    display: block;
+                    padding: 10px 15px;
+                    color: $brand-primary;
+                    @include transition(.2s ease);
+                }
+                
+                .mega-sub-menu {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: -1;
+                    width: 100%;
+                    min-height: calc(100% + 1px);
+                    padding: 25px 30px;
+                    padding-left: 274px;
+                    visibility: hidden;
+                    background-color: #fff;
+                    border: 1px solid darken($brand-primary, 10%);
+                    border-top: 0;
+                    border-bottom-right-radius: $border-radius-base;
+                    border-bottom-left-radius: $border-radius-base;
+                    @include flexbox;
+                    @include box-shadow(0 5px 10px rgba(#000, .3));
+                    @include opacity(0);
+                    
+                    ul {
+                        margin-right: 20px;
+                        
+                        > li > a {
+                            font-weight: 400;
+                            color: $brand-primary;
+                        }
+                    }
+                    
+                    &::before {
+                        position: absolute;
+                        top: 0;
+                        left: 248px;
+                        width: 1px;
+                        height: 100%;
+                        content: "";
+                        background-color: darken($brand-primary, 10%);
+                    }
+                }
+                
+                &:hover {
+                    
+                    > a {
+                        color: #fff;
+                        background-color: $brand-primary;
+                    }
+                    
+                    .mega-sub-menu {
+                        visibility: visible;
+                        @include opacity(1);
+                    }
+                }
+            }
+            
+            &::hover {
+                border-bottom: 0;
+                border-bottom-right-radius: 0;
+                @include box-shadow(none);
+            }
+        }
+    }
+    
+    .mega-menu-trigger:hover + .mega-menu .mega-main-menu, .mega-main-menu:hover {
+        visibility: visible;
+        @include opacity(1);
+        @include box-shadow(0 5px 10px rgba(#000, .3));
+    }
+}

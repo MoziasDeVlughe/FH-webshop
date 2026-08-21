@@ -1,0 +1,44 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+{% set class = (class is defined ? class : 'prod-slider') %}
+
+{% if products is not empty %}
+    <div class="home-slider pt-10 ">
+        <div class="home-slider-buttons swiper-button-prev " data-target=".{{class}}"></div>
+        <div class="home-slider-buttons swiper-button-next " data-target=".{{class}}"></div>
+    </div>
+    <div class="{{class}} swiper pb-50">
+        <div class="swiper-pagination" data-target=".{{class}}"></div>
+        <div class="swiper-wrapper">
+            {% for product in products %}
+                <div class="swiper-slide">
+                    
+                    {{af_displays.product({
+                        "product": product,
+                        "class": 'col-xs-12'
+                    })}}
+                    
+                    {#<article class="product-grid-item col-xs-12">#}
+                    {#    <a href="{{product.url}}">#}
+                    {#        <div class="lazyload-wrapper lazyload-square">#}
+                    {#            <img data-src="{{product.image_default.thumbs.400|image({"w": 400, "h": 400})}}" class="lazyload" alt="Foto van {{product.name}}"/>#}
+                    {#        </div>#}
+                          
+                    {#        <div><strong>{{product.name}}</strong></div>#}
+                    {#    </a>#}
+                    {#    <strong class="text-secondary">#}
+                    {#        {% if product.has_discount %}#}
+                    {#            <small>#}
+                    {#                <s>#}
+                    {#                    {{product.original_price|price}}#}
+                    {#                </s>#}
+                    {#            </small>#}
+                    {#        {% endif %}#}
+                    {#        <span> {{product.price|price}}</span>#}
+                    {#    </strong>#}
+                    {#</article>#}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

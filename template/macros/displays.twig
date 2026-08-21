@@ -1,0 +1,66 @@
+{# display macros #}
+
+{# use these macros by importing macros/displays.twig as af_displays in your document #}
+
+{# Config expects: two text blocks #}
+{% macro dual_blocks(config) %}
+	{% include "macros/displays/dualBlocks.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro big_images(config) %}
+	{% include "macros/displays/bigImages.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro mini_banners(config) %}
+	{% include "macros/displays/miniBanners.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: text blocks array #}
+{% macro text_blocks_grid(config) %}
+	{% include "macros/displays/textBlockGrid.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro brands_grid(config) %}
+	{% include "macros/displays/brandsGrid.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: product #}
+{% macro product(config) %}
+	{% include "macros/displays/product.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: slider #}
+{% macro products(config) %}
+	{% include "macros/displays/products.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: styles #}
+{% macro maps(config) %}
+	{% include "macros/displays/maps.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro gallery(config) %}
+	{% include "macros/displays/gallery.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro video(config) %}
+	{% include "macros/displays/video.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: slider #}
+{% macro icon(config) %}
+    {% include 'macros/displays/icons/'~ config.id|lower ~ '.twig' ignore missing with {'type': config.type|default('original'),'class' : config.class|default('partner-logo')} only %}
+{% endmacro %}

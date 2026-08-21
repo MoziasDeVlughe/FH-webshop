@@ -1,0 +1,30 @@
+<div class="kiyoh-reviews">
+    <a href="{{url}}" target="_blank">
+        <div class="kiyoh-reviews-count">
+            <strong>{{count}} {{'reviews'|t}}</strong>
+        </div>
+        <hr class="light">
+        <div class="kiyoh-reviews-rating">
+            <div class="star-rating">
+                <div class="star-rating-bg">
+                    <i class="fa fa-star star"></i>
+                    <i class="fa fa-star star"></i>
+                    <i class="fa fa-star star"></i>
+                    <i class="fa fa-star star"></i>
+                    <i class="fa fa-star star"></i>
+                </div>
+                <div class="star-rating-overlay" style="width: {{(score ) * 10}}%">
+                    <i class="fa fa-star star full"></i>
+                    <i class="fa fa-star star full"></i>
+                    <i class="fa fa-star star full"></i>
+                    <i class="fa fa-star star full"></i>
+                    <i class="fa fa-star star full"></i>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <strong>{{'EXCELLENT'|t}}</strong>
+            <br>
+            <strong>{{score / 2}}</strong><small class="text-muted">/5.0</small>
+        </div>
+    </a>
+</div>

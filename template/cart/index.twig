@@ -1,0 +1,14 @@
+{# cart index #}
+
+{# In this file you determine wich layout should be used for the cart page. #}
+{# You can choose exciting layouts or build a new one. #}
+{# To use a layout simply fill in the name of the document between the double qoutes for the code variable. #}
+{# This will search for the file and use that code for the product page, if it doesn't exist it will use the default. #}
+
+{# options #}
+{#  - default #}
+{#  - layout-1 #}
+
+{% set code = "cart-2" %}
+
+{% include ['cart/'~ code ~ '.twig','cart/default.twig'] %}

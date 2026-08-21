@@ -1,0 +1,47 @@
+<div class="drawer drawer-right" id="cart-drawer" data-hash="{{cart.hash}}">
+    <div class="drawer-header">
+        <div class="h4 m-0 fw-700">
+            {{"Winkelwagen"|t}}
+        </div>
+        <button class="btn btn-link m-4 p-0 icon-40 mr-n12" type="button" data-dismiss="drawer" aria-label="{{'Sluit winkelwagen'|t}}">
+            <i class="fa fa-times icon-size-20 text-black"></i>
+        </button>
+    </div>
+    
+    <div class="drawer-body configurator-drawer-inner p-0">
+
+        {% if cart.count == 0 %}
+            <div class="text-center">
+                <i class="fa fa-cart-plus text-primary fa-4x mt-40 mb-40"></i>
+                <span class="h4 mb-12">{{"Uw winkelwagen is leeg"|t}}</span>
+                <p class=" mb-40">{{"Bekijk het aanbod op onze website en voeg producten toe aan je winkelwagen."|t}}</p>
+                <button type="button" class="btn btn-primary" data-dismiss="drawer">
+                    {{'Verder winkelen'|t}}
+                </button>
+            </div>
+        {% else %}
+            <div class="cart-preview-items">
+                {% for item in cart.items if not item.is_nested %}
+                    {% include 'layouts/cartOverviews/cartOverview-2.twig' %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% if cart.count > 0 %}
+        <div class="drawer-footer drawer-footer-sticky pb-32 px-32">
+            <hr class="m-0" />
+            <div class="d-flex justify-content-between py-20">
+                <span>
+                    {{'Totaal'|t}}
+                </span>
+                <span>
+                    {{cart.total|price}}
+                </span>
+            </div>
+            <hr class="mt-0 mb-32" />
+            <a class="btn btn-primary btn-block{% if cart.count == 0 %} disabled{% endif %}" href="{{cart_url}}">
+                {{'Afrekenen'|t}}
+            </a>
+        </div>
+    {% endif %}
+</div>

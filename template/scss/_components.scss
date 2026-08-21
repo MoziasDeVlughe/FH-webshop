@@ -1,0 +1,48 @@
+// import all components that are necessary
+// disable a component import by making the import a comment with cmd+/ or ctrl+/
+
+// ### macros ###
+// blog
+@import "components/blogs"; 
+
+// displays
+@import "components/bigImages";
+@import "components/miniBannerRow";
+@import "components/imageGallery";
+@import "components/textBlocksGrid";
+@import "components/productGrid";
+@import "components/productList";
+@import "components/button";
+@import "components/card";
+
+
+// forms
+@import "components/_formElements";
+
+// menus
+@import "components/megamenu";
+@import "components/menuDropdown";
+
+// plugins
+@import "components/kiyoh";
+@import "components/instagram";
+@import "components/countdown";
+
+// sliders
+@import "components/sliders";
+@import "components/swiper";
+@import "components/fullWidthSlider";
+@import "components/collectionPreview";
+
+// ### other components ###
+// misc
+@import "components/filters";
+@import "components/cart-overview";
+@import "components/cookie";
+@import "components/reviews";
+@import "components/cart-counter";
+@import "components/lazyload";
+@import "components/panels";
+@import "components/breadcrumbs";
+@import "components/drawer";
+@import "components/banner";

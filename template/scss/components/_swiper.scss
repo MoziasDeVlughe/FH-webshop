@@ -1,0 +1,132 @@
+.main-slider {
+    // margin: 0 0 20px;
+}
+
+// .slick-slide-image {
+//     width: 100%;
+// }
+.swiper-slide {
+    height: auto;
+}
+
+.home-slider {
+    
+    --swiper-navigation-size: 16px;
+    display: flex;
+    justify-content: center;
+    gap: 100px;
+    
+    &-buttons {
+        display: block;
+        position: relative;
+        color: black;
+    }
+}
+.swiper-pagination-bullet {
+    width:  35px;
+    height: 4px;
+    border-radius: 10px;
+    &-active{
+        background: #000;
+    }
+}
+    
+.swiper {
+    
+    $slider-height:             400px;
+    $slider-overlay-color:      rgba($brand-primary, .4);
+    
+    $slider-title-font:         "Expletus Sans", cursive;
+    $slider-title-size:         3vw;
+    $slider-title-weight:       900;
+    $slider-title-casing:       uppercase;
+    
+    $slider-text-font:          $font-family-sans-serif;
+    $slider-text-size:          .8vw;
+    $slider-text-weight:        500;
+    $slider-text-casing:        none;
+    
+    &.use-overlay {
+        
+        &::after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            content: "";
+            background-color: $slider-overlay-color;
+        }
+    }
+    
+    .slide-overlay {
+        position: absolute;
+        left: 50%;
+        z-index: 99;
+        padding: 30px;
+        color: #fff !important;
+        text-align: center;
+        @include transform(translate(-50%, -50%));
+        
+        .slide-title {
+            
+            h1 {
+                font-family: $slider-title-font;
+                font-size: $slider-title-size;
+                font-weight: $slider-title-weight;
+                text-transform: $slider-title-casing;
+            }
+        }
+        
+        .slide-text {
+            font-family: $slider-text-font;
+            font-size: $slider-text-size;
+            font-weight: $slider-text-weight;
+            text-transform: $slider-text-casing;
+            
+            @include af-xs {
+                
+                .btn {
+                    @include button-size($padding-small-vertical, $padding-small-horizontal, $font-size-small, $line-height-small, $btn-border-radius-small);
+                }
+            }
+        }
+    } 
+    
+    &.position-text- {
+        
+        &left .slide-overlay {
+            text-align: left;
+        }
+        
+        &right .slide-overlay {
+            text-align: right;
+        }
+        
+        &center .slide-overlay {
+            text-align: center;
+        }
+    }
+    .swiper-button-next {
+
+        color: black;
+        border-radius: 4px;
+        
+        &::before {
+            font-size: 16px;
+        }
+        
+        &::after {
+            font-size: 16px;
+            color: black;
+        }
+    }
+    
+    // .swiper-button-next {
+    //     right: -15px;
+    // }
+    
+    // .swiper-button-prev {
+    //     left: -15px;
+    // }
+}

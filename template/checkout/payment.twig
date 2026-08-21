@@ -1,0 +1,52 @@
+{# type: payment #}
+{#<div class="row">#}
+{#    <div class="col-md-4 col-md-push-4">#}
+{#        <h1>#}
+{#            Betaling Afgebroken#}
+{#        </h1>#}
+{#        <div class="space-20"></div>#}
+{#        <div class="payment-message">#}
+{#            <p>{{"U heeft de transactie met de bank voortijdig afgebroken en er is geen betaling ontvangen. Indien u de betaling alsnog wilt voldoen, klikt u op de onderstaande knop 'herstart betaling'."|t}}</p>#}
+{#        </div>#}
+{#        <hr>#}
+{#        <div class="payment-actions">#}
+{#            <form method="POST">#}
+{#                <div class="btn-toolbar">#}
+{#                    <div class="btn-group">#}
+{#                        <a class="btn btn-primary-inverse" href="{{cart_url}}">{{"Terug naar winkelmandje"|t}}</a>#}
+{#                    </div>#}
+{#                    <div class="btn-group">#}
+{#                        <button class="btn btn-primary btn-restart-payment">{{"Herstart betaling"|t}}</button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </form>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8 col-sm-push-2">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h1>{{"Betaling mislukt"|t}}</h1>
+                </div>
+                <div class="panel-body">
+                    <p class="lead">{{"U heeft de transactie met de bank voortijdig afgebroken en er is geen betaling ontvangen. Indien u de betaling alsnog wilt voldoen, klikt u op de onderstaande knop 'herstart betaling'."|t}}</p>
+                    <br />
+                    <div class="payment-actions">
+                        <form method="POST">
+                            <div class="btn-toolbar">
+                                <div class="btn-group">
+                                    <a class="btn btn-primary-inverse" href="{{cart_url}}">{{"Terug naar winkelmandje"|t}}</a>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-primary btn-restart-payment">{{"Herstart betaling"|t}}</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

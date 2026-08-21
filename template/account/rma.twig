@@ -1,0 +1,4 @@
+{% extends 'config.twig' %}
+{% block configProvider %}
+    {% include ['account/' ~ shop_version ~ '/rma.twig', 'account/v2/rma.twig'] %}
+{% endblock configProvider %}

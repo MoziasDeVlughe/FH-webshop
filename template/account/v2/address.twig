@@ -1,0 +1,234 @@
+<div class="container">
+    <h1>{{'Mijn profiel'|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig' with {'active': 'address'}%}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <h2>{{"Account instellingen"|t}}</h2>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <strong>{{customer.email}}</strong><br>
+                    <a href="/account/settings">{{"Mijn e-mailadres wijzigen"|t}}</a>
+                    <br><br>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <strong>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</strong><br>
+                    <a href="/account/settings">{{"Mijn wachtwoord wijzigen"|t}}</a>
+                </div>
+            </div>
+            <hr>
+            <form id="account-form" method="post" class="form form-validate" data-postal-code-url="https://app.afosto.com/address/_postcode">
+                <h2>{{"Contact informatie"|t}}</h2>
+                <label for="account_is_female">{{"Aanhef"|t}}</label>
+                <div class="form-group">
+                    <input id="account_is_female" type="hidden" value="" name="customer[is_female]">
+                    <div class="radio af">
+                        <label for="account_is_female_0">
+                            <input type="radio" name="customer[is_female]" id="account_is_female_0" value="0" {% if customer.is_female == false %} checked {% endif %} >
+                            <div class="radio-button"></div>
+                            {{"Dhr."|t}}
+                        </label> 
+                    </div>
+                    <div class="radio af">
+                        <label for="account_is_female_1"> 
+                            <input type="radio" name="customer[is_female]" id="account_is_female_1" value="1" {% if customer.is_female == true %} checked {% endif %} >
+                            <div class="radio-button"></div>
+                            {{"Mvr."|t}}
+                        </label> 
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="customer_first_name" class="control-label">{{'Voornaam'|t}} <span class="required">*</span></label>
+                    <div class="validation-container">
+                        <input type="text" name="customer[first_name]" class="form-control required phoenix-input" tabindex="1" id="customer_first_name" value="{{customer.first_name|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="form-group">
+                    <label for="customer_last_name" class="control-label" >{{'Achternaam'|t}} <span class="required">*</span></label>
+                    <div class="validation-container">
+                        <input type="text" name="customer[last_name]" class="form-control required phoenix-input" tabindex="2" id="customer_last_name" value="{{customer.last_name|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="input-append form-group date" id="dp3">
+                    <label for="customer_birth_date" class="control-label">{{'Geboortedatum'|t}} <small>{{'(Niet verplicht)'|t}}</small></label>
+                    <input class="form-control datepicker phoenix-input hidden" size="16" type="text" id="customer_birth_date" name="date_holder" data-date="12-02-2012" data-date-end-date="0d" data-date-start-date="01-01-1900" data-date-format="dd-mm-yyyy" data-parsley-pattern="^(0?[1-9]|[12][0-9]|3[01])\-(0?[1-9]|1[012])\-(\d{4})$" data-date-viewmode="year" tabindex="3" data-customer-birthdate="{{customer.birth_date|e}}" value="" placeholder="dd-mm-jjjj">
+                    <input class="form-control datefield phoenix-input hidden" type="date" name="date_holder" data-parsley-group="group-step-1" data-parsley-nofuturedates="{{"now"|date('Y-m-d')}}">
+                    <input type="hidden" name="customer[birth_date]" value="" class="date_parser">
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="customer_phone_number">{{'Telefoonnummer'|t}}</label>
+                    <input type="tel" class="form-control" id="customer_phone_number" name="customer[phone_number][primary]" tabindex="4" placeholder="{{'+316 12 34 56 78'}}" value="{{customer.phone_numbers.primary.number|e}}">
+                </div>
+                <hr>
+                <h2>{{"Verzendadres"|t}}</h2>
+                <div class="form-group country-switch-shipping">
+                    <label class="control-label">{{'Land'|t}}</label>
+                    <div class="radio af">
+                        <label class="radio-inline" for="address-shipping-is-nl1">
+                          <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl1" class="address-country-select" value="1" data-type="shipping" {% if shipping.isNL == 1 or shipping.isNL is not defined %}checked{% endif %}>
+                          <div class="radio-button"></div>
+                          {{'Nederland'|t}}
+                        </label>
+                    </div>
+                    <div class="radio af">
+                        <label class="radio-inline" for="address-shipping-is-nl2">
+                          <input type="radio" name="shipping[isNL]" id="address-shipping-is-nl2" class="address-country-select" value="0" data-type="shipping" {% if shipping.isNL is defined and shipping.isNL == 0 %}checked{% endif %}>
+                          <div class="radio-button"></div>
+                          {{'Anders'|t}}
+                        </label>
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                    <div class="collapse country-collapsable {% if shipping.isNL is defined and shipping.isNL == 0 %}checked{% endif %}">
+                    <div class="form-group">
+                        <select name="shipping[country_id]" class="form-control required" tabindex="5" id="shipping_address_country_id" value="{{shipping.address.country.id}}">
+                            {% for country in countries %}
+                                <option value="{{country.id}}" {% if shipping.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="shipping_company">{{'Bedrijf'|t}}</label>
+                    <div class="validation-container">
+                        <input type="text" class="form-control" id="shipping_address_company" name="shipping[company]" tabindex="6" placeholder="{{"Bedrijfsnaam"|t}}" value="{{shipping.address.company|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-xs-12 col-sm-4 col-md-5">
+                        <label class="control-label" for="shipping[postal_code]">{{"Postcode"|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" class="form-control required address-check-field" data-type="shipping" id="shipping_address_postal_code1" tabindex="7" name="shipping[postal_code]" placeholder="{{"Postcode"|t}}" value="{{shipping.address.postal_code|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group col-xs-7 col-sm-4">
+                        <label class="control-label" for="shipping_address_house_number">{{"Huisnummer"|t}}</label>
+                        <div class="validation-container">
+                            <input type="number" class="form-control required address-check-field" data-type="shipping" id="shipping_address_house_number" tabindex="8" name="shipping[house_number]" placeholder="{{"Huisnr"|t}}" value="{{shipping.address.house_number|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group col-xs-5 col-sm-4 col-md-3">
+                        <label class="control-label" for="shipping_address_number_suffix">{{"Toevoeging"|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" class="form-control address-check-field" data-type="shipping" id="shipping_address_house_number_suffix" tabindex="9" name="shipping[house_number_suffix]" placeholder="{{"Toev"|t}}" value="{{shipping.address.house_number_suffix|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="shipping[street]">{{'Adres'|t}}</label>
+                    <div class="validation-container">
+                        <input type="text" class="form-control" data-type="shipping" id="shipping_address_street" name="shipping[street]" tabindex="10" placeholder="Adres" value="{{shipping.address.street|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="shipping[city]">{{"Woonplaats"|t}}</label>
+                    <div class="validation-container">
+                        <input type="text" class="form-control" data-type="shipping" id="shipping_address_city" name="shipping[city]" tabindex="11" placeholder="{{"Woonplaats"|t}}" value="{{shipping.address.city|e}}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <hr>
+                <h2>{{"Factuuradres"|t}}</h2>
+                <div class="same-address-check">
+                    <div class="form-group">
+                        <div class="checkbox af">
+                            <label for="same-billing-address">
+                                <input type="checkbox" value="1" id="same-billing-address" name="billing[is_shipping]" {% if (billing is not defined and billing.is_shipping is not defined) or billing.is_shipping == 1 %}checked{% endif %}>
+                                <div class="checkbox-button"></div>
+                                {{"Factuuradres gelijk aan verzendadres"|t}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="billing-complete-container" class="collapse" aria-expanded="false">
+                    <div class="form-group country-switch-shipping">
+                        <label class="control-label">{{"Land"|t}} <span class="required">*</span></label>
+                        <div class="radio af">
+                            <label class="radio-inline" for="address-billing-is-nl1">
+                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl1" class="address-country-select" value="1" data-type="billing" {% if billing.isNL == 1 or billing.isNL is not defined %}checked{% endif %}> 
+                                <div class="radio-button"></div>
+                                {{"Nederland"|t}}
+                            </label>
+                        </div>
+                        <div class="radio af">
+                            <label class="radio-inline" for="address-billing-is-nl2">
+                                <input type="radio" name="billing[isNL]" id="address-billing-is-nl2" class="address-country-select" value="0" data-type="billing" {% if billing.isNL is defined and billing.isNL == 0 %}checked{% endif %}> 
+                                <div class="radio-button"></div>
+                                {{"Anders"|t}}
+                            </label>
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class=" collapse country-collapsable {% if billing.isNL is defined and billing.isNL == 0 %}in{% endif %}">
+                        <div class="form-group">
+                            <select name="billing[country_id]" class="form-control required" tabindex="12" id="billing_address_country_id" value="{{billing.address.country.id}}">
+                                {% for country in countries %}
+                                    <option value="{{country.id}}" {% if billing.address.country.id == country.id %}selected{% endif %} data-country-iso="{{country.iso}}">{{country.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="billing[company]">{{"Bedrijf"|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" class="form-control" id="billing_address_company" name="billing[company]" tabindex="13" placeholder="{{"Bedrijfsnaam"|t}}" value="{{billing.address.company|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-xs-4 col-md-5">
+                            <label class="control-label" for="billing[postal_code]">{{"Postcode"|t}}</label>
+                            <div class="validation-container">
+                                <input type="text" class="form-control required address-check-field" id="billing_address_postal_code1" tabindex="14" data-type="billing" name="billing[postal_code]" placeholder="{{"Postcode"|t}}" value="{{billing.address.postal_code|e}}">
+                            </div>
+                            <div class="field-error-container"></div>
+                        </div>
+                        <div class="form-group col-xs-4">
+                            <label class="control-label" for="billing[house_number]">{{"Huisnummer"|t}}</label>
+                            <div class="validation-container">
+                                <input type="number" class="form-control required address-check-field" id="billing_address_house_number" tabindex="15" data-type="billing" name="billing[house_number]" placeholder="{{"Huisnr"|t}}" value="{{billing.address.house_number|e}}">
+                            </div>
+                            <div class="field-error-container"></div>
+                        </div>
+                        <div class="form-group col-xs-4 col-md-3">
+                            <label class="control-label" for="billing[house_number_suffix]">{{"toevoeging"|t}}</label>
+                            <div class="validation-container">
+                                <input type="text" class="form-control address-check-field" id="billing_address_house_number_suffix" tabindex="16" data-type="billing" name="billing[house_number_suffix]" placeholder="{{"Toev"|t}}" value="{{billing.address.house_number_suffix|e}}">
+                            </div>
+                            <div class="field-error-container"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="billing_street">{{"Adres"|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" class="form-control" id="billing_address_street" name="billing[street]" tabindex="17" placeholder="{{"Adres"|t}}" value="{{billing.address.street|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="billing_city">{{"Woonplaats"|t}}</label>
+                        <div class="validation-container">
+                            <input type="text" class="form-control" id="billing_address_city" name="billing[city]" tabindex="18" placeholder="{{"Woonplaats"|t}}" value="{{billing.address.city|e}}">
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <a href="/account/settings">{{"Mijn wachtwoord veranderen"|t}}</a> &nbsp; <a href="/account/settings">{{"Mijn e-mailadres veranderen"|t}}</a>
+                </div>
+                <div class="form-group">
+                    <button type="submit" tabindex="19" class="btn btn-success">{{"Opslaan"|t}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

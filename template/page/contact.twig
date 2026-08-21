@@ -1,0 +1,75 @@
+{% import 'macros/displays.twig' as af_displays %}
+<div class="container">
+    <div class="contact">
+            <h1>{{title}}</h1>
+            <hr>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <form method="post" action="/form/contact">
+                    <input name="shop_name" type="hidden" value="{{properties.name}}">
+                    
+                    <div class="row">
+                        <div class="col-xs-12 form-group">
+                            <label for="name">{{"Naam"|t}}</label>
+                            <input name="name" type="text" class="form-control" id="name" placeholder="{{"Voornaam Achternaam"|t}}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 form-group">
+                            <label for="email">{{"E-mailadres"|t}}</label>
+                            <input name="email" type="email" class="form-control" id="email" placeholder="{{"naam@mail.nl"|t}}" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 form-group">
+                            <label for="bericht">{{"Stel hier je vraag"|t}} </label>
+                            <textarea name="message" id="bericht" class="form-control" rows="5" placeholder="{{"Bericht"|t}}" required></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 mb-10">
+                            {{call("recaptcha")|first}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 form-group">
+                            <button type="submit" class="btn btn-primary">{{"Verstuur"|t}}</button>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="lead">
+                    {{blocks.contact_info.content}}
+                </div>
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <a href="http://facebook.com" class="contact-social-icon" target="_blank" rel="noopener">
+                            <span class="fa-stack fa-lg fa-2x social-icon">
+                                <i class="fa fa-square fa-stack-2x"></i>
+                                <i class="fab fa-facebook fa-stack-1x text-white"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://twitter.com" class="contact-social-icon" target="_blank" rel="noopener">
+                            <span class="fa-stack fa-lg fa-2x social-icon">
+                                <i class="fa fa-square fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x text-white"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://instagram.com" class="contact-social-icon" target="_blank" rel="noopener">
+                            <span class="fa-stack fa-lg fa-2x social-icon">
+                                <i class="fa fa-square fa-stack-2x"></i>
+                                <i class="fab fa-instagram fa-stack-1x text-white"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

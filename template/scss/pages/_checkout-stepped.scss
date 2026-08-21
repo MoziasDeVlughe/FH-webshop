@@ -1,0 +1,304 @@
+#checkout-form.stepped {
+
+    textarea {
+        resize: vertical;
+    }
+
+    .datepicker {
+
+        @media (max-width: 991px) {
+
+            &::before, &::after {
+                display: none;
+            }
+        }
+    }
+
+    .checkout-summary-fixed {
+
+        hr {
+            margin-top: 7px;
+            margin-bottom: 7px;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        @include transform(translate3d(0, 0, 0));
+
+        @media (max-width: 991px) {
+            position: relative !important;
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            top: 150px;
+            width: 374.16px;
+        }
+
+        @media (min-width: 1200px) and (max-width: 1560px) {
+            top: 150px;
+            width: 359.98px;
+        }
+
+        @media (min-width: 1560px) {
+            top: 150px;
+            width: 360px;
+        }
+
+        &.affix-bottom {
+
+            @media (min-width: 768px) {
+                position: absolute;
+                left: initial;
+            }
+        }
+
+        .checkout-next {
+            margin-bottom: 20px;
+        }
+
+        // #checkout-table-credits {
+        //     display: none;
+        // }
+    }
+
+    fieldset {
+        display: none;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity .3s ease-in-out;
+
+        &.active {
+            display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .btn.checkout-next {
+            width: 100%;
+        }
+    }
+
+    .shipping-info-sum, .billing-info-sum, .payment-method-sum, .shipping-method-sum {
+
+        button {
+            color: #000;
+            text-decoration: underline;
+        }
+    }
+
+    #step-2 {
+
+        .shipping-methods {
+
+            .shipping-method {
+                margin: 0;
+
+                .shipping-method-sub-options {
+                    position: relative;
+                    display: inline-block;
+                    padding-left: 30px;
+                    margin-bottom: 15px;
+
+                    &:empty {
+                        display: none;
+                    }
+
+                    .deliver-options-angle {
+                        position: absolute;
+                        top: 13px;
+                        right: 17px;
+                    }
+
+                    .radio {
+
+                        label {
+                            @include flexbox;
+                            @include align-items(center);
+
+                            .checked-box {
+                                @include flex-basis(35px);
+                            }
+
+                            .checked-circle-text {
+                                display: inline-block;
+                                @include flex-grow(1);
+                                @include flex-basis(0);
+                            }
+                        }
+                    }
+
+                    .shipping-method-more {
+                        margin-top: 15px;
+                        @extend .btn;
+                        @extend .btn-sm;
+                        @extend .btn-primary;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// progress bar styling and transitions
+#checkout-progress {
+
+    // local variables
+    $step-border-radius: 50%;
+    $transition-speed: .3s;
+    $transition-delay: .5s;
+    //
+
+    position: relative;
+    width: 90%;
+    margin: 0 auto 50px;
+    font-size: 2.5em;
+    font-weight: 900;
+    @include flexbox;
+    @include align-items(center);
+
+    @media (max-width: 767px) {
+        font-size: 1.5em;
+    }
+
+    &::before {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        content: "";
+        background-color: $gray;
+        @include transform(translateY(-50%) perspective(1000px));
+    }
+
+    &::after {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 20px;
+        content: "";
+        background-color: $brand-primary;
+        transform-origin: left center;
+        @include transform(scaleX(0) translateY(-50%) perspective(1000px));
+        @include transition(transform $transition-speed $transition-delay ease);
+    }
+
+    &.step-2::after {
+        @include transform(scaleX(.333) translateY(-50%) perspective(1000px));
+    }
+
+    &.step-3::after {
+        @include transform(scaleX(.666) translateY(-50%) perspective(1000px));
+    }
+
+    &.step-4::after {
+        @include transform(scaleX(1) translateY(-50%) perspective(1000px));
+    }
+
+    &.step-5::after {
+        @include transform(scaleX(1) translateY(-50%) perspective(1000px));
+    }
+
+    .checkout-progress-bar {
+        width: 100%;
+        height: 100px;
+        @include flexbox;
+        @include justify-content(space-between);
+        @include align-items(center);
+
+        .step {
+            position: relative;
+            z-index: 2;
+
+            .step-label {
+                position: absolute;
+                top: calc(100% + 10px);
+                left: 50%;
+                font-size: .4em;
+                font-weight: 600;
+                color: $gray;
+                white-space: nowrap;
+                @include transform(translateX(-50%) perspective(1000px));
+                @include transition($transition-speed $transition-delay ease);
+
+                @media (max-width: 767px) {
+                    top: calc(100% + 15px);
+                }
+            }
+
+            span {
+                display: block;
+                color: $gray;
+                @include transition($transition-speed $transition-delay ease);
+                @include transform(translate3d(0,0,0) scale(1) perspective(1000px));
+            }
+
+            .fa-check {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                color: #fff;
+                opacity: 0;
+                @include transition($transition-speed $transition-delay ease);
+                @include transform(translate3d(-50%, -50%, 0) scale(0) perspective(1000px));
+            }
+
+            &.active {
+
+                span, .step-label {
+                    color: $brand-primary;
+                }
+            }
+
+            &.valid {
+
+                .fa-check {
+                    opacity: 1;
+                    @include transform(translate3d(-50%, -50%, 0) scale(1) perspective(1000px));
+                }
+
+                span {
+                    color: $brand-primary;
+                    opacity: 0;
+                    @include transform(translate3d(0,0,0) scale(2) perspective(1000px));
+                }
+
+                .step-label {
+                    color: $brand-primary !important;
+                }
+            }
+
+            &::after {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                z-index: -1;
+                width: 75px;
+                height: 75px;
+                content: "";
+                background-color: #fff;
+                border: 5px solid $gray;
+                border-radius: $step-border-radius;
+                @include transform(translate(-50%, -50%) perspective(1000px));
+                @include transition($transition-speed $transition-delay ease);
+
+                @media (max-width: 767px) {
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+
+            &.active::after {
+                border: 5px solid $brand-primary;
+            }
+
+            &.valid::after {
+                background-color: $brand-primary;
+                border: 5px solid $brand-primary;
+            }
+        }
+    }
+}

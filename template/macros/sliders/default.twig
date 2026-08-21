@@ -1,0 +1,32 @@
+{% set full_image = (full_image is defined ? (full_image == true ? true : false) : true) %}
+{% set btn_class = (btn_class is defined ? btn_class : 'btn-white-inverse') %}
+{% set use_overlay = (use_overlay is defined ? use_overlay : true) %}
+{% set text_position = (text_position is defined ? text_position : 'center') %}
+{% set lazyload = (lazyload is defined ? lazyload : true) %}
+
+{% if slider is not empty %}
+    <div class="row">
+        <div class="main-slider swiper {{(use_overlay ? "use-overlay": "")}} col-md-12 {{text_position}}">
+            <div class="swiper-wrapper"></div>
+                {% for slide in slider.slides %}
+                    <div class="swiper-slide">
+                        <div class="lazyload-wrapper lazyload-slide">
+                            <img class="slick-slide-image {% if lazyload %}lazyload{% endif %}" {% if lazyload %}data-{% endif %}src="{{slide.filename|image({"w": 1170, "h": 250})}}" alt="{{slide.title}}"/>
+                        </div>
+                        <div class="slide-overlay">
+                            {% if slide.title is not empty %}
+                                <div class="slide-title">
+                                    <h1>{{slide.title}}</h1>
+                                </div>
+                            {% endif %}
+                            {% if slide.text is not empty %}
+                                <div class="slide-text">
+                                    {{slide.text|replace({"<a href" : "<a class='btn #{btn_class}' href"})}}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+        </div>
+    </div>
+{% endif %}  

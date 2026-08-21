@@ -1,0 +1,134 @@
+<div class="container">
+    <h1>{{'Mijn account'|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig' with {'active': 'rma-' ~ (rma_type.key) } %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+          {{blocks["rma_" ~ rma_type.key].content}}
+            <form method="post" id="account-form" class="create-rma-form">
+                {% for item in items %}
+                    <table class="table">
+                        <tr>
+                            <th>{{"Artikel nummer"|t}}</th>
+                            <th>{{"Merk"|t}}</th>
+                            <th>{{"Artikel omschrijving"|t}}</th>
+                            {#<th>{{"Maat"|t}}</th>#}
+                            <th>{{"Aantal"|t}}</th>
+                            <th>{{"Prijs"|t}}</th>
+                            <th class="visible-xs">{{"Totaalprijs"|t}}</th>
+                        </tr>
+                        <tr>
+                            <td>{{item.product.ean}}</td>
+                            {% set merk = item.product.specifications.merk.options|first %}
+                            <td>{{merk.label}}</td>
+                            <td>{{item.name}}</td>
+                            {% set maat = item.product.specifications.maat.options|first %}
+                            {#<td>{{maat.label}}</td>#}
+                            <td>{{item.amount_ordered}}</td>
+                            <td>{{(item.price_gross / item.amount_ordered)|price(false, '&euro;')}}</td>
+                            <td class="visible-xs">{{item.price_gross|price(false, '&euro;')}}</td>
+                        </tr>
+                        {% if item.amount_ordered > 1 %}
+                            <tr class="hidden-xs">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>{{item.price_gross|price(false, '&euro;')}}</td>
+                            </tr>
+                        {% endif %}
+                    </table>
+    
+                    {% if item.can_rma %}
+                    <div class="form-inline rma-row">
+                        <div class=" col-lg-3 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <input type="checkbox" name="rma[{{item.sale_item_id}}][enable]" id="rma_{{item.sale_item_id}}" value="1" class="rma-checker" data-trigger="{{item.sale_item_id}}" data-parsley-multiple="rma_item" data-parsley-mincheck="1" data-parsley-required data-parsley-error-message="Een van deze {% if rma_type.key == 'ruilen' %}ruil{% else %}retour{% endif %}velden moet zijn aangevinkt." />
+                                    <label for="rma_{{item.sale_item_id}}">{{"retourneren"|t}}</label>
+                                </div>
+                                <div class="error-field"></div>
+                            </div>
+                            <div class="form-group rma-amount-select-wrapper">
+                                {% if item.amount_ordered > 1 %}
+                                    <div class="select-wrapper">
+                                    <select name="rma[{{item.sale_item_id}}][amount]" id="rma_{{item.sale_item_id}}_amount" class="form-control rma-amount-select" disabled> 
+                                    
+                                        {% for i in 1..item.amount_rma %}
+                                            <option value="{{i}}"> {{ i }} </option>
+                                        {% endfor %}
+                                    
+                                    </select>
+                                    <div class="fa fa-caret-down"></div>
+                                    </div>
+                                    <label for="rma_{{item.sale_item_id}}_amount">&nbsp;&nbsp;aantal</label>
+                                    
+                                {% else %}
+                                    <input type="hidden" name="rma[{{item.sale_item_id}}][amount]" value="1" />
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="rma-select-form-group col-md-6 col-sm-12">
+                            <div class="form-group">
+                                {#<label for="rma_{{item.sale_item_id}}_comment">Reden</label>#}
+                                {#<br>#}
+                                <div class="select-wrapper">
+                                    <select name="rma[{{item.sale_item_id}}][comment]" id="rma_{{item.sale_item_id}}_comment" class="form-control other-option" disabled data-responder="{{item.sale_item_id}}" data-parsley-dependanton="rma[{{item.sale_item_id}}][enable]" data-parsley-error-message="Dit veld is verplicht als het ruilen veld is aangevinkt.">
+                                        <option value="-" selected>{{"Kies een reden"|t}}</option>
+                                        {% if rma_type.key == 'retourneren' %}
+                                            <option value="{{"Artikel voldoet niet aan de verwachting"|t}}">{{"Artikel voldoet niet aan de verwachting"|t}}</option>
+                                            <option value="{{"Maat is niet goed"|t}}">{{"Maat is niet goed"|t}}</option>
+                                            <option value="{{"Kleur voldoet niet aan de verwachting"|t}}">{{"Kleur voldoet niet aan de verwachting"|t}}</option>
+                                            <option value="{{"Anders"|t}}">{{"Anders, namelijk"|t}}</option>
+                                        {% elseif rma_type.key == 'ruilen' %}
+                                            <option value="{{"Ruilen voor een ander artikel"|t}}">{{"Ruilen voor een ander artikel"|t}}</option>
+                                            <option value="{{"Ruilen voor een andere maat"|t}}">{{"Ruilen voor een andere maat"|t}}</option>
+                                            <option value="{{"Ruilen voor een andere kleur"|t}}">{{"Ruilen voor een andere kleur"|t}}</option>
+                                        {% endif %}
+                                    </select>
+                                    <div class="fa fa-caret-down"></div>
+                                </div>
+                                {% if rma_type.key != 'ruilen' %}
+                                    <textarea class="other-textarea font-control" placeholder="{{"Geef hier je reden op"|t}}"></textarea>
+                                {% endif %}
+                                <div class="error-field"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <hr>
+                {% endfor %}
+                <hr>
+                {% if can_rma %}
+                    <h3>{{"Retouropties"|t}}</h3>
+                    <p>{{"Maak een keuze uit één van de volgende retour punten."|t}}</p>
+                    {% set shippingmethods = {'dhl': {'id': 'dhl', 'name': 'DHL Drop off'}, 'postnl': {'id': 'postnl', 'name': 'Postkantoor'}, 'kiala': {'id': 'kialapunt', 'name': 'Kiala punt'}} %}
+                    <div class="form-inline">
+                        <div class="form-group">
+                            {% for shippingmethod in shippingmethods %}
+                                <div class="checkbox">
+                                    <input type="radio" name="rma[shippingmethod]" value="{{shippingmethod.id}}" id="shippingmethod_{{shippingmethod.id}}" data-parsley-required />
+                                    <label for="shippingmethod_{{shippingmethod.id}}">{{shippingmethod.name}}</label>
+                                </div>
+                            {% endfor %}
+                            <div class="error-field"></div>
+                        </div>
+                    </div>
+                    <hr/>
+                    
+                    <input type="submit" value="{{"Download retourformulier en verzendlabel"|t}}" class="btn is-action auto-width right pull-right" />
+                {% endif %}
+                <div class="rma-form-footer">
+                    {% if rma_type.key == 'retourneren' %}
+                        {{blocks.rma_return_footer.content}}
+                    {% elseif rma_type.key == 'ruilen' %}
+                        {{blocks.rma_swap_footer.content}}
+                    {% endif %}
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+{# blog macros #}
+
+{# use these macros by importing macros/blogs.twig as af_blogs in your document #}
+
+{# Config expects: blogs array #}
+{% macro list(config) %}
+	{% include "macros/blogs/list.twig" with config only %}
+{% endmacro %}
+
+{# Config expects: blogs array #}
+{% macro grid(config) %}
+	{% include "macros/blogs/grid.twig" with config only %}
+{% endmacro %}

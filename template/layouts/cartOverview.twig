@@ -1,0 +1,23 @@
+<div id="cart-overview">
+    <div class="cart-overview-header px-15">
+        <span class="h3">{{"Winkelwagen"|t}}</span>
+    </div>
+    <div class="cart-overview-inner">
+        {% if cart.count == 0 %}
+            <div class="text-center">
+                <span class="h3">{{"Uw winkelwagen is leeg."|t}}</span>
+                <span class="h5">{{"Vul hem met producten."|t}}</span>
+            </div>
+        {% else %}
+            {% for item in cart.items if not item.is_nested %}
+                {% include 'layouts/cartOverviews/cartOverview-2.twig' %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+    <div class="cart-overview-buttons">
+        <a href="{{cart_url}}" class="btn btn-primary {% if cart.count == 0 %}disabled{% endif %}">
+            {{"Afrekenen"|t}}
+        </a>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="title-row">
+        <h1>{{title}}</h1>
+        <hr />
+    </div>
+    <div class="row">
+        {% if menus.active is not empty or filters is not empty %}
+            <div class="col-md-3 col-xs-12 sidebar">
+                <ul class="nav nav-pills nav-stacked">
+                    {% for menuitem in menus[menus.active.tag].items %}
+                        <li class="{% if menuitem.active %}active{% endif %}">
+                            <a href="{{menuitem.url}}">{{menuitem.label}}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="{% if menus.active is not empty or filters is not empty %}col-md-9{% endif %} col-xs-12">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {% for chart in blocks if "sizechart_" in chart.identifier %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="{{chart.identifier}}">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#{{chart.identifier}}_id" aria-expanded="false" aria-controls="{{chart.identifier}}_id">
+                                <h4 class="panel-title">
+                                        {{chart.title}}
+                                </h4>
+                            </a>
+                        </div>
+                        <div id="{{chart.identifier}}_id" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{{chart.identifier}}">
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    {{chart.content}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

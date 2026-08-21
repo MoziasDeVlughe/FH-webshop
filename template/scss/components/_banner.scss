@@ -1,0 +1,30 @@
+.banner {
+        display: grid;
+        grid-template-areas: "stage";
+        border: 2;
+        color: #ffffff;
+        
+        &-content {
+            align-self: center;
+            text-align: right;
+            grid-area: stage;
+            
+        }
+        
+        &-media {
+            width: 100%;
+            grid-area: stage;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            
+            @media (min-width: $screen-sm-min) {
+                aspect-ratio: 1897 / 656;
+                
+            }
+        }
+
+        .items {
+            background-color:  #81d742;
+            text-align: center;
+        }
+    }

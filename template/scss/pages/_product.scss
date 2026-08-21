@@ -1,0 +1,68 @@
+#product-page-content {
+    
+    .product-information {
+        .product-name {
+            font-size: 32px;
+        }
+    }
+
+    .product-images:not(.side) {
+
+        .thumbnail-container {
+            @include flexbox;
+            @include flex-wrap(wrap);
+
+            &-item {
+                padding: 15px;
+                @include flex-basis(20%);
+
+                img {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+// Contact form
+.product-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 40px;
+    margin-top: 10px;
+    
+    button {
+        background-color: $brand-primary;
+        color: #fff;
+        
+        &:hover, &:active {
+            background-color: darken($brand-primary, 10%);
+        }
+    }
+    
+    .contact-button-text {
+        position: relative;
+        
+        i {
+            position: absolute;
+            left: -25px;
+            top: 0;
+        }
+    }
+}
+
+.show-contact-status {
+    position: relative;
+    
+    &.contact-status-open::before {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        content: attr(data-open-text);
+        background-color: $brand-success;
+        color: #fff;
+        padding: 0 4px 2px;
+        font-size: 12px;
+        border-radius: 10px;
+    }
+}

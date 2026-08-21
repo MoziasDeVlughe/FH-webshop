@@ -1,0 +1,28 @@
+<h1>{{'Nieuw ticket'|t}}</h1>
+<hr>
+<div class="row">
+    <div class="col-sm-3">
+        {% include 'account/menu.twig'  with {'active': 'orders'} %}
+    </div>
+    <div class="col-sm-9">
+        <form method="post">
+            <div class="form-group">
+                <label class="control-label" for="ticket_subject">{{'Onderwerp'|t}}</label>
+                <div class="validation-container">
+                    <input type="text" class="form-control" id="ticket_subject" name="subject" placeholder="Onderwerp" value="">
+                </div>
+                <div class="field-error-container"></div>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="ticket_body">{{'Bericht'|t}}</label>
+                <div class="validation-container">
+                    <textarea class="form-control" id="ticket_body" name="body" placeholder="Uw bericht" rows="8"></textarea>
+                </div>
+                <div class="field-error-container"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">{{'Verzenden'|t}}</button>
+            </div>
+        </form>
+    </div>
+</div>

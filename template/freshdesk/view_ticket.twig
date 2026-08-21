@@ -1,0 +1,38 @@
+<h1>{{'Ticket #[id]: [subject]'|t({"[id]": ticket.id, "[subject]": ticket.subject})}}</h1>
+<hr>
+<div class="row">
+    <div class="col-sm-3">
+        {% include 'account/menu.twig'  with {'active': 'orders'} %}
+    </div>
+    <div class="col-sm-9">
+        {% for message in ticket.messages %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ message.user.name|e }} {{'schreef'|t}}:
+                    <div class="pull-right">
+                        {{ message.created_at | date('d-m-Y H:i') }}
+                    </div>
+                </div>
+                <div class="panel-body">
+                    {{ message.text|e }}
+                </div>
+            </div>
+        {% endfor %}
+        <form method="post">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label" for="reply">{{'Reageer'|t}}</label>
+                        <div class="validation-container">
+                            <textarea class="form-control" id="reply" name="reply" placeholder="Uw reactie" rows="8"></textarea>
+                        </div>
+                        <div class="field-error-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">{{'Verzenden'|t}}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

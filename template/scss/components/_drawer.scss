@@ -1,0 +1,119 @@
+.drawer {
+    position: fixed;
+    z-index: 1039;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    @include flexbox;
+    @include flex-direction(column);
+    width: 100%;
+    visibility: hidden;
+    overflow-y: auto;
+    background-color: #fff;
+    
+    html.document-loaded & {
+        @include transition(.3s cubic-bezier(0.4, 0, 0.2, 1));
+    }
+    
+    @media (min-width: $screen-sm) {
+        width: 440px;
+    }
+    
+    &.drawer-top {
+        bottom: auto;
+        @include transform(translateY(-100%));
+        
+        &.in {
+            visibility: visible;
+            @include transform(none);
+        }
+    }
+    
+    &.drawer-right {
+        left: auto;
+        @include transform(translateX(100%));
+        
+        &.in {
+            visibility: visible;
+            @include transform(none);
+        }
+    }
+    
+    &.drawer-bottom {
+        top: auto;
+        @include transform(translateY(100%));
+        
+        &.in {
+            visibility: visible;
+            @include transform(none);
+        }
+    }
+    
+    &.drawer-left {
+        right: auto;
+        @include transform(translateX(-100%));
+        
+        &.in {
+            visibility: visible;
+            @include transform(none);
+        }
+    }
+    
+    &.drawer-static-md-up {
+        @media (min-width: $screen-md) {
+            position: static;
+            top: initial;
+            right: initial;
+            bottom: initial;
+            left: initial;
+            width: auto;
+            visibility: visible;
+            @include transform(none);
+        }
+    }
+    
+    &-header {
+        @include position-sticky;
+        top: 0;
+        @include flexbox;
+        @include justify-content(space-between);
+        @include align-items(center);
+        @include flex-shrink(0);
+        min-height: 40px;
+        padding: 12px 32px;
+        background-color: #fff;
+        border-bottom: 1px solid $gray-lighter;
+    }
+    
+    &-body {
+        margin: 0 32px;
+    }
+    
+    &-footer {
+        margin-top: auto;
+        
+        &-sticky {
+            @include position-sticky;
+            bottom: 0;
+            z-index: 5;
+            background-color: #fff;
+        }
+    }
+    
+    &-backdrop {
+        position: fixed;
+        z-index: 1038;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(#000, .6);
+        @include opacity(0);
+        @include transition(.3s ease);
+        
+        &.in {
+            @include opacity(1);
+        }
+    }
+}

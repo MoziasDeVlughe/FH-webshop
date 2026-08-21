@@ -1,0 +1,51 @@
+.modal {
+    z-index: 9999;
+}
+.cart-item-row {
+    @include flexbox;
+    @include justify-content(space-between);
+
+    .cart-item-image {
+        @include flex-basis(85px);
+        @include flex-grow(0);
+        @include flex-shrink(0);
+    }
+
+    .cart-item-info {
+        padding: 0 0 0 15px;
+        @include flex-grow(3);
+
+        &-details {
+            @include flexbox;
+            @include justify-content(space-between);
+
+            .cart-item-prices {
+                text-align: right;
+                @include flex-grow(1);
+                @include flex-shrink(1);
+            }
+        }
+    }
+    
+    & + .gift-wrap-form-container {
+        
+        .form-group {
+            margin-bottom: 0;
+            
+            .checkbox {
+                margin-bottom: 0;
+            }
+        }
+    }
+    
+}
+.cart-item-child-products {
+    .cart-item-row .cart-item-image {
+        @include flex-basis(40px);
+    }
+}
+
+.cost-summary-sticky {
+    @include position-sticky;
+    top: 150px;
+}

@@ -1,0 +1,22 @@
+{% set url = (url is defined ? url : null) %}
+{% set title = (title is not empty ? title : 'facebook') %}
+{% set adapt_width = (adapt_width is defined ? adapt_width : 'true') %}
+{% set hide_cover = (hide_cover is defined ? hide_cover : 'false') %}
+{% set facepile = (facepile is defined ? facepile : 'true') %}
+{% set height = (height is defined ? height : '400') %}
+
+<div class="fb-page" 
+    data-href="{{url}}" 
+    data-tabs="timeline" 
+    data-small-header="false" 
+    data-adapt-container-width="{{adapt_width}}" 
+    data-hide-cover="{{hide_cover}}" 
+    data-show-facepile="{{facepile}}" 
+    data-height="{{height}}"
+>
+    <blockquote cite="{{url}}" class="fb-xfbml-parse-ignore">
+        <a href="{{url}}">
+            {{title}}
+        </a>
+    </blockquote>
+</div>

@@ -1,0 +1,86 @@
+<div class="container">
+    <h1>{{"Account instellingen"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig'  with {'active': 'settings'}  %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            {% if has_app('newsletter') %}
+                <div class="row">
+                    <div class="col-xs-12">
+                    
+                        <h2>
+                            {{'Nieuwsbrieven'|t}}
+                        </h2>
+                                
+                        <form method="post" id="customer_newsletter">
+                           <input type="hidden" name="__returnUrl" value="{{home_url}}account/settings">
+                           
+                           {% for newsletterId,newsletter in newsletters|default(pluginData.newsletter)%}
+                                {% set checked =  (postdata.plugin.newsletter[newsletterId]|default(account.pluginData.newsletter[newsletterId].is_subscribed|default(0)) == 1) %}
+                                <div class="form-group">
+                                    <div class="checkbox af">
+                                        <label for="newsletter-{{newsletterId}}">
+                                            <input type="hidden" value="0"  name="pluginData[newsletter][{{newsletterId}}]">
+                                            <input type="checkbox" value="1" id="newsletter-{{newsletterId}}" class="" name="pluginData[newsletter][{{newsletterId}}]" {% if checked %} checked {% endif %}>
+                                            <div class="checkbox-button"></div>
+                                           {{'Niewsbrief ontvangen voor {niewsbrief-label}'|t({'{niewsbrief-label}' : newsletter.label })}}
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-success">{{'Opslaan'|t}}</button>
+                       </form> 
+                        <hr>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>{{"Kies een nieuw wachtwoord"|t}}</h2>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <form method="post" id="account-form" class="form-validate">
+                        <div class="form-group">
+                            <label class="control-label" for="account_current_password">{{"Huidig wachtwoord"|t}}</label>
+                            <input type="password" class="form-control" required id="account_current_password" name="account[current_password]" placeholder="{{"Huidig wachtwoord"|t}}">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="account_password">{{"Nieuw wachtwoord"|t}}</label>
+                            <input type="password" class="form-control" required id="account_password" name="account[password]" placeholder="{{"Wachtwoord"|t}}">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="account_password_copy">{{"Herhaal nieuw wachtwoord"|t}}</label>
+                            <input type="password" class="form-control" required id="account_password_copy" name="account[password_copy]" placeholder="{{"Wachtwoord herhalen"|t}}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">{{"Opslaan"|t}}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <h2>{{"Kies een ander e-mailadres"|t}}</h2>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <form method="post" id="account-form" class="form-validate">
+                        <div class="form-group">
+                            <label class="control-label" for="account_email">{{"Nieuw e-mailadres"|t}}</label>
+                            <input type="text" class="form-control" required id="account_email" name="account[email]" placeholder="{{customer.email|e}}">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="account_current_password">{{"Wachtwoord"|t}}</label>
+                            <input type="password" class="form-control" required id="account_current_password" name="account[current_password]" placeholder="{{"Huidig wachtwoord"|t}}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">{{"Opslaan"|t}}</button>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

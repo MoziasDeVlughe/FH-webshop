@@ -1,0 +1,28 @@
+{% set theme = (theme is defined ? theme : 'light') %}
+{% set color = (color is defined ? color : '#000') %}
+{% set show_reviews = (show_reviews is defined ? show_reviews : 'yes') %}
+{% set view = (view is defined ? view : 'slider') %}
+
+
+<script class='wwk_script_container' defer>(function () {
+    (_wwk_id = (typeof _wwk_id !== 'undefined') ? _wwk_id : []).push({{store}});
+    (_wwk_layout = (typeof _wwk_layout !== 'undefined') ? _wwk_layout : []).push('default');
+    (_wwk_theme = (typeof _wwk_theme !== 'undefined') ? _wwk_theme : []).push('{{theme}}');
+    (_wwk_color = (typeof _wwk_color !== 'undefined') ? _wwk_color : []).push('{{color}}');
+    (_wwk_show = (typeof _wwk_show !== 'undefined') ? _wwk_show : []).push('{{show_reviews}}');
+    (_wwk_view = (typeof _wwk_view !== 'undefined') ? _wwk_view : []).push('{{view}}');
+    (_wwk_amount = (typeof _wwk_amount !== 'undefined') ? _wwk_amount : []).push(6);
+    (_wwk_width = (typeof _wwk_width !== 'undefined') ? _wwk_width : []).push('auto');
+    (_wwk_width_amount = (typeof _wwk_width_amount !== 'undefined') ? _wwk_width_amount : []).push('240px');
+    (_wwk_height = (typeof _wwk_height !== 'undefined') ? _wwk_height : []).push('345px');
+    (_wwk_interval = (typeof _wwk_interval !== 'undefined') ? _wwk_interval : []).push(8000);
+    (_wwk_language = (typeof _wwk_language !== 'undefined') ? _wwk_interval : []).push(1);
+    var js = document.createElement('script'), c = _wwk_id.length - 1;
+    js.className = 'wwk_script';
+    js.type = 'text/javascript';
+    js.async = true;
+    js.src = 'https://www.webwinkelkeur.nl/widget2.js?c=' + c;
+    var s = document.getElementsByClassName('wwk_script_container')[c];
+    s.parentNode.insertBefore(js, s);
+    })();
+</script>

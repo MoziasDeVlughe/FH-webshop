@@ -1,0 +1,8 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+<div class="container mt-24">
+    <h1>{{'Onze merken'|t}}</h1>
+    {{af_displays.brands_grid({
+        "slider" : sliders.merken, 
+    })}}
+</div>

@@ -1,0 +1,133 @@
+$switch-element-diameter: 20px;
+$form-element-color: $brand-primary;
+$form-element-contra-color: #fff;
+
+.form-control {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+%af-radio-styles, .radio.af {
+
+    label {
+        padding-left: 0;
+        @include flexbox;
+        @include align-items(center);
+
+        .radio-button {
+            position: relative;
+            width: $switch-element-diameter;
+            height: $switch-element-diameter;
+            margin-right: 10px;
+            content: "";
+            border: 1px solid rgba($form-element-color, .5);
+            border-radius: 50%;
+            @include flex-shrink(0);
+
+            &::before {
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: $switch-element-diameter - 6px;
+                height: $switch-element-diameter - 6px;
+                content: "";
+                background-color: rgba($form-element-color, 0);
+                border-radius: 50%;
+                @include transform(perspective(1000px) scale(.8));
+                @include transition(transform .2s ease, background-color .2s ease);
+            }
+        }
+
+        input[type=radio] {
+            position: absolute;
+            left: -9999px;
+            @include opacity(0);
+
+            &:checked ~ .radio-button::before {
+                background-color: rgba($form-element-color, 1);
+                @include transform(perspective(1000px) scale(1));
+            }
+            
+            &:focus ~ .radio-button {
+                box-shadow: 0 0 5px 0 $brand-info;
+            }
+        }
+    }
+}
+
+.radio-inline.af {
+    @extend %af-radio-styles;
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+.checkbox.af {
+
+    label {
+        padding-left: 0;
+        @include flexbox;
+        @include align-items(center);
+
+        .checkbox-button {
+            position: relative;
+            width: $switch-element-diameter;
+            height: $switch-element-diameter;
+            margin-right: 10px;
+            content: "";
+            border: 1px solid rgba($form-element-color, .5);
+            border-radius: $input-border-radius;
+            @include flex-shrink(0);
+
+            &::before {
+                position: absolute;
+                top: -1px;
+                right: -1px;
+                bottom: -1px;
+                left: -1px;
+                content: "";
+                background-color: rgba($form-element-color, 0);
+                border-radius: $input-border-radius;
+                @include transform(perspective(1000px) scale(.8));
+                @include transition(transform .2s ease, background-color .2s ease);
+            }
+
+            &::after {
+                position: absolute;
+                top: 0;
+                left: 35%;
+                width: $switch-element-diameter * .3;
+                height: $switch-element-diameter * .7;
+                content: "";
+                border-color: transparent;
+                border-style: solid;
+                border-width: 0 2px 2px 0;
+                @include transform(perspective(1000px) scale(1.5) rotate(45deg));
+                @include transition(transform .2s ease);
+            }
+        }
+
+        input[type=checkbox] {
+            position: absolute;
+            left: -9999px;
+            @include opacity(0);
+
+            &:checked ~ .checkbox-button {
+
+                &::before {
+                    background-color: rgba($form-element-color, 1);
+                    @include transform(perspective(1000px) scale(1));
+                }
+                
+                &::after {
+                    border-color: $form-element-contra-color;
+                    @include transform(perspective(1000px) scale(1) rotate(45deg));
+                }
+            }
+            
+            &:focus ~ .checkbox-button {
+                box-shadow: 0 0 5px 0 $brand-info;
+            }
+        }
+        
+    }
+}

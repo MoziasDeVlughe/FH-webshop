@@ -1,0 +1,108 @@
+{# type: layout #}
+{% import 'macros/sliders.twig' as af_sliders %}
+{% import 'macros/displays.twig' as af_displays %}
+{% import 'macros/menus.twig' as af_menus %}
+
+{# Tijdelijke transitie-melding (tekstblok: extra_banner). Site-breed, niet op checkout. #}
+{% if blocks.extra_banner.content is not empty %}
+    <div class="extra-banner" role="status">
+        <div class="container">
+            <div class="extra-banner__inner">
+                <i data-lucide="info" class="extra-banner__icon size-18"></i>
+                <div class="extra-banner__text">{{ blocks.extra_banner.content }}</div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{#<div class="header-usps hidden-xs">#}
+{#    <div class="container">#}
+{#        <div class="flex justify-content-between">#}
+{#            <div class="usps-bar">#}
+                {##}
+                {#USPS are dynamically loaded from tekstblokken. make sure the name contains usps and it will appear in the right places#}
+                {##}
+{#                {% for usp in blocks if "usps" in usp.identifier %}#}
+{#                        <span class="usps-item">#}
+{#                            {{usp.content}}#}
+{#                        </span>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{#            <div class="language-bar">#}
+{#                {% if pluginData.hrefLang %}#}
+{#                    {% include 'layouts/languageSelect.twig' %}#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+
+<header class="default fh-header">
+    <div class="navbar navbar-default" >
+        <div class="navbar-header font-size-sm-13 font-size-20 text-uppercase font-weight-100 px-sm-20 px-15">
+            <div class="navbar-brand-wrapper">
+                {% if properties.logo %}
+                    <a href="{{home_url}}" class="navbar-brand"><img class="img-polaroid image-file"  src="{{image('/image/1050559293-Florian_Horsefood_liggend.png')}}"></a>
+                {% else %}
+                    <a href="{{home_url}}" class="header-service-name navbar-brand"><strong>{{properties.name}}</strong></a>
+                {% endif %}
+            </div>
+            {#<form class="navbar-form" role="search" method="GET" action="{{search_url}}">#}
+            {#    <div class="input-group d-flex">#}
+            {#        <label for="search-field" class="sr-only">#}
+            {#            {{'Zoeken'|t}}#}
+            {#        </label>#}
+            {#        <input type="text" class="form-control no-fix-up" value="{{search_query}}" name="q" placeholder="{{'Zoeken'|t}}" id="search-field" autocomplete="off" >#}
+            {#        <span class="input-group-btn">#}
+            {#            <button type="submit" class="btn btn-primary" aria-label="{{'Zoeken'|t}}"><i data-lucide="search" class="size-20"></i></button>#}
+            {#        </span>#}
+            {#    </div>#}
+            {#    <div class="search-focus-overlay"></div>#}
+            {#</form>#}
+            <div class="navbar-utilities">
+                <ul class="nav navbar-nav pull-right px-lg-30 py-lg-15">
+                    <li class="text-center">
+                        <a class="cart-toggle" data-toggle="drawer" data-target="#cart-drawer">
+                            <i class="size-20" data-lucide="shopping-cart"></i> <span class="badge"></span>
+                            <span class="sr-only hidden-xs">{{"Winkelwagen"|t}}</span>
+                        </a>
+                    </li>
+                    <li class="text-center" id="account-display">
+                        <a href="#" id="account-link">
+                            <i class="size-20" data-lucide="user-round{% if pluginData['af-sid'].given_name %}-check{% else %}-x{% endif %}"></i>
+                            <br />
+                            <span class="sr-only hidden-xs account-link-label">
+                                {% if pluginData['af-sid'].given_name %}{{pluginData['af-sid'].given_name}}{% else %}{{'Inloggen'|t}}{% endif %}
+                            </span>
+                        </a>
+                    </li>
+                    <li class="visible-xs">
+                        <button class="navbar-toggle toggle-mobile-menu" data-toggle="drawer">
+                            <span class="sr-only">{{"Toggle navigation"|t}}</span>
+                            <i data-lucide="menu"></i>
+                        </button>
+                    </li>
+                    {# wishlist bewust weggelaten uit de header #}
+                </ul>
+            </div>
+            <div class="main-nav">
+                <nav id="main-navbar-nav ">
+                    {{af_menus.dropdown({
+                        "menu"  : menus.default
+                    })}}
+                </nav>
+            </div>
+            {#<div class="main-nav-backdrop"></div>#}
+    </div>
+          
+         
+</header>
+
+<div id="cart-drawer-container"></div>
+
+{% if type != 'collection' and type != 'product' and breadcrumbs %}
+    <div class="container">
+        {% include 'macros/breadcrumbs.twig' %}
+    </div>
+{% endif %}
+

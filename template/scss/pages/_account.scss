@@ -1,0 +1,35 @@
+.order-list {
+
+    .order-row {
+        padding: 10px 0;
+        border-bottom: 1px solid $gray-lighter;
+        @include transition(background-color .2s ease);
+
+        &-inner {
+            padding: 0 15px;
+            @include flexbox;
+            @include flex-wrap(nowrap);
+            @include flex-direction(row);
+            @include align-items(center);
+            @include af-xs {
+                display: block;
+            }
+        }
+
+        &:nth-child(even) {
+            background-color: rgba($brand-primary, .02);
+        }
+
+        &:hover {
+            text-decoration: underline;
+            background-color: rgba($gray-base, .05);
+        }
+    }
+}
+
+.account-menu-sticky {
+    @media (min-width: $screen-sm) {
+        @include position-sticky;
+        top: 150px;
+    }
+}

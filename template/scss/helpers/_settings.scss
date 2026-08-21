@@ -1,0 +1,248 @@
+// Theme Settings
+// 
+// This list contains the key variables used throughout the scss files.
+// By changes these varaibles to the correct values The site will change drasticaly.
+// 
+// 
+// 
+// !!!!
+// 
+// Do not forget to save main.scss after you change any variable. Your changes will have no effect if you don't.
+// 
+// !!!!
+
+
+$screen-xl: 1560px;
+
+$breakpoints-map: (
+    xs: 0,
+    sm: $screen-sm,
+    md: $screen-md,
+    lg: $screen-lg,
+    xl: $screen-xl
+);
+
+
+// ******* header *******
+
+// set the height and top and bottom spacing of the logo for desktop and mobile.
+$logo-height:                       60px;
+$logo-height-mobile:                40px;
+$logo-padding:                      5px 0;
+$logo-padding-mobile:               0 0;
+
+// use this setting to level out the searchbar and the menu that contains the shoppingcart
+$padding-header-elements:           5px;
+$padding-header-elements-mobile:    0;
+
+
+// these variables are the color-palette of the site. 
+// They are all standard bootstrap variables except secondary.
+$brand-primary:         #8bc63e;
+$brand-secondary:       #006633;
+$brand-success:         #2C7F5A;
+$brand-info:            #81d742;
+$brand-warning:         #D29902;
+$brand-danger:          #D44438;
+
+
+// $gray-900:              #242424;
+// $gray-800:              #fff;
+// $gray-700:              #fff;
+// $gray-600:              #fff;
+// $gray-500:              #fff;
+// $gray-400:              #fff;
+// $gray-300:              #fff;
+// $gray-200:              #fff;
+// $gray-100:              #F0F0F0;
+
+
+$gray-base:             #000;
+$gray-darker:           lighten($gray-base, 13.5%); // #222
+$gray-dark:             #7b8a8b;   // #333
+$gray:                  #95a5a6; // #555
+$gray-light:            #b4bcc2;   // #999
+$gray-lighter:          #ecf0f1; // #eee
+$brand-text-secondary:  #333;
+
+// With this varaible you can set the background of the site. you can also use an image.
+$body-bg:               #fff;
+
+
+// The yiq lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 and 255.
+$yiq-contrasted-threshold:  150 !default;
+
+// Customize the light and dark text colors for use in our YIQ color contrast function.
+$yiq-text-dark:             $gray-base !default;
+$yiq-text-light:            #fff !default;
+
+// settings for border radius on all elements that have this
+$border-radius-base:        4px;
+$border-radius-large:       6px;
+$border-radius-small:       3px;
+
+
+//** Global text styling on `<body>`.
+$text-color:            #000;
+$font-weight:           400;
+
+//** Global textual link color.
+$link-color:            $brand-primary;
+//** Link hover color set via `darken()` function.
+$link-hover-color:      $link-color;
+//** Link hover decoration.
+$link-hover-decoration: underline;
+
+
+$input-border-focus:             $brand-primary;
+
+
+$navbar-default-color:             $brand-primary;
+$navbar-default-bg:                #006633; //$gray-100
+$navbar-default-border:            transparent;
+
+
+// styling for navigation menu items
+$navbar-default-link-color:                $navbar-default-color;
+$navbar-default-link-hover-color:          $brand-primary;
+$navbar-default-link-hover-bg:             transparent;
+$navbar-default-link-active-color:         $brand-primary;
+$navbar-default-link-active-bg:            transparent;
+$navbar-default-link-disabled-color:       #ccc;
+$navbar-default-link-disabled-bg:          transparent;
+
+
+// styling for footer
+$footer-color:                      $text-color;
+$footer-bg:                         #20323C;
+$footer-border:                     $navbar-default-border;
+
+$footer-link-color:                 $footer-color;
+$footer-link-hover-color:           $navbar-default-link-hover-color;
+$footer-link-hover-bg:              $navbar-default-link-hover-bg;
+$footer-link-active-color:          $navbar-default-link-active-color;
+$footer-link-active-bg:             $navbar-default-link-active-bg;
+$footer-link-disabled-color:        $navbar-default-link-disabled-color;
+$footer-link-disabled-bg:           $navbar-default-link-disabled-bg;
+
+
+// styling for default button 
+$btn-default-color:              #fff;
+$btn-default-bg:                 #ccc;
+$btn-default-border:             #ccc;
+$btn-default-transition:         .2s ease;
+
+$btn-gray-hover-border:             #333;
+
+$partner-logo-fill:             rgba(#fff, .9);
+
+
+// utility maps
+$flex-widths: (
+    "20":   20,
+    "33":   33.33333,
+    "25":   25,
+    "40":   40,
+    "50":   50,
+    "60":   60,
+    "66":   66.66666,
+    "75":   75,
+    "80":   80,
+    "100":  100
+);
+
+$spacer: 5px;
+$spacer-4: 4px;
+$spacing-map: (
+
+    // 'other' spacing map
+    "0": 0,
+    "1": 1px,
+    "2": 2px,
+    "3": 3px,
+
+    // 5px spacing map
+    "n20": ($spacer * -4 ),
+    "n15": ($spacer * -3),
+    "n10": ($spacer * -2),
+    "n5": ($spacer * -1),
+    "5":   $spacer,
+    "10":  ($spacer * 2),
+    "15":  ($spacer * 3),
+    "20":  ($spacer * 4),
+    "25":  ($spacer * 5),
+    "30":  ($spacer * 6),
+    "35":  ($spacer * 7),
+    "40":  ($spacer * 8),
+    "45":  ($spacer * 9),
+    "50":  ($spacer * 10),
+    "55":  ($spacer * 11),
+    "60":  ($spacer * 12),
+    "65":  ($spacer * 13),
+    "70":  ($spacer * 14),
+    "75":  ($spacer * 15),
+    "80":  ($spacer * 16),
+    "90":   ($spacer * 18),
+    "120":  ($spacer * 24),
+    
+    // 4px spacing map
+    "n16": ($spacer-4 * -4),
+    "n12": ($spacer-4 * -3),
+    "n8":  ($spacer-4 * -2),
+    "n4":  ($spacer-4 * -1),
+    "4":   $spacer-4,
+    "8":   ($spacer-4 * 2),
+    "12":  ($spacer-4 * 3),
+    "16":  ($spacer-4 * 4),
+    // "20":  ($spacer-4 * 5),
+    "24":  ($spacer-4 * 6),
+    "28":  ($spacer-4 * 7),
+    "32":  ($spacer-4 * 8),
+    "36":  ($spacer-4 * 9),
+    // "40":  ($spacer-4 * 10),
+    "44":  ($spacer-4 * 11),
+    "48":  ($spacer-4 * 12),
+    "52":  ($spacer-4 * 13),
+    "56":  ($spacer-4 * 14),
+    // "60":  ($spacer-4 * 15),
+    "64":  ($spacer-4 * 16),
+    "68":  ($spacer-4 * 17),
+    "72":  ($spacer-4 * 18),
+    "76":  ($spacer-4 * 19),
+    // "80":  ($spacer-4 * 20),
+);
+
+$icon-sizes: (
+
+    // per 2
+    "2":    2px,
+    "4":    4px,
+    "6":    6px,
+    "8":    8px,
+    "10":   10px,
+    "12":   12px,
+    "14":   14px,
+    "16":   16px,
+    "18":   18px,
+    "20":   20px,
+    
+    // per 4
+    "24":   24px,
+    "28":   28px,
+    "32":   32px,
+    "36":   36px,
+    "40":   40px,
+    "44":   44px,
+    "48":   48px,
+    "52":   52px,
+    "56":   56px,
+    "60":   60px,
+    "64":   64px,
+    "68":   68px,
+    "72":   72px,
+    "76":   76px,
+    "80":   80px,
+    
+    // others
+    "96":   96px,
+);

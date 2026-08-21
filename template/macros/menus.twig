@@ -1,0 +1,28 @@
+{# Config expects: menu #}
+{% macro default(config) %}
+	{% include "macros/menus/default.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: main menu with sub items for dropdown #}
+{% macro dropdown(config) %}
+	{% include "macros/menus/defaultDropdown.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: menu #}
+{% macro mmenu(config) %}
+	{% include "macros/menus/mmenu.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: main menu for dropdown, extra menu for extra menu items to the right #}
+{% macro megamenu(config) %}
+	{% include "macros/menus/megamenu.twig" with config only %}
+{% endmacro %}
+
+
+{# Config expects: main menu for dropdown, extra menu for extra menu items to the right #}
+{% macro premium_mega(config) %}
+	{% include "macros/menus/premiumMega.twig" with config only %}
+{% endmacro %}

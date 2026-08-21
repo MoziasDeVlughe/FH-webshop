@@ -1,0 +1,23 @@
+<section class="full-width-slider">
+    {% if slider is not empty %}
+        {% if slider.slides|first.title is not empty %}
+            <a href="{{slider.slides|first.title}}">
+        {% else %}
+            <div>
+        {% endif %}
+        <picture>
+            {% if slider.slides|length > 1 %}
+                <source media="(max-width: 767px)" srcset="{{slider.slides[1].filename|replace({'1170x250/' :''})|image({ "w": 767, "h": 384 })}}" />
+            {% endif %}
+            <img
+                class="slide-image-background object-fit-cover"
+                src="{{slider.slides|first.filename|replace({'1170x250/' :''})|image({ "w": 1920, "h": 480 })}}"
+            />
+        </picture>
+        {% if slider.slides|first.title is not empty %}
+            </a>
+        {% else %}
+            </div>
+        {% endif %}
+    {% endif %}
+</section>

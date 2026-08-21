@@ -1,0 +1,143 @@
+{# type: success #}
+
+{% set quantity = 0 %}
+{% for item in order.items %}
+    {% set quantity = quantity + item.quantity %}
+{% endfor %}
+
+{% set productIdsArray = [] %}
+{% for id in order.product_ids %}
+    {% set productIdsArray = productIdsArray|merge([id]) %}
+{% endfor %}
+
+{% if order.first_time_tracking == 1 %}
+    <script>
+        pintrk('track', 'checkout', {
+            order_id: '{{order_number}}',
+            value: {{order.total_price}},
+            order_quantity: {{quantity}},
+            currency: "{{properties.currency}}",
+            line_items: [
+                {% for item in order.items %}
+                    {
+                        product_name: '{{item.name}}',
+                        product_id: '{{productIdsArray[loop.index0]}}',
+                        product_price: {{item.price}},
+                        product_quantity: {{item.quantity}}
+                    },
+                {% endfor %}
+            ]
+        });
+    </script>
+{% endif %}
+
+{#{{dump(customer)}}#}
+
+<div class="container">
+    <div class="d-flex flex-column flex-md-row mx-n15">
+        <div class="flex-100 d-flex flex-column px-15{% if not account.is_logged_in %} flex-md-66{% endif %}">
+            
+            <div class="panel panel-success">
+                <div class="panel-body">
+                    <h1 class="h2 mt-0">{{"Bedankt voor je aankoop [name]"|t({"[name]": customer.first_name|e|capitalize})}}</h1>
+                    <p>{{"Je bestelling is bij ons ontvangen en is bij ons bekend onder ordernummer"|t}} <strong>#{{order_number}}</strong>. {{"Zojuist heb je een bevestiging op je e-mailadres ontvangen"|t}}: <strong>{{customer_email|e}}</strong>. {{"Verdere updates over de status van deze bestelling zullen per e-mail worden verstuurd"|t}}.</p>
+                    {% if payment_instructions %}
+                		<h5>{{"Betaalinstructies"|t}}</h5>
+                		<p>{{payment_instructions}}</p>
+                	{% endif %}
+                    <a href="{{home_url}}" class="btn btn-primary">{{"Klik hier om door te gaan met winkelen"|t}}</a>
+                </div>
+            </div>    
+            {#<div class="panel panel-primary">#}
+            {#    <div class="panel-body">#}
+            {#        <div class="d-flex flex-column mt-15">#}
+            {#            <h2 class="mt-0">#}
+            {#                {{'Uw aankopen'|t}}#}
+            {#            </h2>#}
+            {#            {% for item in order.items %}#}
+            {#                <div class="panel panel-default w-100">#}
+            {#                    <div class="panel-body w-100">#}
+            {#                        <div class="d-flex w-100">#}
+            {#                            <div class="flex-60">#}
+            {#                                <div>#}
+            {#                                    {{item.name}}#}
+            {#                                </div>#}
+            {#                            </div>#}
+            {#                            <div class="pr-20 flex-20">#}
+            {#                                {{item.quantity}}x#}
+            {#                            </div>#}
+            {#                            <div class="flex-20 text-right">#}
+            {#                                <strong>#}
+            {#                                    {{item.price|price}}#}
+            {#                                </strong>#}
+            {#                            </div>#}
+            {#                        </div>#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#            {% endfor %}#}
+            {#        </div>#}
+            {#    </div>#}
+            {#</div>#}
+        </div>
+        {% if not account.is_logged_in %}
+            <div class="flex-100 flex-md-33 px-15 d-flex">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h2 class="mt-0">
+                            {{'Account aanmaken'|t}}
+                        </h2>
+                        <p>
+                            {{'Maak een account aan om je orders terug te kijken en de volgende keer sneller te kunnen afrekenen.'|t}}
+                        </p>
+                    
+                        <form action="{{account.signup_url}}" method="post" class="form form-validate" id="success-signup-form">
+                            <div class="form-group">
+                                <label>{{'Aanhef'|t}}</label>
+                                <div class="radio af">
+                                    <label for="account_is_female_0">
+                                        <input class="phoenix-input" type="radio" name="customer[is_female]" id="account_is_female_0" value="0" {% if postdata.customer.is_female == false %} checked {% endif %} >
+                                        <div class="radio-button"></div>
+                                        {{'Man'|t}}  
+                                    </label> 
+                                </div>
+                                
+                                <div class="radio af">
+                                    <label for="account_is_female_1"> 
+                                        <input class="phoenix-input" type="radio" name="customer[is_female]" id="account_is_female_1" value="1" {% if postdata.customer.is_female == true %} checked {% endif %} >
+                                        <div class="radio-button"></div>
+                                        {{'Vrouw'|t}}
+                                    </label> 
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="control-label" for="account_name">{{"Naam"|t}}</label>
+                                <div class="validation-container">
+                                    <input type="text" class="form-control" value="{{customer.first_name|e ~ ' ' ~ customer.last_name|e}}" id="account_name" name="account[name]" placeholder="{{"Je naam"|t}}" data-parsley-required="true" data-parsley-minlength="1">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="account_email">{{"E-mailadres"|t}}</label>
+                                <div class="validation-container">
+                                    <input type="text" class="form-control" id="account_email" name="account[email]" value="{{customer.email|e}}" placeholder="{{"Je e-mailadres"|t}}" data-parsley-type="email" data-parsley-required="true" >
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="account_password">{{"Wachtwoord"|t}}</label>
+                                <div class="validation-container">
+                                    <input type="password" class="form-control" id="account_password" name="account[password]" placeholder="{{"Je wachtwoord"|t}}" data-parsley-required="true" data-parsley-minlength="4">
+                                </div>
+                                <div class="field-error-container"></div>
+                            </div>
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn btn-primary">{{"Registreren"|t}}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

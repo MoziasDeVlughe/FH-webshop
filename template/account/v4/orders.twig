@@ -1,0 +1,74 @@
+{% set orders = call("search","calculations")|first %}
+
+<div class="container">
+    <h1>{{"Mijn bestellingen"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig'  with {'active': 'orders'} %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <div class="row">
+                <div class="col-md-2 col-xs-4 hidden-xs hidden-sm">
+                    <strong>{{ "Ordernummer"|t }}</strong>
+                </div>
+                <div class="col-md-2 col-sm-4 hidden-xs hidden-sm">
+                    <strong>{{ "Datum"|t }}</strong>
+                </div>
+                <div class="col-md-2 col-sm-4 hidden-xs hidden-sm">
+                    <strong>{{ "Status"|t }}</strong>
+                </div>
+                <div class="col-md-2 col-sm-4 hidden-xs hidden-sm">
+                    <strong>{{ "Bedrag"|t }}</strong>
+                </div>
+            </div>
+            <hr>
+            <div class="order-list">
+                {% for sale in orders|reverse %}
+                    <div class="order-row">
+                        <div class="row order-row-inner">
+                            <div class="col-xs-6 visible-xs visible-sm">
+                                <strong>{{ "Ordernummer"|t }}:</strong>
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                {{ sale.title }}
+                            </div>
+                            <div class="col-xs-6 visible-xs visible-sm">
+                                <strong>{{ "Datum"|t }}:</strong>
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                {{ (sale.filters.created_at / 1000)|date("d-m-Y") }}
+                            </div>
+                            <div class="col-xs-6 visible-xs visible-sm">
+                                <strong>{{ "Status"|t }}:</strong>
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                {% set state = 'Open' %}
+                                {% if sale.filters.is_accepted %}
+                                    {% set state = 'Geaccepteerd' %}
+                                {% endif %}
+                                {% if sale.filters.is_confirmed %}
+                                    {% set state = 'Bevestigd' %}
+                                {% endif %}
+                                {% if sale.filters.is_finished %}
+                                    {% set state = 'Afgerond' %}
+                                {% endif %}
+                                {{state}}
+                            </div>
+                            <div class="col-xs-6 visible-xs visible-sm">
+                                <strong>{{ "Bedrag"|t }}:</strong>
+                            </div>
+                            <div class="col-md-2 col-sm-6">
+                                {{ (sale.metadata.amount / 100)|price(false, '&euro;') }}
+                            </div>
+                            <div class="col-xs-12 space-20 visible-xs"></div>
+                            {#<div class="col-sm-3 col-xs-12 text-right">#}
+                            {#    <a href="{{home_url ~ 'account/orders/' ~ sale.metadata.order_id }}" class="btn btn-sm btn-gray"><i class="fa fa-search"> </i> {{ "Bekijk details"|t }}</a>#}
+                            {#</div>#}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+.mini-banner-row {
+    @include flexbox;
+    @include flex-direction(row);
+    @include flex-wrap(nowrap);
+    @include justify-content(center);
+    @include align-items(center);
+
+    @include af-xs {
+        @include flex-direction(column);
+        @include align-items(stretch);
+    }
+
+    .mini-banner {
+        position: relative;
+        overflow: hidden;
+        @include flex-grow(1);
+
+        &-overlay {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            z-index: 1;
+            @include transform(translateY(-50%));
+
+            span {
+                font-size: 2vw;
+                color: #fff;
+                text-shadow: 0 0 6px rgba(0,0,0,.5);
+
+                @include af-xs {
+                    font-size: 7vw;
+                    text-shadow: 0 0 8px rgba(0,0,0,.5);
+                }
+            }
+        }
+
+        img {
+            @include transition(.3s ease);
+            @include transform(perspective(1000px) translate3d(0,0,10px));
+            width: 100%;
+        }
+
+        &:hover {
+
+            img {
+                @include opacity(.7);
+                @include transform(perspective(1000px) translate3d(0,0,50px));
+            }
+        }
+    }
+}

@@ -1,0 +1,89 @@
+{% set tabindex = 1 %}
+
+{% set pickup_point_methods = [] %}
+    
+{% if has_app('dhl-pickup-points') %}
+    {% set pickup_point_methods = pickup_point_methods|merge([pluginData.dhl_pickup_points.pickup_method_id]) %}
+{% endif %}
+ 
+{% if has_app('postnl-pickup-points') %}
+    {% set pickup_point_methods = pickup_point_methods|merge([pluginData.postnl_pickup_points.pickup_method_id]) %}
+{% endif %}
+
+<fieldset id="step-2">
+    <p>
+        {{blocks.shipping_options.content}}
+    </p>
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2  col-md-8 col-md-push-2   col-lg-8 col-lg-push-2   col-xl-6 col-xl-push-3">
+            <div class="panel panel-primary panel-body">
+                <div class="form-group">
+                    <label for="sale_shipping_method_id" class="control-label">{{'Maak je keuze'|t}} <span class="required">*</span></label>
+                    <div class="shipping-methods">
+                        {% for method in shipping_methods|sort %}
+                            <div class="row shipping-method-row hidden">
+                                <div class="col-xs-12">
+                                    <div class="radio af shipping-method{% if method.id in pickup_point_methods %} hidden{% endif %}" data-country="{{method.iso}}" data-id="{{method.id}}">
+                                        <label>
+                                            <div class="radio-label">
+                                                <input 
+                                                    type="radio"
+                                                    tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" 
+                                                    {% if loop.first %}
+                                                        required
+                                                        data-parsley-required-message="{{'Kies een van de verzendmethodes om verder te gaan.'|t}}"
+                                                    {% endif %}
+                                                    data-parsley-group="group-step-2"
+                                                    data-parsley-excluded
+                                                    name="sale[shipping][method][id]"
+                                                    class="shipping-method-option"
+                                                    id="sale_shipping_method_id_{{method.id}}_{{method.iso}}"
+                                                    data-method-code="{{method.code}}"
+                                                    data-type="shipping"
+                                                    data-iso="{{method.iso}}"
+                                                    data-name="{{method.name}}"
+                                                    data-cost="{{method.cost}}"
+                                                    data-tax-rate="{{method.tax_rate}}"
+                                                    value="{{method.id}}" 
+                                                    {% if postdata.sale.shipping.method.id == method.id or (postdata.sale.shipping.method.id is not defined and loop.parent.loop.first) %}checked{% endif %}
+                                                >
+                                                <div class="radio-button"></div>
+                                                <strong>
+                                                    {{method.name}}
+                                                    {% if method.cost > 0 %}
+                                                        <span class="method-cost"> ({{method.cost|price}})</span>
+                                                    {% endif %}
+                                                </strong>
+                                            </div>
+                                            {% if 'postnl' in method.name|lower %}
+                                                {{af_displays.icon({
+                                                    'id'    : 'postnl',
+                                                    'class' : 'shipping-method-icon partner-logo fill-primary'
+                                                })}}
+                                            {% elseif 'dpd' in method.name|lower %}
+                                                {{af_displays.icon({
+                                                    'id'    : 'dpd',
+                                                    'class' : 'shipping-method-icon partner-logo fill-primary'
+                                                })}}
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-7 col-xs-push-5 col-sm-6 col-sm-push-6">
+                        <button type="button" data-next-step="step-3" class="btn btn-primary btn-checkout-step checkout-next pull-right" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-step-type="payment">{{'VOLGENDE STAP'|t}}</button>
+                    </div>
+                    <div class="col-xs-5 col-xs-pull-7 col-sm-6 col-sm-pull-6">
+                        <button type="button" data-previous-step="step-1" class="btn btn-checkout-step btn-prev-step btn-primary-inverse btn-full-width" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" data-step-type="address">
+                            {{'Terug'|t}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

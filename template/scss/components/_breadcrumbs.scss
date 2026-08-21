@@ -1,0 +1,13 @@
+.breadcrumb-container {
+    .breadcrumb {
+        li {
+            &::before {
+                content: none !important;
+            }
+            
+            .separator {
+                color: $breadcrumb-color;
+            }
+        }
+    }
+}

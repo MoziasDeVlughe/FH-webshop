@@ -1,0 +1,170 @@
+{# type: page #}
+{% import 'macros/sliders.twig' as af_sliders %}
+{% import 'macros/displays.twig' as af_displays %}
+{% import 'macros/plugins.twig' as af_plugins %}
+{% import 'macros/blogs.twig' as af_blog %}
+{% import 'macros/menus.twig' as af_menus %}
+
+{# Styling staat in scss/_florian-redesign.scss (gescopet onder .fh-home). #}
+
+<div class="fh-home">
+
+  {# ===== HERO ===== #}
+  <section class="fh-hero" style="padding:0;">
+    <div class="fh-wrap">
+      <div class="fh-hero-inner">
+        <span class="fh-eyebrow">Gezonde, natuurlijke paardenvoeding</span>
+        <h1>Back to <em>Basic</em>!</h1>
+        <p class="fh-lead">Terug naar de basis van een gezond rantsoen — pure, doordachte voeding die past bij de natuur van jouw paard.</p>
+        <div class="fh-cta-row">
+          <a href="/webshop/" class="fh-btn fh-btn-primary">Onze producten <span class="arr">&rarr;</span></a>
+          <a href="https://wa.me/31850604129" class="fh-btn fh-btn-ghost">Gratis voeradvies</a>
+        </div>
+      </div>
+      {% if slider.slides|first %}
+        <div class="fh-hero-visual">
+          <img src="{{ slider.slides|first.filename|replace({"/1170x250": ""}) }}" alt="Florian Horsefood">
+        </div>
+      {% endif %}
+    </div>
+    <svg class="fh-hills" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 140 C 240 80,480 190,720 140 C 960 90,1200 170,1440 120 L1440 240 L0 240 Z" fill="#8bc63e" opacity="0.35"/>
+      <path d="M0 180 C 280 130,520 220,780 175 C 1040 130,1240 210,1440 165 L1440 240 L0 240 Z" fill="#2C7F5A" opacity="0.55"/>
+      <path d="M0 215 C 300 185,600 240,900 210 C 1140 186,1300 230,1440 208 L1440 240 L0 240 Z" fill="#006633"/>
+    </svg>
+  </section>
+
+  {# ===== TRUST + HELP TRIO ===== #}
+  <div class="fh-wrap fh-trust">
+    <ul>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Voor 16:00 besteld, morgen in huis</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z"/></svg> Puur &amp; natuurlijk rantsoen</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M8 12h8M12 8v8"/></svg> Gratis persoonlijk voeradvies</li>
+    </ul>
+  </div>
+
+  <section style="padding-top:56px;">
+    <div class="fh-wrap">
+      <div class="fh-trio">
+        <div class="fh-help">
+          <div class="fh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.6L3 21l1.9-5.8A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
+          <h3>Gratis voeradvies</h3>
+          <p>Neem nu contact op met onze adviseurs voor gratis, persoonlijk voeradvies voor jouw paard(en)!</p>
+          <a class="fh-link" href="https://wa.me/31850604129">WhatsApp ons <span class="arr">&rarr;</span></a>
+        </div>
+        <div class="fh-help">
+          <div class="fh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M6 7h12l-1.2 11.2A2 2 0 0 1 14.8 20H9.2a2 2 0 0 1-2-1.8L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></div>
+          <h3>Naar de webshop</h3>
+          <p>Alles makkelijk besteld &amp; snel in huis! Bekijk het complete assortiment gezonde paardenvoeding.</p>
+          <a class="fh-link" href="/webshop/">Naar de webshop <span class="arr">&rarr;</span></a>
+        </div>
+        <div class="fh-help">
+          <div class="fh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <h3>Liever ophalen?</h3>
+          <p>Bekijk hier al onze verkooppunten en zoek makkelijk een verkooppunt bij jou in de buurt!</p>
+          <a class="fh-link" href="/verkooppunten/">Verkooppunten <span class="arr">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===== ONZE PRODUCTEN (categorieën) ===== #}
+  <section style="padding-top:24px;">
+    <div class="fh-wrap">
+      <div class="fh-sec-head">
+        <span class="fh-eyebrow">Assortiment</span>
+        <h2>Onze producten</h2>
+        <p>Van ruwvoermixen tot balancers en supplementen — alles voor een gezond, natuurlijk rantsoen.</p>
+      </div>
+      <div class="fh-cats">
+        {% for category in sliders.onzeproducten.slides %}
+          <a class="fh-cat" href="{{ category.title }}">
+            <div class="fh-cat-tile"><img src="{{ category.filename|replace({"/1170x250": ""}) }}" alt="{{ category.text|striptags }}"></div>
+            <b>{{ category.text|striptags }}</b>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# ===== KENNISCAFÉ / QUIZ ===== #}
+  <section style="padding-top:16px;">
+    <div class="fh-wrap">
+      <div class="fh-band">
+        <svg class="fh-band-deco" viewBox="0 0 200 200" fill="currentColor" aria-hidden="true"><path d="M100 170c-30-10-45-35-45-65 0 0 25 5 40 25 5-25 20-40 20-40s10 20 10 45c10-15 25-20 25-20 0 30-15 50-40 55l-5 20h-5z"/></svg>
+        <div class="fh-band-in">
+          <span class="fh-eyebrow">Florians Kenniscafé</span>
+          <h2>Hoeveel weet jij over de vertering van je paard?</h2>
+          <p>Doe de VerteringsQuiz en ontdek in een paar minuten hoe goed jij het spijsverteringsstelsel van je paard kent — en wat dat betekent voor het juiste rantsoen.</p>
+          <a href="/verteringsquiz/" class="fh-btn fh-btn-leaf">Doe de VerteringsQuiz <span class="arr">&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# ===== NIEUW IN ONS ASSORTIMENT ===== #}
+  <section class="fh-grey">
+    <div class="fh-wrap">
+      <div class="fh-sec-head">
+        <span class="fh-eyebrow">Vers binnen</span>
+        <h2>Nieuw in ons assortiment!</h2>
+        <p>De laatste aanvullingen op het Florian-rantsoen.</p>
+      </div>
+      <div class="fh-prod-grid">
+        {% for product in products[:8] %}
+          <a class="fh-prod" href="{{ product.url }}">
+            <div class="fh-prod-ph">
+              {% if loop.index <= 2 %}<span class="fh-badge">Nieuw</span>{% endif %}
+              <img src="{{ product.image_default.thumbs.400|image }}" alt="{{ product.name }}">
+            </div>
+            <div class="fh-prod-body">
+              <h3>{{ product.name }}</h3>
+              {% set price_incl = product.price %}
+              {% set price_excl = price_incl / 1.21 %}
+              <div class="fh-price-row">
+                <span class="fh-price">&euro;&thinsp;{{ price_incl|price(true, '') }}</span>
+                <span class="fh-excl">&euro; {{ price_excl|price(true, '') }} excl. btw</span>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+      <div class="fh-center-cta"><a href="/webshop/" class="fh-btn fh-btn-primary">Naar de webshop <span class="arr">&rarr;</span></a></div>
+    </div>
+  </section>
+
+  {# ===== KENNIS EN ADVIES (blog) ===== #}
+  <section>
+    <div class="fh-wrap">
+      <div class="fh-sec-head">
+        <span class="fh-eyebrow">Kennisbank</span>
+        <h2>Kennis en advies</h2>
+        <p>Artikelen over gezonde paardenvoeding, vertering en het opbouwen van het juiste rantsoen.</p>
+      </div>
+      <div class="fh-blog-grid">
+        {% for post in blog.posts[:3] %}
+          <a class="fh-post" href="{{ post.url }}">
+            <div class="fh-post-ph"><img src="{{ post.image.filename|replace({'inline':'blogpost'}) }}" alt="{{ post.title }}"></div>
+            <div class="fh-post-body">
+              <span class="date">Kennisbank</span>
+              <h3>{{ post.title }}</h3>
+              <p>{{ get_excerpt(post.content, 150, 0) }}</p>
+              <span class="fh-more">Lees verder <span class="arr">&rarr;</span></span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# ===== KENNISBANK CTA ===== #}
+  <section class="fh-grey fh-know" style="padding:70px 0;">
+    <div class="fh-wrap">
+      <span class="fh-eyebrow">Blijf leren</span>
+      <h2>Meer blogs lezen?</h2>
+      <p>Ga naar de kennisbank voor artikelen over gezonde paardenvoeding!</p>
+      <a href="/blog/" class="fh-btn fh-btn-primary">Meer lezen <span class="arr">&rarr;</span></a>
+    </div>
+  </section>
+
+</div>

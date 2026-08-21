@@ -1,0 +1,15 @@
+<div class="text-block-grid">
+    {% for item in blocks %}
+        {% if blockIdentifier in item.title %}
+            <div class="col-md-{{width}} col-xs-12">
+                <a href="{{item.identifier|replace({"*" : ""})}}">
+                    <figure class="{{class}} panel panel-primary">
+                        <figcaption class="panel-body">
+                            {{item.content}}
+                        </figcaption>
+                    </figure>
+                </a>
+            </div>    
+        {% endif %}
+    {% endfor %}
+</div>

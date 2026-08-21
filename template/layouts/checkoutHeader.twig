@@ -1,0 +1,42 @@
+{# type: layout #}
+<header id="checkout-header" data-af-locale="nl">
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-brand-wrapper">
+                    {% if properties.logo %}
+                        <a href="{{home_url}}" class="navbar-brand"><img src="{{properties.logo|image({"h": 40})}}" alt="logo van {{properties.name}}"/></a>
+                    {% else %}
+                        <a href="{{home_url}}" class="header-service-name navbar-brand"><strong>{{properties.name}}</strong></a>
+                    {% endif %}
+                </div>
+                {% if home_url starts with 'https://' %}
+                    <small class="sercure-usp text-right text-success">
+                        <i class="fa fa-lg fa-lock"> </i>
+                        <strong>
+                            {{"Beveiligde verbinding"|t}}
+                        </strong>
+                    </small>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+  
+</header>
+
+
+
+{% if alerts is not empty %}
+    <div class="container">
+        <div class="alert-row row">
+            {% for alert in alerts %}
+                <div class="col-md-12">
+                    <div class="alert alert-{{alert.type}} alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{alert.message}}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

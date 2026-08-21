@@ -1,0 +1,185 @@
+.cart-version-flex {
+    @media (max-width: 767px) {
+        .cart-title {
+            font-size: 24px;
+        }
+    }
+    
+    .cart-grid {
+        @include flex(1 0 0px);
+        max-width: 100%;
+        
+        &-header {
+            @media (max-width: 991px) {
+                display: none;
+            }
+            
+            @include flexbox;
+            @include align-items(center);
+            padding-top: 15px;
+            padding-bottom: 15px;
+            background-color: #F0F1F4;
+            font-family: $headings-font-family;
+            font-size: 14px;
+            font-weight: 500;
+            color: #979BA2;
+        }
+        
+        
+        
+        &-item {
+            @include flexbox;
+            @include align-items(center);
+            
+            &-container {
+                padding-top: 30px;
+                padding-bottom: 30px;
+                border-bottom: 1px solid #F2F3F9;
+                
+                &:last-child {
+                    border-bottom: 0;
+                }
+            }
+            
+            &-information {
+                @include flexbox;
+                @include align-items(center);
+                
+                &-image {
+                    @include flex(0 0 50px);
+                    max-width: 50px;
+                    margin-right: 10px;
+                    
+                    @media (max-width: 991px) {
+                        @include flex(0 0 75px);
+                        max-width: 75px;
+                    }
+                }
+                
+                &-inner {
+                    @include flex(1 1 auto);
+                    text-align: left;
+                }
+            }
+            
+            &-child-products {
+                .cart-grid-item-information-image {
+                    @include flex(0 0 30px);
+                    max-width: 30px;
+                }
+            }
+            
+            &-adjustments {
+                display: flex;
+                flex-direction: column;
+                align-items: baseline;
+                
+                @media (min-width: $screen-md-min) {
+                    padding-left: 110px;
+                    flex-direction: row;
+                }
+                
+                &-description {
+                    font-size: 80%;
+                
+                    @media (min-width: $screen-md-min) {
+                        @include flex(1 1 auto);
+                    }
+                }
+                
+                &-outcome {
+                    // margin-left: 12px;
+                    text-align: right;
+                    font-size: 80%;
+                    
+                    @media (min-width: $screen-md-min) {
+                        @include flex(0 0 90px);
+                    }
+                }
+                &-new-total {
+                    display: flex;
+                    gap: 8;
+                    margin-left: 90px;
+                    text-align: right;
+                    padding-right: 10px;
+                    
+                    @media (min-width: $screen-md-min) {
+                        justify-content: flex-end;
+                        @include flex(0 0 90px);
+                    }
+                }
+            }
+        }
+        
+        &-header-action,
+        &-item-action {
+            @include flex(0 0 50px);
+        }
+        &-header-information,
+        &-item-information {
+            @include flex(1 1 auto);
+        }
+        &-header-color,
+        &-item-color {
+            @include flex(0 0 50px);
+        }
+        &-header-size,
+        &-item-size {
+            @include flex(0 0 50px);
+        }
+        &-header-single-price,
+        &-item-single-price {
+            @include flex(0 0 90px);
+            text-align: right;
+        }
+        &-header-quantity,
+        &-item-quantity {
+            @include flex(0 0 90px);
+            text-align: right;
+        }
+        &-header-subtotal,
+        &-item-subtotal {
+            @include flex(0 0 90px);
+            text-align: right;
+            padding-right: 10px;
+        }
+    }
+    
+    
+    .cost-summary {
+        @include flex(1 1 100%);
+        max-width: 100%;
+        
+        @media (min-width: 992px) {
+            @include flex(0 0 350px);
+            max-width: 350px;
+        }
+        
+        &-inner {
+            background-color: #F0F1F4;
+            padding: 20px;
+            
+            .coupon-label {
+                font-weight: 500;
+                font-size: 12px;
+                color: #7B8086;
+            }
+            
+            hr {
+                margin-left: -20px;
+                margin-right: -20px;
+                border-color: #E3E3E3;
+            }
+            
+            .text-muted {
+                color: #979BA2;
+            }
+            
+            @media (min-width: 992px) {
+                @include position-sticky;
+                top: 150px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+}

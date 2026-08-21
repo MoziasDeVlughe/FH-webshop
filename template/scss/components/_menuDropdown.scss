@@ -1,0 +1,70 @@
+.navbar-nav.dropdown-navigation > li {
+
+    & > .sub-menu {
+    
+        $dd-background-color: $navbar-default-bg;
+        $dd-text-color: color-yiq($dd-background-color);
+        
+        position: absolute;
+        min-width: 150px;
+        visibility: hidden;
+        background-color: $dd-background-color;
+        box-shadow: 0 2px 2px rgba(0,0,0,.3);
+        @include opacity(0);
+        @include transition(.1s ease);
+
+        .sub-menu-menu {
+            padding: 5px 0;
+            @include flexbox;
+
+            .h5 {
+                padding: 5px 10px;
+                margin-top: 0;
+                color: $dd-text-color;
+                background-color: $brand-primary;
+                border-radius: $border-radius-base;
+
+                &.no-border {
+                    background-color: transparent;
+                    border-color: transparent;
+                }
+            }
+
+            > ul {
+                width: 100%;
+                margin-right: 40px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                li {
+
+                    a {
+                        display: block;
+                        padding: 5px 15px;
+                        margin: 1px 0 !important;
+                        font-size: 13px !important;
+                        color: $dd-text-color;
+                        text-decoration: none;
+                        text-transform: initial !important;
+                        white-space: nowrap;
+                        @include transition(background-color .2s ease);
+
+                        &:hover {
+                            background-color: lighten($dd-background-color, 20%);
+                        }
+                    }
+                }
+            }
+        } 
+    }
+
+    &:hover {
+        
+        & > .sub-menu {
+            visibility: visible;
+            @include opacity(1);
+        }
+    }
+}

@@ -1,0 +1,42 @@
+.kiyoh-reviews {
+    width: 250px;
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    
+    hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    
+    a, a:hover {
+        color: #000;
+        text-decoration: none;
+    }
+    
+    &-rating {
+        
+        .star-rating {
+            position: relative;
+            display: inline-block;
+
+            &-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow-x: hidden;
+                white-space: nowrap;
+            }
+        }
+    }
+    
+    .star {
+        margin: 0 2px;
+        font-size: 20px;
+        color: #ccc;
+        
+        &.full {
+            color: rgba(255, 215, 0, 1);
+        }
+    }
+}

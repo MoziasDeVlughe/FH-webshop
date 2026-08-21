@@ -1,0 +1,17 @@
+{% set lazyload = (lazyload is defined ? lazyload : true) %}
+
+<div class="row brands-grid">
+    <div class="col-xs-12 text-center">
+        <div class="row">
+            {% for slide in slider.slides %}
+                <div class="col-xs-4 col-sm-3 col-md-2 brands-grid-item">
+                    <a href="{{slide.title}}" class="brand-link">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="lazyload lazyload-contain" data-src="{{slide.filename|replace({"1170x250/" : ""})|image({"h": 50})}}" alt="{{slide.title}}">
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

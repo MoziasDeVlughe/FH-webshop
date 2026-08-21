@@ -1,0 +1,166 @@
+footer.footer-collapsible .contact-footer {
+    padding-top: 48px;
+    padding-bottom: 48px;
+    background-color: $gray-lighter;
+    
+    .contact-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        .contact-titles {
+            text-align: center;
+
+            .contact-title {
+                font-size: 20px;
+                // color: $gray-900;
+                font-weight: 900;
+            }
+            
+            .contact-time {
+                font-weight: 700;
+                
+                &:hover {
+                    text-decoration: none;
+                }
+            }
+        }
+        
+        .contact-labels {
+            display: flex;
+            padding-top: 24px;
+            gap: 16px;
+            
+            @media (max-width: $screen-xs-max) {
+                flex-direction: column;
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .contact-label {
+                display: flex;
+                align-items: center;
+                background-color: white;
+                border: 1px solid $gray-light;
+                border-radius: 100px;
+                padding: 8px 16px;
+                text-decoration: none;
+                transition: .2s ease;
+                
+                &:hover {
+                    // background-color: $gray-25;
+                    border-color: $gray-dark;
+                }
+                
+                div {
+                    display: flex;
+                    flex-direction: column;
+                    margin-right: 16px;
+                    margin-left: 12px;
+                    
+                    span {
+                        font-size: 14px;
+                        font-weight: 700;
+                        line-height: 15px;
+                    }
+                    
+                    p {
+                        margin: 0;
+                        color: $gray;
+                        font-size: 12px;
+                        line-height: 15px;
+                    }
+                }
+                
+                i {
+                    margin-top: auto;
+                    margin-bottom: auto;
+                    font-size: 28px;
+                }
+            }
+        }
+    }
+}
+
+footer.footer-collapsible .top-footer{
+    background-color: $navbar-default-bg;
+    color: white;
+    padding: 16px 0px;
+    
+    .top-footer-inner {
+        .usps-item {
+            font-size: 14px;
+            line-height: 24px;
+            padding: 0 1px;
+        }
+    }
+}
+
+footer.footer-collapsible .main-footer {
+    background-color: $gray-lighter;
+    position: relative;
+    z-index: 0;
+    
+    .footer-column-heading {
+        position: relative;
+        cursor: pointer;
+        
+        .collapsible-icon {
+            position: absolute;
+            top: 50%;
+            right: 5px;
+            @include transform(translate(-50%, -50%));
+            
+            &::after {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 10px;
+                height: 1px;
+                content: "";
+                background-color: CurrentColor;
+                @include transform(translate(-50%, -50%) rotate(0deg));
+                @include transition(0.2s ease);
+            }
+            &::before {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 10px;
+                height: 1px;
+                content: "";
+                background-color: CurrentColor;
+                @include transform(translate(-50%, -50%));
+            }
+        }
+        
+        &.collapsed .collapsible-icon::after {
+            @include transform(translate(-50%, -50%) rotate(90deg));
+        }
+    }
+    
+    @media (min-width: 992px) {
+        .footer-column-heading {
+            pointer-events: none;
+            
+            .collapsible-icon {
+                display: none;
+            }
+        }
+        
+        .collapse {
+            display: block !important;
+            height: initial !important;
+        }
+    }
+}
+
+footer.footer-collapsible .bottom-footer {
+    background-color: $gray-lighter;
+    color: $gray-dark;
+    padding: 32px 0px 32px;
+    
+    .powered-by {
+        color: $gray-dark;
+    }
+}

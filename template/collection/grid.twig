@@ -1,0 +1,7 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+{{af_displays.products({
+    'products'  : products,
+    'use_quickview': true,
+    'currency_symbol': properties.currency_symbol,
+})}}

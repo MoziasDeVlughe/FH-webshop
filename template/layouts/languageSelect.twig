@@ -1,0 +1,27 @@
+<div class="dropdown">
+    <div id="language-select" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {% for key, lang in pluginData.hrefLang|sort if home_url in lang %}
+            {{af_displays.icon({id:'flag-' ~ key|split('-')|last|lower})}}
+            {% if key == "nl-nl" %}
+                {{"Nederlands"|t}}
+            {% elseif key == "nl-be" %}
+                {{"Belgisch"|t}}
+            {% endif %}
+        {% endfor %}
+        <i class="fa fa-angle-down ml-5"></i>
+    </div>
+    <ul class="dropdown-menu" aria-labelledby="language-select">
+        {% for key, lang in pluginData.hrefLang|sort if home_url not in lang %}
+            <li class="inline-list">
+                <a href="{{lang}}" title="{{key}}">
+                    {{af_displays.icon({id:'flag-' ~ key|split('-')|last|lower, 'class': 'language-select-flag' })}} 
+                    {% if key == "nl-nl" %}
+                        {{"Nederlands"|t}}
+                    {% elseif key == "nl-be" %}
+                        {{"Belgisch"|t}}
+                    {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

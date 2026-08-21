@@ -1,0 +1,21 @@
+.lucide {
+    width: 1em;
+    height: 1em;
+    line-height: 0;
+    stroke-width: 1.75;
+    vertical-align: middle;
+    
+    @each $size, $style in $icon-sizes {
+        &.size-#{$size} {
+            font-size: $style;
+        }
+    }
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    @each $size, $style in $icon-sizes {
+        &.size-#{$size} {
+            font-size: $style;
+        }
+    }
+}

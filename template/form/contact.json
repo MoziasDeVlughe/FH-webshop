@@ -1,0 +1,44 @@
+{
+    "fields": [
+        {
+            "name": "shop_name",
+            "label": "Shop naam",
+            "value": "",
+            "type": "hidden",
+            "rules": [""]
+        },
+        {
+            "name": "name",
+            "label": "Naam",
+            "value": "",
+            "type": "text",
+            "rules": ["required"]
+        },
+        {
+           "name": "email",
+           "label": "Uw e-mailadres",
+           "type": "email",
+           "rules": ["required", "email","sender"]
+        },
+        {
+           "name": "message",
+           "label": "Uw bericht",
+           "type": "textarea",
+           "rules": ["required"]
+        },
+        {
+            "name": "recaptcha",
+            "type": "hidden",
+            "rules": [
+                    {
+                        "length" : { 
+                            "is" : 0
+                        }
+                    }
+            ]
+        }
+    ],
+    "title": "Contactformulier",
+    "subject": "Contactformulier",
+    "recipients": ["info@florianhorsefood.nl"]
+}

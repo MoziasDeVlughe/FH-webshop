@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="pull-left">
+        <h1>{{'Mijn tickets'|t}}</h1>
+    </div>
+    <div class="pull-right">
+        <a href="/account/freshdesk/create" class="btn btn-success">{{'Nieuw ticket'|t}}</a>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-sm-3">
+        {% include 'account/menu.twig'  with {'active': 'orders'} %}
+    </div>
+    <div class="col-sm-9">
+        <div class="row">
+            <div class="col-sm-2">
+                <strong>{{'Ticketnummer'|t}}</strong>
+            </div>
+            <div class="col-sm-2">
+                <strong>{{'Onderwerp'|t}}</strong>
+            </div>
+            <div class="col-sm-2">
+                <strong>{{'Status'|t}}</strong>
+            </div>
+            <div class="col-sm-2">
+                <strong>{{'Prioriteit'|t}}</strong>
+            </div>
+            <div class="col-sm-2">
+                <strong>{{'Aangemaakt op'|t}}</strong>
+            </div>
+            <div class="col-sm-2">
+                <strong>{{'Laatst bijgewerkt op'|t}}</strong>
+            </div>
+        </div>
+        <hr>
+        {% for ticket in tickets %}
+            <div class="row">
+                <div class="col-sm-2">
+                    <a href="/account/freshdesk/{{ ticket.id }}">
+                        #{{ticket.id}}
+                    </a>
+                </div>
+                <div class="col-sm-2">
+                    <a href="/account/freshdesk/{{ ticket.id }}">
+                        {{ticket.subject|e}}
+                    </a>
+                </div>
+                <div class="col-sm-2">
+                    {{ticket.status}}
+                </div>
+                <div class="col-sm-2">
+                    {{ ticket.priority }}
+                </div>
+                <div class="col-sm-2">
+                    {{ ticket.created_at|date('d-m-Y H:i') }}
+                </div>
+                <div class="col-sm-2">
+                    {{ ticket.updated_at|date('d-m-Y H:i') }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

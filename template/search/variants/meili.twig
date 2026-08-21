@@ -1,0 +1,74 @@
+<div id="collection-content">
+    <div class="container">
+        <div class="pt-16 pt-md-24 pb-0 pb-0 pb-md-40">
+            {% include 'macros/breadcrumbs.twig' %}
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div id="sub-filter-menu" class="filter-collection-row">
+                    <div class="sub-filter-menu-inner">
+                        <div class="drawer-header flex-column align-items-stretch p-0 mx-32 z-index-overlay-max hidden-md hidden-lg hidden-xl">
+                            <div class="d-flex justify-content-between align-items-center py-14">
+                                <div class="h4 m-0 fw-700">
+                                    {{"Filters"|t}}
+                                </div>
+                                <button class="btn btn-link text-heading m-4 p-0 icon-40 mr-n12 close-mob" type="button" data-dismiss="drawer" aria-label="{{'Sluit winkelwagen'|t}}">
+                                    <i class="fa fa-times icon-size-20 fa-fw"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <hr class="m-0" />
+                            </div>
+                        </div> 
+                        <div class="drawer-body configurator-drawer-inner p-0 pt-0 mx-md-0">
+                            <div id="current-filters"></div>
+                            <div id="clear-filters"></div>
+                            <div class="filter mb-40 mt-40 mt-md-4">
+                                <div class="d-flex align-items-center position-relative">
+                                    <strong class="text-heading">{{'Subcategorie'|t}}</strong>
+                                </div>
+                                <hr class="mt-12 mb-16" />
+                                <div id="subcat-list" data-more-label="{{'Toon meer'|t}}" data-less-label="{{'Toon minder'|t}}"></div>
+                            </div>
+                            
+                            <div class="filter mb-40">
+                                <div class="d-flex align-items-center position-relative">
+                                    <strong class="text-heading">{{'Materiaal'|t}}</strong>
+                                </div>
+                                <hr class="mt-12 mb-16">
+                                <div id="materials-list" data-more-label="{{'Toon meer'|t}}" data-less-label="{{'Toon minder'|t}}"></div>
+                            </div>
+                            
+                            <div class="filter mb-40">
+                                <div class="d-flex align-items-center position-relative">
+                                    <strong class="text-heading">{{'Houtsoort'|t}}</strong>
+                                </div>
+                                <hr class="mt-12 mb-16">
+                                <div id="wood-type-list" data-more-label="{{'Toon meer'|t}}" data-less-label="{{'Toon minder'|t}}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <h1 class="h3 fw-700 m-0 pt-40 pt-md-0 pb-12">{{"Zoeken"|t}}</h1>
+                <div id="searchbox"></div>
+                <div class="d-flex align-items-center py-24">
+                    <div id="stats-products" data-no-results="{{'Geen resultaten'|t}}" data-one-result="{{'1 resultaat'|t}}" data-many-results="{{'[n] resultaten'|t}}"></div>
+                    <div class="ml-auto d-flex align-items-center">
+                        {{'producten per pagina'|t}}
+                        <div id="hits-per-page" class="ml-20"></div>
+                    </div>
+                    <div id="sort-by"></div>
+                </div>
+                <div id="hits-products" data-empty="{{'Geen resultaten'|t}}"></div>
+                <div class="d-flex justify-content-center">
+                    <div id="pagination"></div>
+                </div>
+                <h1>{{"pages"|t}}</h1>
+                <div id="stats-pages" data-no-results="{{'Geen resultaten'|t}}" data-one-result="{{'1 resultaat'|t}}" data-many-results="{{'[n] resultaten'|t}}"></div>
+                <div id="hits-pages" data-empty="{{'Geen resultaten'|t}}"></div>
+            </div>
+        </div>
+    </div>
+</div>

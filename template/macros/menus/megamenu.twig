@@ -1,0 +1,75 @@
+{# mega menu #}
+<div class="mega-menu-container">
+    <div class="mega-menu-trigger pull-left">
+        <span>
+            {{"Kies een categorie <i class='fa fa-lg fa-caret-down'></i>"|t}}
+        </span>
+    </div>
+    <div class="mega-menu">
+        <ul class="list-unstyled mega-main-menu">
+            {% for menuitem in menu.items %}
+                <li class="mega-main-menu-item {% if menuitem.active %} active{% endif %}" data-af-target="submenu-{{menuitem.id}}">
+                    <a href="{{menuitem.url}}" title="{{menuitem.title}}">{{menuitem.label}}</a>
+                    {% if menuitem.items %}
+                        <div class="mega-sub-menu" id="submenu-{{menuitem.id}}">
+                            <ul class="list-unstyled">
+                                {% for subitem in menuitem.items %}
+                                    {% if subitem.url == "column-blank" %}
+                                        <li class="h5 no-border">
+                                            <strong>
+                                                &nbsp;
+                                            </strong>
+                                        </li>
+                                        {% for item in subitem.items %}
+                                            <li>
+                                                <a href="{{item.url}}" title="{{item.title}}">
+                                                    {{item.label}}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                        {% if not loop.last %}
+                                            </ul>
+                                            <ul class="list-unstyled">
+                                        {% endif %}
+                                    {% elseif subitem.url == "column" %}
+                                            <li class="h5">
+                                                <strong>
+                                                    {{subitem.label}}
+                                                </strong>
+                                            </li>
+                                            {% for item in subitem.items %}
+                                                <li>
+                                                    <a href="{{item.url}}" title="{{item.title}}">
+                                                        {{item.label}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        {% if not loop.last %}
+                                            </ul>
+                                            <ul class="list-unstyled">
+                                        {% endif %}
+                                    {% else %}
+                                        {#<ul class="list-unstyled">#}
+                                            <li>
+                                                <a href="{{subitem.url}}" title="{{subitem.title}}">
+                                                    {{subitem.label}}
+                                                </a>
+                                            </li>
+                                        {#</ul>#}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <ul class="nav navbar-nav">
+        {% for menuitem in extra_menu.items %}
+            <li{% if menuitem.active %} class="active"{% endif %}>
+                <a href="{{menuitem.url}}" title="{{menuitem.title}}">{{menuitem.label}}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

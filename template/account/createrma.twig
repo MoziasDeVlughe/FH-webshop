@@ -1,0 +1,4 @@
+{% extends 'config.twig' %}
+{% block configProvider %}
+    {% include ['account/' ~ shop_version ~ '/createrma.twig', 'account/v2/createrma.twig'] %}
+{% endblock configProvider %}

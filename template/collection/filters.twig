@@ -1,0 +1,190 @@
+{% import "macros/default.twig" as sorting %}
+
+{% if has_app('filters') and localizedFilters is not empty %}
+    <div id="sub-filter-menu" class="filter-collection-row">
+        {#<div class="fa fa-times fa-2x close-mob visible-xs visible-sm"></div>#}
+        <i data-lucide="x" class="size-32 close-mob visible-xs visible-sm"></i>
+        <div class="sub-filter-menu-inner">
+            <div class="h4 d-flex-imp align-items-center justify-content-between">
+                {{"Filters"|t}}
+                <div class="btn-group visible-xs" role="group">
+                    <div class="btn btn-sm btn-primary layout-option" data-layout-option="grid">
+                        <i data-lucide="grid-3x3" class="size-16"></i>
+                    </div>
+                    <div class="btn btn-sm btn-primary layout-option" data-layout-option="list">
+                        <i data-lucide="list" class="size-16"></i>
+                    </div>
+                </div>
+            </div>
+             <div class="filter visible-xs">
+                <button class="btn btn-sm btn-primary collapsed" type="button" id="sort-menu" data-toggle="collapse" data-target="#sorting" aria-expanded="false"> 
+                     {{sorting.activeSortingLabel("%active%", sort, 'Nieuwste'|t)}}  
+                     <div class="collapsable-icon"></div>
+                </button>
+                <div class="collapse" id="sorting">
+                    <div class="well">
+                        <ul class="list-unstyled" >
+                            {% for option in sort.options %}
+                                <li>
+                                    <a data-af-href="{{option.link}}" class="filter-option" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > *">{{option.label}}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            {% set counter = 0 %}
+            
+            {% for filter_key, filter in localizedFilters if filter.key != 'date' %}
+                <div class="filter">
+                    {% set attribute_count = 0 %}
+                    {% for attribute in filter.attributes if attribute.available %}
+                        {% set attribute_count = attribute_count + 1 %}
+                    {% endfor %}
+                    
+                    <div class="mt-32">
+                        {{filter.label}}  
+                    </div>
+                    <div class="collapse in" id="{{filter.key}}">
+                        {% if filter.type != 'slider' and attribute_count > 5 %}
+                            <div 
+                                class="filter-collapse af-read-more"
+                                data-simple-read-more
+                                data-read-height="160" 
+                                aria-expanded="false" 
+                                data-read-more="<i class='icon-chevron-down lucide'></i> {{'Toon meer'|t}}" 
+                                data-read-less="<i class='icon-chevron-up lucide'></i> {{'Toon minder'|t}}"
+                                id="filter-collapse-{{loop.index}}"
+                                style="height: 160px"
+                            >
+                        {% endif %}
+                        <ul id="filterList{{ counter }}" class="list-unstyled">
+                            {% if filter.type == 'checkbox' %}
+                                {% for attribute in filter.attributes %}
+                                    {% if attribute.available %}
+                                        <li>
+                                            {% if has_app('menu_item_filter') and attribute.clean_url == true %}
+                                                <div class="checkbox af">
+                                                    <label data-af-href="{{attribute.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div" class="filter-option">
+                                                        <a href="{{attribute.link}}">
+                                                            <input type="checkbox"  value="{{attribute.key}}" name="{{filter.key}}"{% if attribute.active %} checked{% endif %}>
+                                                            <div class="checkbox-button"></div>
+                                                            {% if attribute.icon %}
+                                                                <img src="{{attribute.icon.thumbs.50|image({"w": 20, "h": 20})}}" class="icon-20 mr-5" alt="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}" title="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}"/>
+                                                            {% endif %}
+                                                            {{attribute.label}}
+                                                            <span class="filter-option-count">&nbsp;({{attribute.count}})</span>
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                <div class="checkbox af">
+                                                    <label data-af-href="{{attribute.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div" class="filter-option">
+                                                        <input type="checkbox" value="{{attribute.key}}" name="{{filter.key}}"{% if attribute.active %} checked{% endif %}>
+                                                        <div class="checkbox-button"></div>
+                                                        {% if attribute.icon %}
+                                                            <img src="{{attribute.icon.thumbs.50|image({"w": 20, "h": 20})}}" class="icon-20 mr-5" alt="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}" title="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}"/>
+                                                        {% endif %}
+                                                        {{attribute.label}}
+                                                         <span class="filter-option-count">&nbsp;({{attribute.count}})</span>
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% elseif filter.type == 'radio' %}
+                                {% for attribute in filter.attributes %}
+                                    {% if attribute.available %}
+                                        <li>
+                                            {% if has_app('menu_item_filter') and attribute.clean_url == true %}
+                                                <div class="radio af">
+                                                    <label data-af-href="{{attribute.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div">
+                                                        <a href="{{attribute.link}}" class="filter-option">
+                                                            <input type="radio" name="{{filter.key}}" value="{{attribute.key}}"{% if attribute.active %} checked{% endif %}>
+                                                            <div class="radio-button"></div>
+                                                            {% if attribute.icon %}
+                                                                <img src="{{attribute.icon.thumbs.50|image({"w": 20, "h": 20})}}" class="icon-20 mr-5" alt="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}" title="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}"/>
+                                                            {% endif %}
+                                                            {{attribute.label}} 
+                                                            <span class="filter-option-count">({{attribute.count}})</span>
+                                                        </a>
+                                                    </label>
+                                                </div>
+                                            {% else %}
+                                                <div class="radio af">
+                                                    <label data-af-href="{{attribute.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > div" class="filter-option">
+                                                        <input type="radio" name="{{filter.key}}" value="{{attribute.key}}"{% if attribute.active %} checked{% endif %}>
+                                                        <div class="radio-button"></div>
+                                                        {% if attribute.icon %}
+                                                            <img src="{{attribute.icon.thumbs.50|image({"w": 20, "h": 20})}}" class="icon-20 mr-5" alt="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}" title="{{'Icoontje van filter optie [name]'|t({"[name]":attribute.label})}}"/>
+                                                        {% endif %}
+                                                        {{attribute.label}} 
+                                                        <span class="filter-option-count">({{attribute.count}})</span>
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                        
+                        {% if filter.type != 'slider' and attribute_count > 5 %}
+                            </div>
+                            <button class="btn btn-link p-0 btn-sm read-more-toggle bold mt-20" type="button" data-target="#filter-collapse-{{loop.index}}">
+                                <i class="icon-chevron-down lucide"></i> {{'Toon meer'|t}}
+                            </button>
+                        {% endif %}
+                        
+                        {% if filter.type == 'slider' %}
+                            
+                            {#<div class="d-flex align-items-center mx-n10">#}
+                            {#    <div class="flex-fill px-10">#}
+                            {#        <div class="form-group mb-0">#}
+                            {#            <label for="price-range-min" class="sr-only">#}
+                            {#                {{'Minimale prijs'|t}}#}
+                            {#            </label>#}
+                            {#            <input type="number" class="form-control input-sm" id="price-range-min" placeholder="{{filter.min}}" value="{{filter.active_min}}">#}
+                            {#        </div>#}
+                            {#    </div>#}
+                            {#    <div>#}
+                            {#        {{'tot'|t}}#}
+                            {#    </div>#}
+                            {#    <div class="flex-fill px-10">#}
+                            {#        <div class="form-group mb-0">#}
+                            {#            <label for="price-range-max" class="sr-only">#}
+                            {#                {{'Maximale prijs'|t}}#}
+                            {#            </label>#}
+                            {#            <input type="number" class="form-control input-sm" id="price-range-max" placeholder="{{filter.max}}" value="{{filter.active_max}}">#}
+                            {#        </div>#}
+                            {#    </div>#}
+                            {#    <div>#}
+                            {#        <button #}
+                            {#            type="button" #}
+                            {#            class="btn btn-success btn-block btn-sm p-5" #}
+                            {#            id="set-price-range"#}
+                            {#            data-pr-ajax-element="#collection-content" #}
+                            {#            data-pr-ajax-input="#collection-content > div"#}
+                            {#            aria-label="{{'filter op prijs'|t}}"#}
+                            {#        >#}
+                            {#            <i class="fa fa-chevron-right fa-fw"> </i>#}
+                            {#        </button>#}
+                            {#    </div>#}
+                            {#</div>#}
+                            
+                            <div class="filter-overlay">
+                                <input type="hidden" class="filter-slider-value" name="{{filter.key}}">
+                                <span class="filter-slider-label"></span>
+                                <div class="clearfix"></div>
+                                <div class="filter-slider" data-min="{{filter.min}}" data-max="{{filter.max}}" data-value="{{filter.active_min ~ '.' ~ filter.active_max}}"></div>
+                            </div>    
+                        {% endif %}
+                    </div>
+                </div>
+                {% set counter = counter + 1 %}
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

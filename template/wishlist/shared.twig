@@ -1,0 +1,79 @@
+<div class="space-20"></div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="wishlist-top-row">
+            <div>
+                <h1>
+                    {{"WISHLIST"|t}}
+                </h1>
+            </div>
+            <div class="hidden-xs hidden-sm">
+                <form action="{{home_url}}cart/add-multiple" method="POST">
+                     {#<input type="hidden" name="__returnUrl" value="{{home_url}}wishlist">#}
+                      {% for listitem in items %}
+                        {% set product = listitem.product %}
+                            <input type="hidden" name="item[{{loop.index0}}][product_id]" value="{{product.id}}">
+                        {% endfor %}
+                    <button  class="btn btn-primary">{{'Alles toevoegen'|t}}</button>
+                </form>
+            </div>
+        </div>
+        <hr />
+    </div>
+</div>
+
+<div class="row wishlist-grid">
+    {% for listitem in items %}
+        {% set product = listitem.product %}
+        <div class="col-md-6 col-sm-6 wishlist-grid-item">
+            <div class="wishlist-grid-item-inner panel panel-primary panel-body">
+                <div class="wishlist-grid-item-image">
+                    <a data-af-href="{{product.url}}" class="thumbnail">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="lazyload" data-src="{{ product.images|first.thumbs.100|image({"w": 100, "h": 100}) }}" alt="{{ product.name }}">
+                        </div>
+                    </a>
+                </div>
+                <div class="wishlist-grid-item-info">
+                    <div class="wishlist-grid-item-info-inner">
+                        <span class="product-name">
+                            <a data-af-href="{{product.url}}">
+                                {{product.name}}
+                            </a>
+                        </span>
+                        <br>
+                        <div class="wishlist-grid-item-info-table">
+                            <div class="wishlist-table-row">
+                                <div class="wishlist-table-value">
+                                    {% if product.has_discount %}
+                                        <small>
+                                            <s>
+                                                {{ product.original_price|price }}
+                                            </s>
+                                        </small>
+                                        &nbsp;
+                                    {% endif %}
+                                    <strong class="{% if product.has_discount %}text-danger{% endif %}">
+                                        {{ product.price|price }}
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="wishlist-table-row">
+                                {{product.short_description}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wishlist-grid-item-info-actions">
+                        <form action="{{ cart_url }}" method="post">
+                            <input type="hidden" value="{{ product.id }}" name="product_id"/>
+                            <input type="hidden" value="1" name="quantity"/>
+                            <button class="btn btn-primary" type="submit">
+                                {{"In winkelwagen"|t}}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

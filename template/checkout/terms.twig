@@ -1,0 +1,11 @@
+<div class="form-group">
+    <div class="checkbox af">
+        <label for="accept_terms">
+            <input type="checkbox" id="accept_terms" name="accept_terms" data-parsley-group="group-step-1" tabindex="{{tabindex}}{% set tabindex = tabindex + 1 %}" class="required">
+            <div class="checkbox-button"></div>
+            <span>
+                {{'Ik heb de <a href="[home_url]algemene-voorwaarden/" target="_blank"> &nbsp;algemene voorwaarden&nbsp; </a> gelezen en ga hier mee akkoord.'|t({"[home_url]": home_url })}}
+            </span>
+        </label>
+    </div>
+</div>

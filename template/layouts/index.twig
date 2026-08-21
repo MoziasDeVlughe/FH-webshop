@@ -1,0 +1,282 @@
+{# type: layout #}
+{% extends 'config.twig' %}
+{% block configProvider %}
+
+    {% set container_class = 'container' %}
+    
+    <!DOCTYPE html>
+    <html lang="nl" dir="ltr">
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            {%  if seo_robots == "" %}
+                {% set robots = "index, follow" %}
+            {% else %}
+                {% set robots = seo_robots %}
+            {% endif %}
+            {% if type == 'cart' or type == 'checkout' or type == 'search' or is_error or model.specifications['onderhoud'] is not empty %}
+               {% set robots = "noindex, follow"  %}
+            {% endif %}
+            
+            {% set h1 = title %}
+            {% if has_app('filters')%}
+                {% set clean_filter = null %}
+                {% for filter in active_filters  if clean_filter == null %}
+                   {% if filter.is_clean_url %}
+                      {% set clean_filter = filter %}
+                    {% endif %}
+                {% endfor %}
+                
+                {# to make sure we dont have duplicate content only show the content on a page without clean filters.#}
+                {% if clean_filter is not null %} 
+                {# its a clean url so we want to preppend the h1 with the filter#}
+                    {% set h1 = clean_filter.clean_url_label ~' ' ~ h1|slice(0,1)|lower ~ h1|slice(1) %}
+                {% endif%}
+                {# always make sure that the h1 is ucfirst #}
+                {% set  h1 = h1|slice(0,1)|capitalize ~ h1|slice(1) %}
+            {% endif %}
+            {% set h1 = h1|e %}
+            
+            {% set sseo_title = seo_title %}
+            {% set sseo_description = seo_description %}
+            
+            {% if sseo_title is empty %}
+                {% set sseo_title = h1 ~ " - " ~ properties.name %}
+            {% endif %}
+            
+            {% if sseo_description is empty %}
+                {% set sseo_description = h1 ~ " - " ~ properties.name %}
+            {% endif %}
+            
+            {% set og_type = "website" %}
+            {% if type == 'product' %}
+                {% set og_type = "article" %}
+            {% endif %}
+            
+            {% set og_img = properties.logo|image %}
+            {% if type == 'product' %}
+                {% set og_img = og.image.filename|image %}
+            {% endif %}
+            
+            <meta name="robots" content="{{robots}}">
+            <meta name="title" content="{{sseo_title}}">
+            <meta name="keywords" content="{{seo_keywords}}">
+            <meta name="description" content="{{sseo_description}}">
+            
+            <meta property="og:type" content="{{og_type}}">
+            <meta property="og:url" content="{{current_url}}">
+            <meta property="og:title" content="{{sseo_title}}">
+            <meta property="og:image" content="{{og_img}}">
+            <meta property="og:description" content="{{sseo_description}}">
+            <meta property="og:site_name" content="{{properties.name}}">
+            <meta property="og:locale" content="{{language}}">
+            
+            <meta name="twitter:card" content="summary">
+            <meta name="twitter:url" content="{{current_url}}">
+            <meta name="twitter:title" content="{{sseo_title}}">
+            <meta name="twitter:description" content="{{sseo_description}}">
+            <meta name="twitter:image" content="{{og_img}}">
+            
+            {% if(menu_item.pagination is not null) %}
+                {% set canonical = menu_item.pagination.buttons|first.link_clean %}
+                
+                {% if menu_item.pagination.previous_page_link_clean is not empty %}
+                    <link rel="prev" href="{{menu_item.pagination.previous_page_link_clean}}" />
+                {% endif %}
+                
+                {% if menu_item.pagination.next_page_link_clean is not empty %}
+                    <link rel="next" href="{{menu_item.pagination.next_page_link_clean}}" />
+                {% endif %}
+            {% endif %}
+            
+            
+            {% if active_filters is not empty %}
+                {% for page in menu_item.pagination.buttons %}
+                    {% if page.active == true %}
+                        {% set canonical = page.link_clean %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
+            
+            {% if canonical is not empty %}<link rel="canonical" href="{{canonical}}" />{% endif %}
+            <title>{{sseo_title}}</title>
+            
+            <link rel="icon" type="image/png" href="{{image('/image/4838311490-android-chrome-192x192.png')|image}}" />
+            <link rel="icon" href="{{home_url}}favicon.ico" sizes="any">
+            <meta name="apple-mobile-web-app-title" content="{{properties.name}}">
+            <meta name="application-name" content="{{properties.name}}">
+            <meta name="msapplication-TileColor" content="#064370">
+            <meta name="theme-color" content="#064370">
+            
+            <link rel="dns-prefetch" href="https://connect.facebook.net">
+            {#<link rel="dns-prefetch" href="https://afosto-cdn-01.afosto.com">#}
+            <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+            
+            <script src="https://kit.fontawesome.com/b3217c1569.js" crossorigin="anonymous"></script>
+            
+            <link
+              rel="stylesheet"
+              href="https://unpkg.com/lucide-static@0.518.0/font/lucide.css"
+            />
+            
+            <link
+              rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+            />
+            <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+            
+            <link rel="preconnect" href="https://staticxx.facebook.com" crossorigin>
+            <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+            <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+           {% if type == 'user' %}
+                <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js" type="text/javascript"></script>
+            {% endif %}
+            {{merge_schema({
+                "1":{
+                "@type": "Organization",
+                "sameAs" : [
+                  "https://www.facebook.com/afosto",
+                  "https://twitter.com/afosto",
+                  "https://plus.google.com/+Afosto"
+                ]
+              }})
+            }}
+            
+            {% if is_home %}
+              {{replace_schema({0 : null })  }}
+            {% endif %}
+            
+            {% if type == 'product' %}
+                <link
+                    rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
+                />
+            {% endif %}
+            
+            {{minify(["/scss/main.scss"], 'stylesheet')}}
+            {#{{minify(["/scss/main.scss"], 'stylesheet')|replace({ '">': '" media="print" onload="this.media=`all`; this.onload=null;">' })}}#}
+            
+            
+            {#<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">#}
+            <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
+            
+            <!-- End Cookie Consent plugin -->
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+
+        </head>
+
+        <body class="type-{{type}}" data-af-currency="{{properties.currency_symbol}}" data-af-currency-iso="{{properties.currency}}">
+            <div id="fb-root"></div>
+            {#{% if type != 'checkout' or type != 'cart' %}#}
+            {#    <script>#}
+            {#        (function(d, s, id) {#}
+            {#          var js, fjs = d.getElementsByTagName(s)[0];#}
+            {#          if (d.getElementById(id)) return;#}
+            {#          js = d.createElement(s); js.id = id; js.defer=true;#}
+            {#          js.src = "//connect.facebook.net/nl_NL/sdk.js#xfbml=1&version=v2.7&appId=1876097765947515";#}
+            {#          fjs.parentNode.insertBefore(js, fjs);#}
+            {#        }(document, 'script', 'facebook-jssdk'));#}
+            {#    </script>#}
+            {#{% endif %}#}
+            
+            {% include 'layouts/base.twig' %}
+            
+            {#<script data-search-pseudo-elements defer src="https://use.fontawesome.com/releases/v5.7.0/js/all.js" integrity="sha384-qD/MNBVMm3hVYCbRTSOW130+CWeRIKbpot9/gR1BHkd7sIct4QKhT1hOPd+2hO8K" crossorigin="anonymous"></script>#}
+            <script>
+                window.lazySizesConfig = window.lazySizesConfig || {};
+                window.lazySizesConfig.init = false;
+            </script>
+            
+            <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.8.3/dist/instantsearch.production.min.js" integrity="sha256-LAGhRRdtVoD6RLo2qDQsU2mp+XVSciKRC8XPOBWmofM=" crossorigin="anonymous"></script>
+            <script type="text/javascript">
+                var afostoSearchClient;(()=>{var t={228:t=>{t.exports=function(t,r){(null==r||r>t.length)&&(r=t.length);for(var e=0,n=new Array(r);e<r;e++)n[e]=t[e];return n}},858:t=>{t.exports=function(t){if(Array.isArray(t))return t}},926:t=>{function r(t,r,e,n,o,i,a){try{var u=t[i](a),c=u.value}catch(t){return void e(t)}u.done?r(c):Promise.resolve(c).then(n,o)}t.exports=function(t){return function(){var e=this,n=arguments;return new Promise((function(o,i){var a=t.apply(e,n);function u(t){r(a,o,i,u,c,"next",t)}function c(t){r(a,o,i,u,c,"throw",t)}u(void 0)}))}}},713:t=>{t.exports=function(t,r,e){return r in t?Object.defineProperty(t,r,{value:e,enumerable:!0,configurable:!0,writable:!0}):t[r]=e,t}},884:t=>{t.exports=function(t,r){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(t)){var e=[],n=!0,o=!1,i=void 0;try{for(var a,u=t[Symbol.iterator]();!(n=(a=u.next()).done)&&(e.push(a.value),!r||e.length!==r);n=!0);}catch(t){o=!0,i=t}finally{try{n||null==u.return||u.return()}finally{if(o)throw i}}return e}}},521:t=>{t.exports=function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}},38:(t,r,e)=>{var n=e(858),o=e(884),i=e(379),a=e(521);t.exports=function(t,r){return n(t)||o(t,r)||i(t,r)||a()}},379:(t,r,e)=>{var n=e(228);t.exports=function(t,r){if(t){if("string"==typeof t)return n(t,r);var e=Object.prototype.toString.call(t).slice(8,-1);return"Object"===e&&t.constructor&&(e=t.constructor.name),"Map"===e||"Set"===e?Array.from(t):"Arguments"===e||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(e)?n(t,r):void 0}}},757:(t,r,e)=>{t.exports=e(666)},666:t=>{var r=function(t){"use strict";var r,e=Object.prototype,n=e.hasOwnProperty,o="function"==typeof Symbol?Symbol:{},i=o.iterator||"@@iterator",a=o.asyncIterator||"@@asyncIterator",u=o.toStringTag||"@@toStringTag";function c(t,r,e){return Object.defineProperty(t,r,{value:e,enumerable:!0,configurable:!0,writable:!0}),t[r]}try{c({},"")}catch(t){c=function(t,r,e){return t[r]=e}}function l(t,r,e,n){var o=r&&r.prototype instanceof d?r:d,i=Object.create(o.prototype),a=new _(n||[]);return i._invoke=function(t,r,e){var n=f;return function(o,i){if(n===p)throw new Error("Generator is already running");if(n===v){if("throw"===o)throw i;return N()}for(e.method=o,e.arg=i;;){var a=e.delegate;if(a){var u=E(a,e);if(u){if(u===y)continue;return u}}if("next"===e.method)e.sent=e._sent=e.arg;else if("throw"===e.method){if(n===f)throw n=v,e.arg;e.dispatchException(e.arg)}else"return"===e.method&&e.abrupt("return",e.arg);n=p;var c=s(t,r,e);if("normal"===c.type){if(n=e.done?v:h,c.arg===y)continue;return{value:c.arg,done:e.done}}"throw"===c.type&&(n=v,e.method="throw",e.arg=c.arg)}}}(t,e,a),i}function s(t,r,e){try{return{type:"normal",arg:t.call(r,e)}}catch(t){return{type:"throw",arg:t}}}t.wrap=l;var f="suspendedStart",h="suspendedYield",p="executing",v="completed",y={};function d(){}function g(){}function m(){}var w={};w[i]=function(){return this};var b=Object.getPrototypeOf,x=b&&b(b(k([])));x&&x!==e&&n.call(x,i)&&(w=x);var O=m.prototype=d.prototype=Object.create(w);function P(t){["next","throw","return"].forEach((function(r){c(t,r,(function(t){return this._invoke(r,t)}))}))}function j(t,r){function e(o,i,a,u){var c=s(t[o],t,i);if("throw"!==c.type){var l=c.arg,f=l.value;return f&&"object"==typeof f&&n.call(f,"__await")?r.resolve(f.__await).then((function(t){e("next",t,a,u)}),(function(t){e("throw",t,a,u)})):r.resolve(f).then((function(t){l.value=t,a(l)}),(function(t){return e("throw",t,a,u)}))}u(c.arg)}var o;this._invoke=function(t,n){function i(){return new r((function(r,o){e(t,n,r,o)}))}return o=o?o.then(i,i):i()}}function E(t,e){var n=t.iterator[e.method];if(n===r){if(e.delegate=null,"throw"===e.method){if(t.iterator.return&&(e.method="return",e.arg=r,E(t,e),"throw"===e.method))return y;e.method="throw",e.arg=new TypeError("The iterator does not provide a 'throw' method")}return y}var o=s(n,t.iterator,e.arg);if("throw"===o.type)return e.method="throw",e.arg=o.arg,e.delegate=null,y;var i=o.arg;return i?i.done?(e[t.resultName]=i.value,e.next=t.nextLoc,"return"!==e.method&&(e.method="next",e.arg=r),e.delegate=null,y):i:(e.method="throw",e.arg=new TypeError("iterator result is not an object"),e.delegate=null,y)}function L(t){var r={tryLoc:t[0]};1 in t&&(r.catchLoc=t[1]),2 in t&&(r.finallyLoc=t[2],r.afterLoc=t[3]),this.tryEntries.push(r)}function S(t){var r=t.completion||{};r.type="normal",delete r.arg,t.completion=r}function _(t){this.tryEntries=[{tryLoc:"root"}],t.forEach(L,this),this.reset(!0)}function k(t){if(t){var e=t[i];if(e)return e.call(t);if("function"==typeof t.next)return t;if(!isNaN(t.length)){var o=-1,a=function e(){for(;++o<t.length;)if(n.call(t,o))return e.value=t[o],e.done=!1,e;return e.value=r,e.done=!0,e};return a.next=a}}return{next:N}}function N(){return{value:r,done:!0}}return g.prototype=O.constructor=m,m.constructor=g,g.displayName=c(m,u,"GeneratorFunction"),t.isGeneratorFunction=function(t){var r="function"==typeof t&&t.constructor;return!!r&&(r===g||"GeneratorFunction"===(r.displayName||r.name))},t.mark=function(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,m):(t.__proto__=m,c(t,u,"GeneratorFunction")),t.prototype=Object.create(O),t},t.awrap=function(t){return{__await:t}},P(j.prototype),j.prototype[a]=function(){return this},t.AsyncIterator=j,t.async=function(r,e,n,o,i){void 0===i&&(i=Promise);var a=new j(l(r,e,n,o),i);return t.isGeneratorFunction(e)?a:a.next().then((function(t){return t.done?t.value:a.next()}))},P(O),c(O,u,"Generator"),O[i]=function(){return this},O.toString=function(){return"[object Generator]"},t.keys=function(t){var r=[];for(var e in t)r.push(e);return r.reverse(),function e(){for(;r.length;){var n=r.pop();if(n in t)return e.value=n,e.done=!1,e}return e.done=!0,e}},t.values=k,_.prototype={constructor:_,reset:function(t){if(this.prev=0,this.next=0,this.sent=this._sent=r,this.done=!1,this.delegate=null,this.method="next",this.arg=r,this.tryEntries.forEach(S),!t)for(var e in this)"t"===e.charAt(0)&&n.call(this,e)&&!isNaN(+e.slice(1))&&(this[e]=r)},stop:function(){this.done=!0;var t=this.tryEntries[0].completion;if("throw"===t.type)throw t.arg;return this.rval},dispatchException:function(t){if(this.done)throw t;var e=this;function o(n,o){return u.type="throw",u.arg=t,e.next=n,o&&(e.method="next",e.arg=r),!!o}for(var i=this.tryEntries.length-1;i>=0;--i){var a=this.tryEntries[i],u=a.completion;if("root"===a.tryLoc)return o("end");if(a.tryLoc<=this.prev){var c=n.call(a,"catchLoc"),l=n.call(a,"finallyLoc");if(c&&l){if(this.prev<a.catchLoc)return o(a.catchLoc,!0);if(this.prev<a.finallyLoc)return o(a.finallyLoc)}else if(c){if(this.prev<a.catchLoc)return o(a.catchLoc,!0)}else{if(!l)throw new Error("try statement without catch or finally");if(this.prev<a.finallyLoc)return o(a.finallyLoc)}}}},abrupt:function(t,r){for(var e=this.tryEntries.length-1;e>=0;--e){var o=this.tryEntries[e];if(o.tryLoc<=this.prev&&n.call(o,"finallyLoc")&&this.prev<o.finallyLoc){var i=o;break}}i&&("break"===t||"continue"===t)&&i.tryLoc<=r&&r<=i.finallyLoc&&(i=null);var a=i?i.completion:{};return a.type=t,a.arg=r,i?(this.method="next",this.next=i.finallyLoc,y):this.complete(a)},complete:function(t,r){if("throw"===t.type)throw t.arg;return"break"===t.type||"continue"===t.type?this.next=t.arg:"return"===t.type?(this.rval=this.arg=t.arg,this.method="return",this.next="end"):"normal"===t.type&&r&&(this.next=r),y},finish:function(t){for(var r=this.tryEntries.length-1;r>=0;--r){var e=this.tryEntries[r];if(e.finallyLoc===t)return this.complete(e.completion,e.afterLoc),S(e),y}},catch:function(t){for(var r=this.tryEntries.length-1;r>=0;--r){var e=this.tryEntries[r];if(e.tryLoc===t){var n=e.completion;if("throw"===n.type){var o=n.arg;S(e)}return o}}throw new Error("illegal catch attempt")},delegateYield:function(t,e,n){return this.delegate={iterator:k(t),resultName:e,nextLoc:n},"next"===this.method&&(this.arg=r),y}},t}(t.exports);try{regeneratorRuntime=r}catch(t){Function("r","regeneratorRuntime = r")(r)}}},r={};function e(n){if(r[n])return r[n].exports;var o=r[n]={exports:{}};return t[n](o,o.exports,e),o.exports}e.n=t=>{var r=t&&t.__esModule?()=>t.default:()=>t;return e.d(r,{a:r}),r},e.d=(t,r)=>{for(var n in r)e.o(r,n)&&!e.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:r[n]})},e.o=(t,r)=>Object.prototype.hasOwnProperty.call(t,r);var n={};(()=>{"use strict";e.d(n,{default:()=>p});var t=e(757),r=e.n(t),o=e(926),i=e.n(o),a=e(38),u=e.n(a),c=e(713),l=e.n(c);function s(t,r){var e=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);r&&(n=n.filter((function(r){return Object.getOwnPropertyDescriptor(t,r).enumerable}))),e.push.apply(e,n)}return e}function f(t){for(var r=1;r<arguments.length;r++){var e=null!=arguments[r]?arguments[r]:{};r%2?s(Object(e),!0).forEach((function(r){l()(t,r,e[r])})):Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(e)):s(Object(e)).forEach((function(r){Object.defineProperty(t,r,Object.getOwnPropertyDescriptor(e,r))}))}return t}const h={allowEmptyQuery:!0,showEmptyFacets:!1},p=(t,e)=>{const n=f(f({},h),null!=e?e:{}),o=t=>{var r;const e=(null!==(r=null==t?void 0:t.params)&&void 0!==r?r:{}).facetFilters;return(void 0===e?[]:e).reduce(((t,r)=>{var e;const n=null!=r?r:[],o=u()(n,1)[0],i=null!==(e=null==o?void 0:o.split(":"))&&void 0!==e?e:[],a=u()(i,2),c=a[0],l=a[1];return c&&l?[...t,{key:c,operator:"in",values:[l]}]:t}),[])},a=t=>{var r;const e=null!==(r=null==t?void 0:t.params)&&void 0!==r?r:{},n=e.page,o=e.hitsPerPage,i=void 0===o?10:o;return{hitsPerPage:i,offset:n*i}},c=t=>{var r;return{results:(null!==(r=null==t?void 0:t.results)&&void 0!==r?r:[]).reduce(((t,r)=>{const e=(t=>{var r;return(null!==(r=null==t?void 0:t.facets)&&void 0!==r?r:[]).reduce(((t,r)=>{var e;const o=(null!==(e=null==r?void 0:r.buckets)&&void 0!==e?e:[]).reduce(((t,r)=>null!=r&&r.value&&(n.showEmptyFacets||null!=r&&r.count)?f(f({},t),{},{[r.value]:r.count}):t),{});return f(f({},t),{},{[r.key]:o})}),{})})(r);return f(f({},t),{},{[r.id]:f(f({},r),{},{facets:e})})}),{})}},l=(t,r)=>{var e,n,o,i,a;const u=null!==(e=null==r?void 0:r.params)&&void 0!==e?e:{},c=u.hitsPerPage,l=void 0===c?10:c,s=u.page,f=u.query,h=null!==(n=null==t?void 0:t.hits)&&void 0!==n?n:[],p=null!==(o=null==t?void 0:t.facets)&&void 0!==o?o:[],v=null!==(i=null==t?void 0:t.count)&&void 0!==i?i:0,y=Math.floor(v/l),d=null!==(a=null==t?void 0:t.id)&&void 0!==a?a:null==r?void 0:r.indexName;return{facets:p,hits:h,hitsPerPage:l,index:d,nbHits:v,nbPages:y,page:s,query:f,queryID:d}},s=(t,r)=>({results:t.reduce(((t,e)=>{var n;const o=(null!=e?e:{}).indexName,i=null==r||null===(n=r.results)||void 0===n?void 0:n[o];return i?[...t,l(i,e)]:[...t,l({},e)]}),[])});return{search:function(){var e=i()(r().mark((function e(i){var l,f,h,p,v,y,d,g,m,w,b,x,O,P,j,E,L;return r().wrap((function(r){for(;;)switch(r.prev=r.next){case 0:if(r.prev=0,f=[...new Set(i.map((t=>t.indexName)))],h=null!=i?i:[],p=u()(h,1),v=p[0],y=null!==(l=null==v?void 0:v.params)&&void 0!==l?l:{},d=y.facets,g=void 0===d?[]:d,m=y.query,null!=n&&n.allowEmptyQuery||m){r.next=6;break}return r.abrupt("return",s(i,{}));case 6:return w=o(v),b=a(v),x=b.hitsPerPage,O=b.offset,P={q:m,offset:O,limit:x,indices:f,filters:w,facets:g},r.next=11,fetch("https://api.afosto.io/cnt/instant/search/".concat(t),{method:"POST",body:JSON.stringify(P)});case 11:return j=r.sent,r.next=14,j.json();case 14:return E=r.sent,L=c(E),r.abrupt("return",s(i,L));case 19:return r.prev=19,r.t0=r.catch(0),r.abrupt("return",s(i,{}));case 22:case"end":return r.stop()}}),e,null,[[0,19]])})));return function(t){return e.apply(this,arguments)}}(),searchForFacetValues:function(){var t=i()(r().mark((function t(){return r().wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",{});case 1:case"end":return t.stop()}}),t)})));return function(){return t.apply(this,arguments)}}()}}})(),afostoSearchClient=n.default})();
+            </script>
+            
+            {% if type == 'product' %}
+                <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+            {% endif %}
+            
+            {% include 'layouts/storefrontScripts.twig' %}
+            
+            {{minify([
+                "/js/jquery.js",
+                "/js/jqueryui.js",
+                "/js/moment.js", 
+                "/js/momentlocales.js",
+                "/js/bootstrap.js", 
+                "/js/main.js", 
+                "/js/cookieconsent.js", 
+                "/js/stringhelper.js", 
+                "/js/objecthelper.js", 
+                "/js/inputhelper.js", 
+                "/js/parsley.js", 
+                "/js/slick.js", 
+                "/js/lightbox.js", 
+                "/js/mmenu.js",
+                "/js/touchpunch.js", 
+                "/js/inputmask.js", 
+                "/js/datepicker.js", 
+                "/js/typeahead.js", 
+                "/js/phoenix.js",
+                "/js/star-rating.js",
+                "/js/clipboard.js",
+                "/js/lazysizes.js",
+                "/js/readMoreAfosto.js",
+                
+                "/js/afosto.js", 
+                "/js/search.js", 
+                "/js/collection.js", 
+                "/js/checkout.js", 
+                "/js/cart.js", 
+                "/js/shippingprovider.js", 
+                "/js/checkoutfunc.js", 
+                "/js/product.js", 
+                "/js/reviews.js", 
+                "/js/address.js", 
+                "/js/account.js", 
+                "/js/wishlist.js",
+                "/js/quickview.js",
+                "/js/ajaxChimp.js",
+                "/js/searchValidAddress.js", 
+                "/js/checkout_v4.js", 
+            ], 'scripts')}}
+            
+            <script>
+            $(function(){
+                lazySizes.init();
+            })
+            </script>
+            
+            <script defer type="text/javascript">
+                window.addEventListener("load", function(){
+                    window.cookieconsent.initialise({
+                        "palette": {
+                            "popup": {
+                              "background": "#00502a",
+                              "text": "#e8f0e2"
+                            },
+                            "button": {
+                              "background": "#8bc63e",
+                              "text": "#12240a"
+                            }
+                        },
+                        "theme": "block",
+                      "position": "bottom",
+                      "content": {
+                        "message":"{{'Door verder te klikken op onze website, accepteer je cookies en vergelijkbare technieken. Hiermee verzamelen wij persoonsgegevens en volgen wij (en mogelijk derden) je internetgedrag op onze website en die van derden. Hiermee kunnen wij (en mogelijk derden) je advertenties laten zien die bij jouw interesses passen en zodat je bijvoorbeeld informatie kunt delen op social media.'|t}}",
+                        "dismiss":"{{'Doorgaan'|t}}",
+                        "link": "Lees meer",
+                        "href": "{{current_url}}privacy/"
+                      }
+                    });
+                });
+            </script>
+            <script src="https://unpkg.com/lucide@latest"></script>
+            <script>
+                lucide.createIcons();
+            </script>
+        </body>
+    </html> 
+{% endblock configProvider %}

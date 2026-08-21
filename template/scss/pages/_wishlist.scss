@@ -1,0 +1,123 @@
+.wishlist {
+
+    &-top-row {
+        @include flexbox;
+        @include justify-content(space-between);
+        @include align-items(center);
+
+        &.flex-reverse {
+            @include flex-direction(row-reverse);
+        }
+
+        div a:not(.btn) {
+            color: #000;
+            @include flexbox;
+            @include align-items(center);
+            @include justify-content(center);
+
+            svg {
+                height: 25px;
+                margin-right: 5px;
+            }
+        }
+
+        @media (max-width: 991px) {
+            border-bottom: 1px solid #eee;
+            @include flex-wrap(wrap);
+
+            div {
+                @include flex-basis(100%);
+                text-align: center;
+            }
+
+            div:first-child {
+                @include flex-basis(100%);
+            }
+            
+        }
+        h1 {
+            margin: 0;
+
+            @media (max-width: 991px) {
+                font-size: 24px;
+            }
+        }
+    }
+
+    &-grid {
+        @include flexbox;
+        @include flex-wrap(wrap);
+
+        &-item {
+            margin-bottom: 30px;
+            @include flex-basis(50%);
+
+            @media (max-width: 991px) {
+                @include flex-basis(100%);
+            }
+
+            a {
+                color: $gray-base;
+            }
+
+            &-inner {
+                height: 100%;
+                margin-bottom: 0;
+                @include flexbox;
+            }
+
+            &-image {
+                @include flex-basis(100px);
+                @include flex-shrink(0);
+                max-width: 100px;
+            }
+
+            &-info {
+                position: relative;
+                padding-left: 15px;
+                @include flex-grow(1);
+                @include flexbox;
+                @include flex-direction(column);
+                @include justify-content(space-between);
+
+                &-inner {
+
+                    .product-name {
+                        font-size: 1.4em;
+                        font-weight: 900;
+                    }
+                }
+
+                &-actions {
+                    text-align: right;
+                }
+
+                .fa-times {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                }
+
+                &-table {
+
+                    .wishlist-table {
+
+                        &-row {
+                            padding: 5px 0;
+                            @include flexbox;
+                            @include align-items(center);
+                        }
+
+                        &-spec {
+                            @include flex-basis(80px);
+                        }
+
+                        &-value {
+                            @include flex-grow(0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

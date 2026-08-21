@@ -1,0 +1,18 @@
+{% if slider is not defined %}
+    No slider defined to use for the mini banners macro.
+{% else %}
+    <div class="mini-banner-row">
+        {% for banner in slider.slides %}
+            <div class="mini-banner">
+                <a href="{{home_url|trim('/')}}{{banner.title}}" title="{{banner.text|replace({"<p>":"","</p>":""})}}">
+                    <div class="mini-banner-overlay">
+                        <span class="h3">
+                            {{banner.text|replace({"<p>":"","</p>":""})}}
+                        </span>
+                    </div>
+                    <img src="{{banner.filename|replace({"1170x250/":""})|image({"w": 500})}}" alt="afbeelding: {{banner.text|replace({"<p>":"","</p>":""})}}">
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

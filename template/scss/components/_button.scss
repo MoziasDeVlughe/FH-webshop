@@ -1,0 +1,112 @@
+.btn, .pagination li a {
+    @include transition($btn-default-transition);
+}
+
+.btn {
+
+    &-full-width {
+        width: 100%;
+    }
+
+    &-primary-inverse {
+        @include button-variant($brand-primary, transparent, $brand-primary);
+
+        &:hover {
+            color: #fff;
+            background-color: $brand-primary;
+        }
+    }
+    &-main {
+        @include button-variant(#fff, $brand-primary, transparent);
+
+        &:hover {
+            color: #fff;
+            background-color: $brand-primary;
+        }
+    }
+    
+    &-outlined-grey {
+        @include button-variant(#263C4A, #fff, #DCE4E9);
+
+        &:hover {
+            color: #263C4A;
+            background-color: #F8F9FB;
+            border-color: #DCE4E9;
+        }
+    }
+
+    &-white-inverse {
+        @include button-variant(#fff, transparent, #fff);
+
+        &:hover {
+            color: $brand-primary;
+            background-color: #fff;
+        }
+    }
+    
+    &[type="submit"],
+    &.btn-loadable {
+        position: relative;
+        
+        &::before {
+            position: absolute;
+            top: calc(50% - 1rem);
+            left: calc(50% - 1rem);
+            width: 2rem;
+            height: 2rem;
+            content: "";
+            border-top: 1rem solid rgba(255, 255, 255, 0.2);
+            border-right: 1rem solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1rem solid rgba(255, 255, 255, 0.2);
+            border-left: 1rem solid #ffffff;
+            border-radius: 50%;
+            @include opacity(0);
+            pointer-events: none;
+            @include transition(opacity .1s ease);
+            -webkit-animation: circleLoading .5s infinite linear;
+            animation: circleLoading .5s infinite linear;
+        }
+        
+        &.btn-loading {
+            color: transparent;
+            
+            &::before {
+                @include opacity(1);
+            }
+        }
+        
+        @-webkit-keyframes circleLoading {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes circleLoading {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+    }
+}
+
+.btn.btn-link {
+    outline: none;
+}
+
+.btn-secondary {
+    @include button-variant(#fff, $brand-secondary, $brand-secondary);
+}
+
+.gift-wrap-form button.btn {
+    outline: none !important;
+}

@@ -1,0 +1,131 @@
+$screen-xl: 1600px;
+
+@import "flexbox";
+
+@mixin af-xs {
+    @media (max-width: ($screen-sm - 1)) {
+        @content;
+    }
+}
+
+@mixin af-sm {
+    @media (min-width: $screen-sm) and (max-width: #{$screen-md - 1}) {
+        @content;
+    }
+}
+
+@mixin af-md {
+    @media (min-width: $screen-md) and (max-width: #{$screen-lg - 1}) {
+        @content;
+    }
+}
+
+@mixin af-lg {
+    @media (min-width: $screen-lg) and (max-width: #{$screen-xl - 1}) {
+        @content;
+    }
+}
+
+@mixin af-xl {
+    @media (min-width: $screen-xl) {
+        @content;
+    }
+}
+
+@mixin transform($rules) {
+    -webkit-transform: $rules;
+    -ms-transform: $rules;
+    -o-transform: $rules;
+    transform: $rules;
+}
+
+@mixin opacity($value) {
+    filter: alpha(opacity=($value * 100));
+    opacity: $value;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=($value * 100))";
+    -moz-opacity: $value;
+    -khtml-opacity: $value;
+}
+
+@mixin loading-icon(
+    $size: $loader-size,
+    $height: $loader-height,
+    $color: $loader-color,
+    $duration: $loader-animation-duration,
+    $gap: $loader-gap,
+    $align: null
+) {
+    position: relative;
+    width: $size;
+    height: $height;
+    background: $color;
+    animation: loader09 $duration ease-in-out infinite;
+    animation-delay: ($duration / 5) * 2;
+    &::after,
+    &::before {
+        position: absolute;
+        width: $size;
+        height: $height;
+        content: "";
+        background: $color;
+        animation: loader09 $duration ease-in-out infinite;
+    }
+
+    &::before {
+        right: $size + $gap;
+        animation-delay: ($duration / 5) * 1;
+    }
+
+    &::after {
+        left: $size + $gap;
+        animation-delay: ($duration / 5) * 3;
+    }
+
+    @if ($align == center) {
+        margin: 0 auto;
+    }
+    
+    @if ($align == middle) {
+        top: 50%;
+        margin: -($size * 2 + $gap) auto 0;
+    }
+    
+    @keyframes loader09 {
+        0%, 100% {
+            box-shadow: 0 0 0 $color, 0 0 0 $color;
+        }
+
+        50% {
+            box-shadow: 0 (-$gap) 0 $color,0 $gap 0 $color;
+        }
+    }
+}
+
+@mixin media-breakpoint-up($name, $breakpoints: $breakpoints-map) {
+  $min: breakpoint-min($name, $breakpoints);
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin display-grid {
+    display: -ms-grid;
+    display: grid;
+}
+@mixin grid-columns($value: 1fr) {
+    grid-template-columns: $value;
+    -ms-grid-columns: $value;
+}
+@mixin grid-rows($value: 1fr) {
+    grid-template-rows: $value;
+    -ms-grid-row: $value;
+}
+
+@mixin position-sticky {
+    position: sticky;
+    position: -webkit-sticky;
+}

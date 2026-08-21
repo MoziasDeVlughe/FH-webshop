@@ -1,0 +1,4 @@
+{% extends 'config.twig' %}
+{% block configProvider %}
+    {% include ['search/variants/' ~ search_variant ~ '.twig', 'search/variants/default.twig'] %}
+{% endblock configProvider %}

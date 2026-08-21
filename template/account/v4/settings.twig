@@ -1,0 +1,61 @@
+<div class="container">
+    <h1>{{"Account instellingen"|t}}</h1>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-sm-3 col-xl-2 account-menu-sticky">
+            {% include 'account/menu.twig'  with {'active': 'settings'}  %}
+        </div>
+        <div class="col-xs-12 col-sm-9 col-xl-10">
+            <form id="settings-form" method="post" class="form form-validate">
+                <div class="form-group">
+                    <label for="customer_first_name" class="control-label">{{ 'Voornaam'|t }} <span class="required">*</span></label>
+                    <div class="validation-container">
+                        <input type="text" name="customer[given_name]" class="form-control required phoenix-input" tabindex="1" id="customer_first_name" value="{{ customer.first_name|e }}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="form-group">
+                    <label for="customer_last_name" class="control-label">{{ 'Tussenvoegsel'|t }}</label>
+                    <div class="validation-container">
+                        <input type="text" name="customer[additional_name]" class="form-control phoenix-input" tabindex="2" id="customer_additional_name" value="{{ customer.last_name_prefix|e }}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <div class="form-group">
+                    <label for="customer_last_name" class="control-label">{{ 'Achternaam'|t }} <span class="required">*</span></label>
+                    <div class="validation-container">
+                        <input type="text" name="customer[family_name]" class="form-control required phoenix-input" tabindex="2" id="customer_last_name" value="{{ customer.last_name|e }}">
+                    </div>
+                    <div class="field-error-container"></div>
+                </div>
+                <hr>
+                <fieldset>
+                    <legend>{{ 'Telefoonnummer'|t }}</legend>
+                    <div class="row mx-n5">
+                        <div class="col-xs-4 px-5">
+                            <div class="form-group">
+                                <label class="control-label" for="customer_phone_number_country_code">{{ 'Land'|t }}</label>
+                                <select name="phone_number[country_code]" class="form-control" id="customer_phone_number_country_code">
+                                    {% for country in countries %}
+                                        <option value="{{ country.iso }}" data-country-iso="{{ country.iso }}" {% if account.customer.phonenumber.primary.country_code == country.iso %}selected{% endif %}>{{ country.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-8 px-5">
+                            <div class="form-group">
+                                <label class="control-label" for="customer_phone_number_number">{{ 'Nummer'|t }}</label>
+                                <input type="tel" class="form-control flex-fill" id="customer_phone_number_number" name="phone_number[number]" pattern="[0-9-+ ]{1,20}" tabindex="4" placeholder="{{ '06 12 34 56 78' }}" value="{{ customer.phonenumber.primary.number|e }}">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        {{ 'Opslaan'|t }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

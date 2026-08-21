@@ -1,0 +1,55 @@
+<div class="container pb-50">
+    <div class="blogpost-container">
+        <div class="post-header">
+            <div class="post-header-image" style="background-image: url({{image.filename|replace({'inline':'blogpost'})|image({"w": 1530, "h": 325, "c": 1})}})">
+                {% if image is null %}
+                    <div class="blur">{{get_excerpt(content, 1000, 0)}}</div>
+                {% endif %}
+            </div>
+            <div class="post-header-title text-center">
+                <h1>
+                    {{title}} 
+                </h1>
+                <small>{{subtitle}}</small><br>
+                <span class="blogpost-publish-date">{{publish_date|date("d F Y")}}</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="blogpost-post">
+                    <p>{{content}}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="h4">{{"Meer artikelen"|t}}</div>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-unstyled">
+                        {% for post in blog.posts|reverse %}
+                            <li><a href="{{post.url}}">{{post.title}}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% if tags is not empty %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="h4">{{"Tags"|t}}</div>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-unstyled">
+                            {% for tag in tags %}
+                                <li><a href="{{tag.url}}">{{tag.label}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                <a href="/blog" class="btn btn-primary"><i class="fa fa-chevron-left"></i> {{"Terug naar het overzicht"|t}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+    

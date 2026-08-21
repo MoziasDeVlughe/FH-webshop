@@ -1,0 +1,63 @@
+.blog-list, .blog-grid {
+    
+    // local variables specific for these components
+    $blogpost-overlay:              rgba(#000, .5);
+    $blogpost-title-font:           "Lato", sans-serif;
+    $blogpost-title-size:           16px;
+    $blogpost-title-weight:         700;
+    $blogpost-title-casing:         none;
+    
+    .blogpost {
+        
+        &-image {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            @media (max-width: $screen-lg) {
+                height: 320px;
+            }
+            
+            .blogpost-title {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                color: #fff !important;
+                background-color: rgba(0,0,0,.3);
+                @include transition(background-color .2s ease-in-out);
+                
+                &-inner {
+                    position: absolute;
+                    top: 50%;
+                    width: 100%;
+                    @include transform(translateY(-50%));
+                }
+                
+                .blogpost-big-title {
+                    position: relative;
+                    margin-top: 0;
+                    font-family: $blogpost-title-font;
+                    // font-size: $blogpost-title-size;
+                    font-weight: $blogpost-title-weight;
+                    text-transform: $blogpost-title-casing;
+                    border: 0;
+                }
+            }
+            
+            &:hover {
+                
+                .blogpost-title {
+                    background-color: $blogpost-overlay;
+                }
+            }
+        }
+    }
+}
+
+.blog-grid {
+    @include flexbox;
+    @include flex-wrap(wrap);
+}

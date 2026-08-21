@@ -1,0 +1,79 @@
+{# type: search #}
+{% import "macros/default.twig" as sorting %}
+<div id="collection-content">
+    <div class="container pb-50">
+        {#<div class="row">#}
+        {% if products is not empty %}
+            {#<div class="col-md-3">#}
+            {#    {% include 'collection/filters.twig'  %}#}
+            {#</div>#}
+            {#<div class="col-md-9">#}
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1><small>{{"Resultaten voor:"|t}}</small> {{query|e}}</h1>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="collection-sort-container">
+                            <div class="btn-toolbar">
+                                <div class="btn-group pull-right" role="group">
+                                    <div class="btn btn-sm btn-primary layout-option" data-layout-option="grid">
+                                        <i class="fa fa-th"></i>
+                                    </div>
+                                    <div class="btn btn-sm btn-primary layout-option" data-layout-option="list">
+                                        <i class="fa fa-list"></i>
+                                    </div>
+                                </div>
+                                {#<div class="dropdown pull-right">#}
+                                {#    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="sort-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> #}
+                                {#        {{sorting.activeSortingLabel("sorteer op: %active%", sort, 'Nieuwste'|t)}}#}
+                                {#        <span class="caret"></span>#}
+                                {#    </button>#}
+                                {#    <ul class="dropdown-menu" aria-labelledby="sort-menu">#}
+                                {#        {% for option in sort.options %}#}
+                                {#            <li>#}
+                                {#                <a data-af-href="{{option.link}}" data-af-ajax-element="#collection-content" data-af-ajax-input="#collection-content > *">{{option.label|t}}</a>#}
+                                {#            </li>#}
+                                {#        {% endfor %}#}
+                                {#    </ul>#}
+                                {#</div>#}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% include 'collection/pagination.twig' with {'show_active_filters' : true } %}
+                <hr>
+                {% include 'collection/grid.twig'  %}
+                {% include 'collection/pagination.twig' %}
+            {#</div>#}
+        {% else %}
+            <div class="text-center pt-50">
+                {% if query is not empty %}
+                    <h1>{{'Geen resultaten voor:'|t}} <i>{{query|e}}</i></h1>
+                    <p class="lead mt-10">
+                        {{'We hebben niks kunnen vinden, probeer het nog eens.'|t}}
+                    </p>
+                {% else %}
+                    <h1>
+                        {{'Geen zoekterm'|t}}
+                    </h1>
+                    <p class="lead mt-10">
+                        {{'Je hebt geen zoekterm ingevuld, probeer het nog eens.'|t}}
+                    </p>
+                {% endif %}
+                <div class="search-form mt-20">
+                    <form class="form" role="search" method="GET" action="{{search_url}}">
+                        <div class="input-group">
+                            <input type="text" class="form-control no-fix-up" value="{{query}}" name="q" placeholder="{{'Zoeken'|t}}" id="search-field" autocomplete="off" autofocus>
+                            <div class="input-group-btn">
+                                <button class="btn btn-secondary" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div >
+        {% endif %}
+        </div>
+    </div>
+</div>

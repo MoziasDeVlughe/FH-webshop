@@ -1,0 +1,9 @@
+{% macro radio_button(config) %}
+    <div class="radio af">
+        <label for="{{id}}">
+            <input type="radio" name="{{name}}" id="{{id}}" value="{{value}}"/>
+            <div class="radio-button"></div>
+            <span>{{label}}</span>
+        </label>
+    </div>
+{% endmacro %}

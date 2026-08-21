@@ -1,0 +1,51 @@
+{% extends 'config.twig' %}
+{% block configProvider %}
+    {# checkout index #}
+    
+    {# To connect with the apis of parcel delivery companies we use this code to determine wich ones to use. #}
+    {# It checks if one of the active plugins makes use of a parcel delivery provider. #}
+    {# Based on that it sets the provider variable wich activates the javascript for that provider in js/pickupPoints.js #}
+    
+    {% set providers = [] %}
+     
+    {% if has_app('dhl-pickup-points') or has_app('dhl-delivery-time') %}
+        {% set providers = providers|merge({'dhl': 'dhl'}) %}
+    {% endif %}
+     
+    {% if has_app('postnl-pickup-points') or has_app('postnl-delivery-time') %}
+        {% set providers = providers|merge({'postnl': 'postnl'}) %}
+    {% endif %}
+    
+    {% set klarnaMethodId = '' %}
+    {% for method in payment_methods if method.providerCode == "pay_nl_web" and method.code == '1717' %}
+        {% set klarnaMethodId = method.id %}
+    {% endfor %}
+    
+    
+    {#{% set newsletter = pluginData.newsletter[<newsletter ID>] %}#}
+    
+    {% if newsletter is not defined %}
+        {% set newsletter = pluginData.newsletter|first %}       
+    {% endif %}
+    
+    
+    
+    {# In this file you determine wich layout should be used for the checkout page. #}
+    {# You can choose exciting layouts or build a new one. #}
+    {# To use a layout simply fill in the name of the document between the double qoutes for the code variable. #}
+    {# This will search for the file and use that code for the product page, if it doesn't exist it will use the default. #}
+    
+    {# options #}
+    {#  - default #}
+    {#  - stepped #}
+    {#  - checkout_v4 #}
+    {#  - side_cart (doesn't work) #}
+    
+    {% set code = "stepped" %}
+    {% if shop_version == 'v4' %}
+        {% set code = "checkout_v4" %}
+    {% endif %}
+    
+    {% include ['checkout/'~ code ~ '.twig','checkout/stepped.twig'] with { 'providers': providers, 'klarnaMethodId': klarnaMethodId } %}
+
+{% endblock configProvider %}

@@ -1,0 +1,178 @@
+<section id="content" class="pb-50">
+    <div class="container">
+        <div class="page-header">
+            <h1>{{"Winkelwagen"|t}} {% if items %}<button class="btn btn-link pull-right" data-toggle="modal" data-target="#cart-refresh-modal"><i class="fa fa-trash fa-lg text-muted"></i> <span class="hidden-xs text-muted">{{"Leeg winkelwagen"|t}}</span></button>{% endif %}</h1>
+        </div>
+        {% if items %}
+            {% for cartItem in items %}
+                <div class="panel panel-{% if cartItem.errors is not empty %}danger{% else %}primary{% endif %} cart-item">
+                    <div class="panel-body">
+                        <div class="cart-item-row">
+    
+                            <div class="cart-item-image">
+                                <a href="{{cartItem.url}}" class="thumbnail">
+                                    <div class="lazyload-wrapper lazyload-square">
+                                        <img class="lazyload" data-src='{{cartItem.image.thumbs.100|image({"w": 75, "h": 75})}}' alt="{{"Foto van"|t}} {{cartItem.name}}"/>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="cart-item-info">
+    
+                                <strong><a href="{{cartItem.url}}">{{cartItem.name}}</a></strong>
+                                <div class="cart-item-info-details">
+                                    <div class="hidden-xs">
+                                        <p>{{cartItem.product.short_description}}</p>
+                                        {% if cartItem.errors is not empty %}
+                                            {% for error in cartItem.errors %}
+                                                <p class="text-danger">{{error|t}}</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="cart-item-prices">
+                                        <div class="price-box" style="">
+                                            {% if cartItem.quantity > 1 %}
+                                                <p style="white-space: nowrap">
+                                                    <small>
+                                                        (
+                                                        {% if cartItem.product.has_discount %}
+                                                            <small><s>{{cartItem.product.original_price|price}}</s></small>
+                                                        {% endif %}
+                                                        {{cartItem.price|price}} x {{cartItem.quantity}} )
+                                                    </small>
+                                                </p>
+                                            {% endif %}
+                                            <p>
+                                                {% if cartItem.quantity < 2 %}
+                                                    {% if cartItem.product.has_discount %}<small><s>{{cartItem.product.original_price|price}}</s></small> &nbsp;{% endif %}
+                                                {% endif %}
+                                                <strong class="{% if cartItem.product.has_discount %}text-danger{% endif %}"> {{cartItem.subtotal|price}}</strong>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <ul class="list-unstyled">
+                                                <li><a data-af-href="{{cartItem.delete_url}}" class="btn btn-xs btn-danger fa fa-times"></a></li>
+                                                {#<li><a data-af-href="{{cartItem.increase_url}}" class="btn btn-sm btn-primary fa fa-plus"></a></li>#}
+                                                {#<li><a data-af-href="{{cartItem.decrease_url}}" class="btn btn-sm btn-primary fa fa-minus"></a></li>#}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-md-6 pull-right text-right">
+                    <table class="table">
+                        <tr>
+                            {% set sub_excl = total %}
+                            {% for tax_amount in vat %}
+                                {% set sub_excl = sub_excl - tax_amount.amount %}
+                            {% endfor %}
+                            <td>
+                                {{"totaal excl. BTW"|t}}
+                            </td>
+                            <td>
+                                {{sub_excl|price}}
+                            </td>
+                        </tr>
+                        {% for tax in vat %}
+                        <tr>
+                            <td>
+                                {{tax.label}}:
+                            </td>
+                            <td>
+                                {{tax.amount|price}}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if coupon.is_active %}
+                            <tr>
+                                <td>
+                                    {{"coupon"|t}}: {{coupon.code}} ({{coupon.discount_rate}}%)
+                                </td>
+                                <td>
+                                   {{discount|price}}
+                                </td>
+    
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>
+                                <strong>{{"Totaal"|t}}: </strong>
+                            </td>
+                            <td>
+                                {{total|price}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            {% if has_app('discount') %}
+                {% if coupon.is_active %}
+                    <a type="button" class="btn btn-primary-inverse pull-left" data-af-href="{{coupon.remove_url}}">
+                        {{"Coupon code verwijderen"|t}}
+                    </a>
+                {% else %}
+                    <a type="button" class="btn btn-primary-inverse pull-left" data-toggle="modal" data-target="#discount-modal">
+                        {{"Coupon code invullen"|t}}
+                    <a>
+                {% endif %}
+            {% endif %}
+            <a class="btn btn-primary pull-right" href="{{checkout_url}}">{{"Afrekenen"|t}}</a>
+            <div class="clearfix"></div>
+            <hr>
+            {% if not cross_sell_products is empty %}
+            <div class="product-crosssell-row">
+                <hr>
+                <h3>{{"Anderen bestelden ook"|t}}</h3>
+                {% include 'collection/grid.twig' with {'products' : cross_sell_products } %}
+            </div>
+        {% endif %}
+        {% else %}
+            <h3 class="text-center text-warning">{{"Uw winkelwagen is nog leeg."|t}}<br><br><button class="center btn btn-primary" data-af-href="{{home_url}}">{{"Bekijk onze producten"|t}}</button></h3>
+    
+        {% endif %}
+    </div>
+</section>
+<div class="modal fade" tabindex="-1" role="dialog" id="discount-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="text-muted fa fa-times"></span></button>
+        <h3 class="modal-title">{{"Kortingscode invullen"|t}}</h3>
+      </div>
+      <form action="{{coupon.url}}" method="post">
+          <div class="modal-body">
+                <div class="form-group">
+                    <label>{{"kortingscode"|t}}</label>
+                     <input type="text" name="coupon" placeholder="{{"Vul hier uw code in"|t}}" class="form-control" />
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary-inverse" data-dismiss="modal">{{"Annuleer"|t}}</button>
+            <input type="submit" value="{{"Valideer"|t}}" class="btn btn-primary"/>
+          </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="cart-refresh-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="text-muted fa fa-times"></span></button>
+        <h3 class="modal-title">{{"Winkelwagen legen"|t}}</h3>
+      </div>
+          <div class="modal-body">
+                <h2>{{"Weet u zeker dat u alle producten wilt verwijderen?"|t}}</h2>
+          </div>
+          <div class="modal-footer text-center">
+            <button data-af-href="{{url}}/refresh" class="btn btn-primary-inverse">{{"Verwijderen"|t}}</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">{{"Annuleren"|t}}</button>
+          </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

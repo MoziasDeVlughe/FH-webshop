@@ -1,0 +1,35 @@
+{% import "macros/default.twig" as macros %}
+{% if menus.active.items is not empty or filters is not empty %}
+    <div class="collection-menu-buttons visible-xs visible-sm floating-filter-button">
+        <div class="row">
+            {#<div class="col-xs-6">#}
+            {#    {% if menus.active.items is not empty %}#}
+            {#        <div class="btn btn-primary btn-block mob-button" data-open="sub-menu">#}
+            {#            {{"categorieën"|t}}#}
+            {#        </div>#}
+            {#    {% endif %}#}
+            {#</div>#}
+            <div class="col-xs-12">
+                {% if filters is not empty %}
+                    <div class="btn btn-default btn-block mob-button" data-open="filter-menu">
+                        {{"Filters"|t}}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+<div class="fh-sidebar-card">
+<div class="sidebar-menu">
+    {#<div class="fa fa-times fa-2x close-mob visible-xs visible-sm"></div>#}
+    <i data-lucide="x" class="size-32 close-mob visible-xs visible-sm"></i>
+    {% if menus.active.items is not empty %}
+        <div class="fh-side-title">{{"Categorieën"|t}}</div>
+        <ul class="nav nav-pills nav-stacked">
+            {{macros.menu_items(menus.active.items) }}
+        </ul>
+        <hr>
+    {% endif %}
+</div>
+{% include 'collection/filters.twig' %}
+</div>{# /.fh-sidebar-card #}

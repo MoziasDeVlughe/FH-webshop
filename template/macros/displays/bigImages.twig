@@ -1,0 +1,69 @@
+{% set width = (width is defined ? width : '4') %}
+{% set class = (class is defined ? class : '.hover-1') %}
+{% set use_btn = (use_btn is defined ? use_btn : true) %}
+{% set textOver = (textOver is defined ? textOver : true) %}
+{% set btn_class = (btn_class is defined ? btn_class : 'btn-white-inverse') %}
+{% set btn_text = (btn_text is defined ? btn_text : 'MEER') %}
+{% set use_image = (use_image is defined ? use_image : true) %}
+{% set lazyload = (lazyload is defined ? lazyload : true) %}
+
+
+{% if textOver == true %}
+    <div class="row">
+        {% for slide in slider.slides %}
+            <div class="col-md-{{width}}">
+                {% if use_btn == false %}
+                    <a href="{{slide.title}}">
+                {% endif %}
+                <figure class="{{class}}">
+                    <div class="lazyload-wrapper lazyload-square">
+                        <img class="{% if lazyload %}lazyload {% endif %}lazyload-disable-transition lazyload-cover" {% if lazyload %}data-{% endif %}src="{{slide.filename|replace({"1170x250/" : ""})|image({"w": 400, "h": 400, "c": 1})}}">
+                    </div>
+                    <figcaption>
+                        <h2>{{slide.text|replace({"<p>" : "", "</p>" : ""})}}</h2>
+                        {% if use_btn %}
+                            <p>
+                                <a class="btn {{btn_class}}" href="{{slide.title}}">
+                                    {{btn_text}}
+                                </a>
+                            </p>
+                        {% endif %}
+                    </figcaption>
+                </figure>
+                {% if use_btn == false %}
+                    </a>
+                {% endif %}
+            </div>    
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="row">
+        {% for slide in slider.slides %}
+            <div class="col-md-{{width}}">
+                <figure class="{{class}}">
+                    {%if use_image == true %}
+                        {% if use_btn == false %}
+                            <a href="{{slide.title}}">
+                        {% endif %}
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="{% if lazyload %}lazyload {% endif %}lazyload-disable-transition lazyload-cover" {% if lazyload %}data-{% endif %}src="{{slide.filename|replace({"1170x250/" : ""})|image({"w": 400, "h": 400, "c": 1})}}">
+                        </div>
+                        {% if use_btn == false %}
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    <figcaption>
+                        {{slide.text}}
+                        {% if use_btn %}
+                            <p>
+                                <a class="btn {{btn_class}}" href="{{slide.title}}">
+                                    Bekijk collectie <i class="fa fa-angle-right"> </i>
+                                </a>
+                            </p>
+                        {% endif %}
+                    </figcaption>
+                </figure>
+            </div>    
+        {% endfor %}
+    </div>
+{% endif %}

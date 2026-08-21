@@ -1,0 +1,198 @@
+{% if(has_app('reviews')) %}
+    {% set reviews = pluginData.review %}
+    <h2>{{ "{name} reviews"|t({'{name}' : name }) }} </h2>
+    {% if reviews.reviews %}
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="rating-block">
+                    <h4>{{ "Gemiddelde score"|t }}</h4>
+                    <div class="text-center" style="display:inline-block">
+                        <h2>
+                            {{ reviews.ratings.average.total }}
+                            <small>/ {{ reviews.scale }}</small>
+                        </h2>
+                        {% for point in range(1, reviews.scale) %}
+                                {% if (reviews.ratings.average.total - loop.index0) == ".5"  %}
+                                    <i class="fa fa-star-half-o fa-2x text-warning" aria-hidden="true"></i>
+                                {% else %}
+                                    <i class="fa fa-star{% if point > reviews.ratings.average.total %}-o{% endif %} fa-2x text-warning" aria-hidden="true"></i>
+                                {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h4>{{ "Scores"|t }}</h4>
+                {% for criteria,value in reviews.ratings.average.criteria %}
+                    <div class="pull-left">
+                        <div class="pull-left" style="width:150px; line-height:1;">
+                            <div style="height:9px; margin:5px 0;">
+                                {{ criteria }}
+                            </div>
+                        </div>
+                        <div class="pull-left" style="width:180px;">
+                            <div class="progress" style="height:9px; margin:8px 0;">
+                                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="5" style="width: {{ 100/(reviews.scale) * value }}%">
+                                    <span class="sr-only">{{ value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pull-right" style="margin-left:10px;">
+                            <strong>
+                                {{ value }}
+                            </strong>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <p>
+            {{"Helaas heeft nog niemand een beoordeling geschreven over [naam], maar jij kunt de eerste zijn! Schrijf een review!"|t({"[naam]": name})}}
+        </p>
+    {% endif %}
+    <hr />
+    {#itterate over all the reviews.#}
+    {% for review in reviews.reviews|reverse[:3] %}
+        <div class="panel panel-secondary">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-9">
+                        <span>
+                            <strong>{{review.author_name}}</strong> <br><small class="text-muted">{{review.created_at|date("d-m-Y")}} om {{review.created_at|date("H:i")}}</small>
+                        </span>
+                    </div>
+                    <div class="col-xs-3 text-right">
+                        <span class="h2 bold">
+                            {{ review.average_rating }}
+                            <small>/ {{ reviews.scale }}</small>
+                        </span>
+                    </div>
+                </div>
+                <p>
+                    {{ review.content }}
+                </p>
+                {% if review.pros or review.cons %}
+                    <hr />
+                    <div class="collapse" id="collapse-points-{{loop.index}}">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                    <strong>
+                                        {{"Pluspunten"|t}}
+                                    </strong><br>
+                                {% if review.pros %}
+                                    <ul class="list-unstyled">
+                                        {% for pro in review.pros %}
+                                            <li>
+                                                <i class="fa fa-plus text-success"> </i> {{pro}}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {{"Geen pluspunten."|t}}
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                    <strong>
+                                        {{"Minpunten"|t}}
+                                    </strong><br>
+                                {% if review.cons %}
+                                    <ul class="list-unstyled">
+                                        {% for con in review.cons %}
+                                            <li>
+                                                <i class="fa fa-minus text-danger"> </i> {{con}}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {{"Geen minpunten."|t}}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-xs btn-link" type="button" data-toggle="collapse" data-target="#collapse-points-{{loop.index}}">
+                        {{"Toon plus en min punten"|t}}
+                    </button>
+                {% endif %}
+                {#<div class="row">#}
+                    {#<div class="col-xs-12">#}
+                    {#    {% for criteria,value in review.ratings %}#}
+                    {#        <div class="text-center col-xs-6 col-sm-4 col-md-3 col-lg-2">#}
+                    {#            <div>#}
+                    {#                <div>#}
+                    {#                    {{ criteria }}#}
+                    {#                </div>#}
+                    {#            </div>#}
+                    {#            <div>#}
+                    {#                <strong>#}
+                    {#                    {{ value }}#}
+                    {#                </strong>#}
+                    {#            </div>#}
+                    {#        </div>#}
+                    {#    {% endfor %}#}
+                    {#</div>#}
+                {#</div>#}
+            </div>
+        </div>
+    {% endfor %}
+    
+    <button class="btn btn-primary mb-20" type="button" data-toggle="collapse" data-target="#review-form-container" >
+        {% if reviews.reviews %}
+            {{"Schrijf ook een review "|t}}
+        {% else %}
+            {{"Schrijf een review "|t}}
+        {% endif %}
+    </button>
+    {#form to post reviews #}
+    <div  id="review-form-container" class="collapse">
+        <div class="panel panel-default panel-body">
+            <h4>{{ "Schrijf een review voor {name}"|t({'{name}' : (name) }) }}</h4>
+            <form method="post" action="{{ reviews.url }}" class="form-validate">
+                <input type="hidden" name="ReviewForm[product_id]" value="{{ reviews.id }}">
+                <input type="hidden" name="__returnUrl" value="{{ url }}">
+                <div class="row">
+                    {% for rating in reviews.ratings.average.criteria|keys %}
+                        <div class="col-xs-6 col-sm-4 form-group">
+                            <label for="ReviewForm_rating_{{ rating }}">{{ rating|capitalize }}</label>
+                            <input name="ReviewForm[rating][{{ rating }}]" type="number" class="form-control rating" id="ReviewForm_rating_{{ rating }}" placeholder="{{ rating|capitalize|t }}" required data-step="1" data-stars="{{reviews.scale}}" data-parsley-min="1" data-parsley-max="5" data-min="0" data-max="{{ reviews.scale }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 form-group">
+                        <label for="ReviewForm_author_name">{{ "Naam"|t }}</label>
+                        <input name="ReviewForm[author_name]" type="text" class="form-control" id="ReviewForm_author_name" placeholder="{{ "Voornaam Achternaam"|t }}" required>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label for="ReviewForm_author_email">{{ "E-mailadres"|t }}</label>
+                        <input name="ReviewForm[author_email]" type="email" class="form-control" id="ReviewForm_author_email" placeholder="{{ "naam@mail.nl"|t }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label for="ReviewForm_review">{{ "Schrijf hier je review"|t }} </label>
+                        <textarea name="ReviewForm[review]" id="ReviewForm_review" class="form-control" rows="5" data-parsley-minlength="20" placeholder="{{ "Review"|t }}" required></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 form-group">
+                        <label for="ReviewForm_pros">{{ "Plus punten"|t }}  </label><br>
+                        <small >{{"Elk op een nieuwe regel"|t}}</small>
+                        <textarea name="ReviewForm[pros]" id="ReviewForm_pros" class="form-control" rows="5" placeholder="{{ "Schrijf hier de pluspunten van {name}"|t({'{name}' : (name)}) }}"></textarea>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label for="ReviewForm_cons">{{ "Min punten"|t }}  </label><br>
+                        <small >{{"Elk op een nieuwe regel"|t}}</small>
+                        <textarea name="ReviewForm[cons]" id="ReviewForm_cons" class="form-control" rows="5" placeholder="{{ "Schrijf hier de minpunten van {name}"|t({'{name}' : (name)}) }}"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <button type="submit" class="btn btn-primary">{{ "Verstuur"|t }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+

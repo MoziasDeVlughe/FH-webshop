@@ -1,0 +1,133 @@
+<div class="cart-overview-item">
+    <div class="cart-overview-item-inner d-flex gap-8">
+        
+        <div class="cart-overview-item-delete align-self-center">
+            <a 
+                data-remove-href="{{item.delete_url}}" 
+                data-cart-url="{{home_url}}cart" 
+                data-cart-ajax-element="#cart-drawer" 
+                data-cart-ajax-input="#cart-drawer > *" 
+                class="text-primary remove-cart-product"
+                data-product-price="{{cartItem.price}}"
+                data-product-quantity="{{cartItem.quantity}}"
+                data-product-id="{{cartItem.product.id}}"
+                data-modify-action="remove"
+            >
+                <i class="fa fa-times text-danger fa-sm"></i>
+            </a>
+        </div>
+        <div class="cart-overview-item-image px-5">
+            <a href="{{item.url}}" class="d-block icon-75">
+                <div class="lazyload-wrapper lazyload-square">
+                    <img class="lazyload" data-src="{{item.image.thumbs.100|image({"w": 75, "h": 75})}}" alt="{{'Bekijk [name]'|t({'[name]': item.name})}}"/>
+                </div>
+            </a>
+        </div>
+        <div class="cart-overview-item-group d-flex flex-column justify-content-between flex-fill">
+            <a href="{{item.url}}" class="cart-overview-item-name">
+                {% if item.pluginData.bundle.bundle.name %}
+                    {{item.pluginData.bundle.bundle.name}}
+                {% else %}
+                    {{item.name}}
+                {% endif %}
+            </a>
+            <div class="d-flex justify-content-between">
+                <div class="cart-overview-item-quantity align-self-end">
+                    <div class="quantity-counter">
+                        <button 
+                            type="button" 
+                            class="btn modify-quantity" 
+                            data-modify-href="{{item.decrease_url}}" 
+                            data-cart-url="{{home_url}}cart" 
+                            data-cart-ajax-element="#cart-drawer" 
+                            data-cart-ajax-input="#cart-drawer > *"
+                            data-product-price="{{cartItem.price}}"
+                            data-product-quantity="1"
+                            data-product-id="{{cartItem.product.id}}"
+                            data-modify-action="remove"
+                            aria-label="{{'aantal plus 2'|t}}"
+                        >
+                            <i class="fa fa-minus fa-sm"></i>
+                        </button>
+                        <div class="mx-10">
+                            {{item.quantity}}
+                        </div>
+                        <button 
+                            type="button" 
+                            class="btn modify-quantity" 
+                            data-modify-href="{{item.increase_url}}" 
+                            data-cart-url="{{home_url}}cart" 
+                            data-cart-ajax-element="#cart-drawer" 
+                            data-cart-ajax-input="#cart-drawer > *"
+                            data-product-price="{{cartItem.price}}"
+                            data-product-quantity="1"
+                            data-product-id="{{cartItem.product.id}}"
+                            data-modify-action="add"
+                            aria-label="{{'aantal plus 1'|t}}"
+                        >
+                            <i class="fa fa-plus fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="cart-overview-item-price text-right">
+                        {% if item.pluginData.bundle.bundle.name %}
+                            {% if item.pluginData.bundle.bundle.original_price != item.pluginData.bundle.bundle.price %}
+                                <div class="h6 mb-0 text-muted">
+                                    <s>
+                                        {{item.pluginData.bundle.bundle.original_price|price}}
+                                    </s>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            {% if cartItem.has_discount %}
+                                <div class="h6 text-muted">
+                                    <s>
+                                        {{item.original_price|price}}
+                                    </s>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    <strong>
+                        {% if item.pluginData.bundle.bundle.name %}
+                            {{(item.pluginData.bundle.bundle.price * item.quantity)|price}}
+                        {% else %}
+                            {{item.subtotal|price}}
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if item.pluginData.bundle %}
+        <div class="d-flex ml-40 mt-10">
+            <div class="cart-overview-item-image flex-shrink-0 pl-5 mr-10">
+                <a href="{{item.url}}" class="d-block icon-40">
+                    <div class="lazyload-wrapper lazyload-square">
+                        <img class="lazyload" data-src="{{item.image.thumbs.50|image({"w": 50, "h": 50})}}" alt="{{'Bekijk [name]'|t({'[name]': item.name})}}"/>
+                    </div>
+                </a>
+            </div>
+            <div class="flex-fill">
+                <a href="{{item.url}}" title="{{item.name}}">
+                    {{item.name}}
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    {% for child in item.children %}
+        <div class="d-flex ml-40 mt-10">
+            <div class="cart-overview-item-image flex-shrink-0 pl-5 mr-10">
+                <a href="{{child.url}}" class="d-block icon-40">
+                    <div class="lazyload-wrapper lazyload-square">
+                        <img class="lazyload" data-src="{{child.image.thumbs.50|image({"w": 50, "h": 50})}}" alt="{{'Bekijk [name]'|t({'[name]': child.name})}}"/>
+                    </div>
+                </a>
+            </div>
+            <div class="flex-fill">
+                <a href="{{child.url}}" title="{{child.name}}">
+                    {{child.name}}
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>

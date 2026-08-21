@@ -1,0 +1,69 @@
+{% if menu is not defined %}
+    <p>
+        No menu defined for 'default menu with dropdown' macro.
+    </p>
+{% else %}
+    <ul class="nav navbar-nav dropdown-navigation">
+        {% for menuitem in menu.items %}
+            <li{% if menuitem.active %} class="active"{% endif %}>
+                <a href="{{menuitem.url}}" title="{{menuitem.title}}">{{menuitem.label}}</a>
+                {% if menuitem.items %}
+                    <div class="sub-menu hidden-xs">
+                        <div class="sub-menu-menu clearfix">
+                            <ul class="list-unstyled">
+                                {% for subitem in menuitem.items %}
+                                    {% if subitem.url == "column-blank" %}
+                                        <li class="h5 no-border">
+                                            <strong>
+                                                &nbsp;
+                                            </strong>
+                                        </li>
+                                        {% for item in subitem.items %}
+                                            <li>
+                                                <a href="{{item.url}}" title="{{item.title}}">
+                                                    {{item.label}}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                        {% if not loop.last %}
+                                            </ul>
+                                            <ul class="list-unstyled">
+                                        {% endif %}
+                                    {% elseif subitem.url == "column" %}
+                                            <li class="h5 text-primary">
+                                                <strong>
+                                                    {{subitem.label}}
+                                                </strong>
+                                            </li>
+                                            {% for item in subitem.items %}
+                                                <li>
+                                                    <a href="{{item.url}}" title="{{item.title}}">
+                                                        {{item.label}}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        {% if not loop.last %}
+                                            </ul>
+                                            <ul class="list-unstyled">
+                                        {% endif %}
+                                    {% else %}
+                                        {#<ul class="list-unstyled">#}
+                                            <li>
+                                                <a href="{{subitem.url}}" title="{{subitem.title}}">
+                                                    {{subitem.label}}
+                                                </a>
+                                            </li>
+                                        {#</ul>#}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="sub-menu-image">
+                            
+                        </div>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

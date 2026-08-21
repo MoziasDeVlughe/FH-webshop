@@ -1,0 +1,87 @@
+.full-width-slider {
+    
+    // local variables specific for the full width slider
+    
+    // height settings
+    $fw-slider-height:              25vw;
+    $fw-slider-height-mob:          50vw;
+    $fw-slider-overlay-color:       rgba($brand-primary, .4);
+    
+    $fw-slider-title-font:          $font-family-sans-serif;
+    $fw-slider-title-size:          5vw;
+    $fw-slider-title-size-mob:      8vw;
+    $fw-slider-title-weight:        900;
+    $fw-slider-title-casing:        uppercase;
+    
+    $fw-slider-text-font:           $font-family-sans-serif;
+    $fw-slider-text-size:           1.5vw;
+    $fw-slider-text-size-mob:       4vw;
+    $fw-slider-text-weight:         500;
+    $fw-slider-text-casing:         none;
+    
+    
+    
+    width: 100%;
+    height: $fw-slider-height;
+    max-height: initial;
+    margin-bottom: 0;
+    overflow: hidden;
+    
+    @include af-xs {
+        height: $fw-slider-height-mob;
+    }
+    
+    .slide-image-background {
+        position: relative;
+        width: 100%;
+        height: $fw-slider-height;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        
+        @include af-xs {
+            height: $fw-slider-height-mob;
+        }
+    }
+    
+    .slide-overlay {
+        width: 100%;
+        
+        .slide-title {
+            
+            h1 {
+                font-family: $fw-slider-title-font;
+                font-size: $fw-slider-title-size;
+                font-weight: $fw-slider-title-weight;
+                text-transform: $fw-slider-title-casing;
+                
+                @include af-xs {
+                    font-size: $fw-slider-title-size-mob;
+                }
+            }
+        }
+        
+        .slide-text {
+            font-family: $fw-slider-text-font;
+            font-size: $fw-slider-text-size;
+            font-weight: $fw-slider-text-weight;
+            text-transform: $fw-slider-text-casing;
+            
+            @include af-xs {
+                font-size: $fw-slider-text-size-mob;
+            }
+            
+            p {
+                margin: $fw-slider-text-size 0;
+                
+                @include af-xs {
+                    margin: $fw-slider-text-size-mob 0;
+                    
+                    .btn {
+                        margin-top: 5px;
+                    }
+                }
+            }
+        }
+    }
+}

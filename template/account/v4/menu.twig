@@ -1,0 +1,13 @@
+<div class="panel panel-default account-menu">
+    <div class="panel-heading" data-af-href="/account">
+        <i class="fa fa-user"></i> {{customer.name}}
+    </div>
+    <div class="panel-body">
+        <ul class="submenu list-unstyled">
+            <li {% if active == 'settings'%} class="active" {% endif %}><a href="{{home_url}}account/settings">{{"Mijn gegevens"|t}}</a></li>
+            <li {% if active == 'address'%} class="active" {% endif %}><a href="{{home_url}}account/address">{{"Mijn adressen"|t}}</a></li>
+            <li {% if active == 'orders'%} class="active" {% endif %} ><a href="{{home_url}}account/orders">{{"Mijn bestellingen"|t}}</a></li>
+            <li><a href="{{home_url}}account/logout">{{"Uitloggen"|t}}</a></li>
+        </ul>
+    </div>
+</div>

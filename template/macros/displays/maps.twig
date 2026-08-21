@@ -1,0 +1,44 @@
+{# Google Maps #}
+
+{# parameters: #}
+{# lat: expects a latitude value for the desired location #}
+{# lng: expects a longitude value for the desired location #}
+{# zoom: expects a number for the desired zoom distance #}
+{# styles: expects an array in a string of styles (to pick a different theme for your map we recommend Snazzy Maps: https://snazzymaps.com/) #}
+{# title: expects a string value to display as the title of the marker #}
+{# width: expects a string value that specifies the width in any measurement that is available in css #}
+{# height: expects a string value that specifies the height in any measurement that is available in css #}
+
+{% set lat = (lat is defined ? lat : '53.237184') %}
+{% set lng = (lng is defined ? lng : '6.590141') %}
+{% set zoom = (zoom is defined ? zoom : '15') %}
+{% set styles = (styles is defined ? styles : null) %}
+{% set width = (width is defined ? width : '100%') %}
+{% set height = (height is defined ? height : '350px') %}
+
+
+<div id="maps-container" style=" width: {{width}};height: {{height}}; overflow: hidden;">
+    <script>
+        function initMap() {
+            var location  = {lat: {{lat}}, lng: {{lng}}};
+              
+            var map = new google.maps.Map(document.getElementById('maps-container'), {
+                center: location,
+                zoom: {{zoom}},
+                disableDefaultUI: true,
+                scrollwheel: false,
+            });
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: 'store'
+            });
+            
+            {% if styles %}
+                var styles = {{styles}};
+                map.setOptions({styles: styles});
+            {% endif %}
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1KDKDOI6jhZJ-nRtVOSONJJT8LeZqtFI&callback=initMap"async defer></script>
+</div>

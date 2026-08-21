@@ -1,0 +1,373 @@
+{% import 'macros/displays.twig' as af_displays %}
+
+<section id="contentcart">
+    <div class="container pb-50">
+        <div class="mb-15">
+            <h1 class="cart-header d-flex flex-column flex-sm-row justify-content-between">
+                {{'Winkelwagen'|t}} 
+                {% if items %}
+                    <a class="btn btn-primary pull-right mt-10 mt-sm-0" href="{{checkout_url}}">
+                        {{'Verder met bestellen'|t}}
+                    </a>
+                {% endif %}
+            </h1>
+            <div class="clearfix"></div>
+        </div>
+        {% if items %}
+            <div class="row">
+                <div class="col-md-7 col-lg-8 col-xl-9 cart-items">
+                    {% for cartItem in items if not cartItem.is_nested %}
+                        <div class="panel panel-{% if cartItem.errors is not empty %}danger{% else %}default{% endif %} cart-item">
+                            <div class="panel-body">
+                                <div class="cart-item-row">
+    
+                                    <div class="cart-item-image">
+                                        <a href="{{cartItem.url}}">
+                                            <div class="lazyload-wrapper lazyload-square">
+                                                <img class="lazyload" data-src='{{cartItem.image.thumbs.100|image({"w": 100, "h": 100})}}' alt="{{'Foto van {name}'|t({'{name}' : cartItem.name })}}"/>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="cart-item-info">
+                                        <strong>
+                                            <a href="{{cartItem.url}}">
+                                                {% if cartItem.pluginData.bundle.bundle.name %}
+                                                    {{cartItem.pluginData.bundle.bundle.name}}
+                                                {% else %}
+                                                    {{cartItem.name}}
+                                                {% endif %}
+                                            </a>
+                                        </strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{cartItem.product.specifications['status']['options']|first.label}}
+                                        </small>
+                                        <a 
+                                            data-remove-href="{{cartItem.delete_url}}" 
+                                            data-cart-url="{{home_url}}cart" 
+                                            data-cart-ajax-element=".page-wrap" 
+                                            data-cart-ajax-input=".page-wrap > *" 
+                                            class="btn btn-xs btn-link pull-right fa fa-times remove-cart-product"
+                                            data-product-price="{{cartItem.price}}"
+                                            data-product-quantity="{{cartItem.quantity}}"
+                                            data-product-id="{{cartItem.product.id}}"
+                                            data-modify-action="remove"
+                                        ></a>
+
+                                        <div class="cart-item-info-table">
+                                            <div class="cart-item-info-table-row">
+                                                <div class="cart-item-info-table-value">
+                                                    {% if cartItem.pluginData.bundle %}
+                                                        {% set original_total = cartItem.pluginData.bundle.bundle.original_price * cartItem.quantity %}
+                                                        {% if cartItem.quantity > 1 %}
+                                                            <small>
+                                                                {% if cartItem.pluginData.bundle.bundle.original_price != cartItem.pluginData.bundle.bundle.price %}
+                                                                    <s>{{original_total|price}}</s><br>
+                                                                {% else %}
+                                                                    {{cartItem.pluginData.bundle.bundle.price|price}}
+                                                                {% endif %}
+                                                            </small>
+                                                        {% endif %}
+                                                        {% if cartItem.quantity < 2 %}
+                                                            {% if cartItem.pluginData.bundle.bundle.original_price != cartItem.pluginData.bundle.bundle.price %}
+                                                            <small><s>{{cartItem.pluginData.bundle.bundle.original_price|price}}</s></small><br>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        <strong class="{% if cartItem.product.has_discount %}text-danger{% endif %}"> 
+                                                            {{(cartItem.pluginData.bundle.bundle.price * cartItem.quantity)|price}}
+                                                        </strong>
+                                                    {% else %}
+                                                        {% set original_total = cartItem.product.original_price * cartItem.quantity %}
+                                                        {% if cartItem.quantity > 1 %}
+                                                            <small>
+                                                                {% if cartItem.product.has_discount %}
+                                                                    <s>{{original_total|price}}</s><br>
+                                                                {% else %}
+                                                                    {{original_total|price}}
+                                                                {% endif %}
+                                                            </small>
+                                                        {% endif %}
+                                                        {% if cartItem.quantity < 2 %}
+                                                            {% if cartItem.product.has_discount %}<small><s>{{original_total|price}}</s></small><br>{% endif %}
+                                                        {% endif %}
+                                                        <strong class="{% if cartItem.product.has_discount %}text-danger{% endif %}"> {{cartItem.subtotal|price}}</strong>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="cart-item-info-table-row">
+                                                <div class="cart-item-info-table-value">
+                                                    <div class="input-group input-group-sm quantity-field">
+                                                        <div>
+                                                            Aantal: {{cartItem.quantity}}
+                                                        </div>
+                                                        <div class="btn-group">
+                                                            <a 
+                                                                data-modify-href="{{cartItem.increase_url}}" 
+                                                                data-cart-url="{{home_url}}cart" 
+                                                                data-cart-ajax-element=".page-wrap" 
+                                                                data-cart-ajax-input=".page-wrap > *" 
+                                                                class="btn btn-info btn-xs modify-quantity"
+                                                                data-product-price="{{cartItem.price}}"
+                                                                data-product-quantity="1"
+                                                                data-product-id="{{cartItem.product.id}}"
+                                                                data-modify-action="add"
+                                                            ><i class="fa fa-plus"></i></a>
+                                                            {% if cartItem.quantity > 1 %}
+                                                                <a 
+                                                                    data-modify-href="{{cartItem.decrease_url}}" 
+                                                                    data-cart-url="{{home_url}}cart" 
+                                                                    data-cart-ajax-element=".page-wrap" 
+                                                                    data-cart-ajax-input=".page-wrap > *" 
+                                                                    class="btn btn-info btn-xs modify-quantity"
+                                                                    data-product-price="{{cartItem.price}}"
+                                                                    data-product-quantity="1"
+                                                                    data-product-id="{{cartItem.product.id}}"
+                                                                    data-modify-action="remove"
+                                                                ><i class="fa fa-minus"></i></a>
+                                                            {% else %}
+                                                                <a 
+                                                                    data-remove-href="{{cartItem.delete_url}}" 
+                                                                    data-cart-url="{{home_url}}cart" 
+                                                                    data-cart-ajax-element=".page-wrap" 
+                                                                    data-cart-ajax-input=".page-wrap > *" 
+                                                                    class="btn btn-info btn-xs remove-cart-product"
+                                                                    data-product-price="{{cartItem.price}}"
+                                                                    data-product-quantity="{{cartItem.quantity}}"
+                                                                    data-product-id="{{cartItem.product.id}}"
+                                                                    data-modify-action="remove"
+                                                                ><i class="fa fa-minus"></i></a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="cart-item-child-products d-flex flex-column pl-30 w-100 mt-20">
+                                    {% if cartItem.pluginData.bundle.bundle %}
+                                        <div class="panel panel-default mb-5">
+                                            <div class="panel-body">
+                                                <div class="cart-item-row">
+                                                    <div class="cart-item-image">
+                                                        <a href="{{cartItem.url}}">
+                                                            <div class="lazyload-wrapper lazyload-square">
+                                                                <img class="lazyload" data-src='{{cartItem.image.thumbs.50|image({"w": 50, "h": 50})}}' alt="{{'Foto van {name}'|t({'{name}' : cartItem.name })}}" title="{{'Foto van {name}'|t({'{name}' : cartItem.name })}}"/>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="cart-item-info">
+                                                        <strong>
+                                                            <a href="{{cartItem.url}}">
+                                                                {{cartItem.name}}
+                                                            </a>
+                                                        </strong>
+                                                        <div class="cart-item-info-table">
+                                                            <div class="cart-item-info-table-row">
+                                                                <div class="cart-item-info-table-value">
+                                                                    {{'aantal: [aantal]'|t({'[aantal]' : cartItem.quantity})}}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% for child in cartItem.children %}
+                                        <div class="panel panel-default mb-5">
+                                            <div class="panel-body">
+                                                <div class="cart-item-row">
+                                                    <div class="cart-item-image">
+                                                        <a href="{{child.url}}">
+                                                            <div class="lazyload-wrapper lazyload-square">
+                                                                <img class="lazyload" data-src='{{child.image.thumbs.50|image({"w": 50, "h": 50})}}' alt="{{'Foto van {name}'|t({'{name}' : child.name })}}" title="{{'Foto van {name}'|t({'{name}' : child.name })}}"/>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="cart-item-info">
+                                                        <strong>
+                                                            <a href="{{child.url}}">
+                                                                {{child.name}}
+                                                            </a>
+                                                        </strong>
+                                                        <div class="cart-item-info-table">
+                                                            <div class="cart-item-info-table-row">
+                                                                <div class="cart-item-info-table-value">
+                                                                    {{'aantal: [aantal]'|t({'[aantal]' : child.quantity})}}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-5 col-lg-4 col-xl-3 cost-summary-sticky">
+                    <div class="cost-summary-sticky-inner">
+                        
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>
+                                 {{'Mijn bestelling'|t}}
+                                </strong>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table">
+                                    <tr>
+                                        {% set sub_excl = total %}
+                                        {% for tax_amount in vat %}
+                                            {% set sub_excl = sub_excl - tax_amount.amount %}
+                                        {% endfor %}
+                                        <td>
+                                         {{'totaal excl. BTW'|t}}
+                                        </td>
+                                        <td class=" text-right">
+                                            {{sub_excl|price}}
+                                        </td>
+                                    </tr>
+                                    {% for tax in vat %}
+                                    <tr>
+                                        <td>
+                                            {{tax.label}}:
+                                        </td>
+                                        <td class="text-right">
+                                            {{tax.amount|price}}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% if coupon.is_active %}
+                                        <tr>
+                                            <td>
+                                                {{'coupon: {code} ({rate}%)'|t({'{code}' : coupon.code, '{rate}' : coupon.discount_rate })}} 
+                                            </td>
+                                            <td class=" text-right">
+                                               {{discount|price}}
+                                            </td>
+                    
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{'Totaal:'|t}}</strong>
+                                        </td>
+                                        <td class="text-right">
+                                            <strong>{{total|price}}</strong>
+                                        </td>
+                                    </tr>
+                                    {#<tr>#}
+                                    {#    <td colspan="2">#}
+                                    {#        <hr>#}
+                                    {#    </td>#}
+                                    {#</tr>#}
+                                    {#<tr>#}
+                                    {#    <td>#}
+                                    {#        {{'Verwachte bezorgdatum:'|t}}<br>#}
+                                    {#        <span class="text-green expected-shipping" data-expected-days="{{pluginData.ShippingDuration}}" data-current-date="{{'now'|date('Y-m-d')}}" data-current-hour="{{'now'|date('H')}}">#}
+                                    {#            {{'berekenen'|t}}...#}
+                                    {#        </span>#}
+                                    {#    </td>#}
+                                    {#</tr>#}
+                                </table>
+                            </div>
+                        </div>
+                        {% if has_app('discount') %}
+                            {% if coupon.is_active %}
+                                <div class="text-center">
+                                    {{'Gebruikte actiecode'|t}}
+                                </div>
+                                <div id="coupon-form">
+                                    <div class="input-group">
+                                        <input type="text" name="coupon" disabled placeholder="{{'Vul hier uw code in'|t}}" value="{{coupon.label}} - {{coupon.code}}" class="col-md-12 form-control" />
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-secondary" data-af-href="{{coupon.remove_url}}">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="space-20"></div>
+                            {% else %}
+                                <div class="text-center">
+                                    <button data-target="#coupon-form" data-toggle="collapse" aria-expanded="false" class="btn btn-link">{{'Heb je een actiecode? Klik hier'|t}}</button>
+                                </div>
+                                <div class="collapse" id="coupon-form">
+                                    <form action="{{coupon.url}}" method="post">
+                                        <div class="input-group">
+                                            <input type="text" name="coupon" placeholder="{{'Vul hier uw code in'|t}}" class="col-md-12 form-control" />
+                                            <span class="input-group-btn">
+                                                <button type="submit" class="btn btn-secondary">
+                                                    <i class="fa fa-check"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="space-20"></div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <a class="btn btn-primary pull-right" href="{{checkout_url}}">
+                {{'verder met bestellen'|t}}
+            </a>
+            <ul class="mb-0 list-inline">
+                {% for method in properties.payment_methods if method.icon %}
+                    <li>
+                        <img src="{{method.icon.thumbs.50}}">
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="clearfix"></div>
+            {% if not cross_sell_products is empty %}
+                <div class="product-crosssell-row">
+                    <hr>
+                    <h3>{{'Anderen bestelden ook'|t}}</h3>
+                    {{af_displays.products({
+                        "products" : cross_sell_products,
+                        "style": 'grid',
+                        'use_quickview': true
+                    })}}
+                </div>
+            {% endif %}
+        {% else %}
+            <h3 class="text-center text-warning">
+                {{'Uw winkelwagen is leeg.'|t}}
+                <br>
+                <br>
+                <button class="center btn btn-primary" data-af-href="{{home_url}}">{{'Bekijk onze producten'|t}}</button>
+            </h3>
+        {% endif %}
+    </div>
+</section>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="cart-refresh-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="text-muted fa fa-times"></span></button>
+        <h3 class="modal-title">Winkelwagen legen</h3>
+      </div>
+          <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Weet u zeker dat u alle producten wilt verwijderen?</h2>
+                    </div>
+                </div>
+          </div>
+          <div class="modal-footer text-center">
+            <button data-af-href="{{url}}/refresh" class="btn btn-link text-danger">Verwijderen</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Annuleren</button>
+          </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

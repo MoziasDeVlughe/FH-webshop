@@ -1,0 +1,165 @@
+// filter styling on collection page
+
+.filter {
+
+    & > .btn {
+        position: relative;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 5px;
+        line-height: 1;
+        text-align: left;
+
+        & > .fa {
+            float: right;
+            line-height: 1.55em;
+            @include transition(.1s ease);
+        }
+
+        // &:not(.collapsed) .fa {
+        //     @include rotate(45deg);
+        // }
+
+        & > .collapsable-icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            @include transform(translateY(-50%, -50%));
+
+            &:after {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 10px;
+                height: 2px;
+                content: "";
+                background-color: #fff;
+                @include transform(translate(-50%, -50%) rotate(0deg));
+                @include transition(.2s ease);
+            }
+
+            &::before {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 10px;
+                height: 2px;
+                content: "";
+                background-color: #fff;
+                @include transform(translate(-50%, -50%));
+            }
+        }
+
+        &.collapsed {
+
+            .collapsable-icon:after {
+                @include transform(translate(-50%, -50%) rotate(90deg));
+            }
+        }
+    }
+
+    ul.double-col {
+        column-count: 2;
+    }
+
+    #price ul, #date ul {
+        column-count: initial;
+    }
+
+    .filter-option {
+        color: $link-color;
+        
+        > a {
+            @include flexbox;
+            @include align-items(center);
+        }
+
+        &::hover {
+            color: $link-hover-color;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+}
+
+// active filters
+.active-filters-box, .product-options-item {
+
+    .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+}
+
+
+#collection-content, #product-page-content {
+    @include transition(.2s ease-in-out);
+}
+
+// animation when ajax is loading
+.loading-ajax {
+    pointer-events: none;
+
+    &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        content: "";
+        background-color: rgba(255,255,255,.8);
+    }
+
+    &::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 2;
+        width: 100px;
+        height: 100px;
+        content: "";
+        border: 5px solid $brand-secondary;
+        border-radius: 50%;
+        -webkit-animation: loader-scale 1s ease-out infinite;
+        animation: loader-scale 1s ease-out infinite;
+    }
+
+    &.prod-slider::after {
+        position: absolute;
+    }
+} 
+
+@keyframes loader-scale {
+
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+
+    50% {
+        opacity: 1; 
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+@-webkit-keyframes loader-scale {
+
+    0% {
+        opacity: 0;
+        -webkit-transform: translate(-50%, -50%) scale(0);
+    }
+
+    50% {
+        opacity: 1; 
+    }
+    
+    100% {
+        opacity: 0;
+        -webkit-transform: translate(-50%, -50%) scale(1);
+    }
+}

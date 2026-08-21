@@ -1,0 +1,37 @@
+<div class="container">
+    {% if success %}
+        <div class="alert alert-success">{{"Uw bericht is succesvol verstuurd."|t}}</div>
+        <h2>{{"Uw bericht"|t}}</h2>
+        <hr>
+        <blockquote>
+            {% for field in fields %}
+                <strong>{{field.label}}</strong><br> {{field.value}}<br><br>
+            {% endfor %}
+        </blockquote>
+    {% else %}
+        <form method="POST">
+            {% for field in fields %}
+                <div class="form-group{% if field.errors is not empty %} has-error{% endif %}">
+                    {% if field.name == "recaptcha" %}
+                        {{call("recaptcha")|first}}
+                    {% else %}
+                        <label class="control-label" for="{{field.name}}-{{loop.index}}">
+                            {{field.label}}
+                        </label>
+                        <input type="{{field.type}}" value="{{field.value|e}}" id="{{field.name}}-{{loop.index}}" name="{{field.name}}" class="form-control">
+                        {% if field.errors is not empty %}
+                            {% for error in field.errors %}
+                            <span class="help-block">
+                                {{error|t}}
+                            </span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">
+                {{'Verstuur'|t}}
+            </button>
+        </form>
+    {% endif %}
+</div>

@@ -1,0 +1,97 @@
+<div class="quick-view-modal-content" id="quick-view-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{"Snel bestellen"|t}}</h4>
+    </div>
+    <form action="{{cart_url}}" method="post" id="quick-view-form" data-product-url="{{url}}" data-cart-url="{{home_url}}cart" data-form-input="[{'product_id' : '{{id}}', 'quantity' : '1', 'price' : '{{price}}'}]">
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="product-image text-center">
+                        <div class="lazyload-wrapper lazyload-square">
+                            <img class="lazyload" data-src="{{image_default.thumbs.200|image({"w": 200, "h": 200})}}" alt="{{name}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="h4">
+                        <strong>
+                            {{name}}
+                        </strong>
+                    </div>
+                    <div class="product-variants text-center">
+                        {% if link is not empty %}
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <div class="lazyload-wrapper lazyload-square">
+                                        <img class="lazyload" data-src="{{image_default.thumbs.100|image({"w": 75, "h": 75})}}" alt="{{name}}">
+                                    </div>
+                                </div>
+                                {% for color in link.links %}
+                                    <div class="col-xs-3">
+                                        <span data-wl-product="{{color.url}}" data-qv-ajax-element="#quick-view-modal .modal-body" data-qv-ajax-input="#quick-view-content > *">
+                                            <div class="lazyload-wrapper lazyload-square">
+                                                <img class="lazyload" data-src="{{color.image.thumbs.100|image({"w": 75, "h": 75})}}"/>
+                                            </div>
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-options">
+                        {% if has_options %}
+                            <div class="product-options">
+                                {% for attribute in attributes %}
+                                    <div class="form-group">
+                                        <strong>{{attribute.label}}</strong>
+                                        <div class="product-options-item">
+                                            {% for option in attribute.options|sort %}
+                                                <button type="button" class="btn btn-primary btn-sm{% if option.active %} active{% endif %} product-option" data-qv-product="{{option.url}}" data-qv-ajax-element="#quick-view-modal .modal-content" data-qv-ajax-input="#quick-view-content > *">{{option.label}}</button>
+                                            {% endfor %} 
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="count">{{"Aantal"|t}}</label>
+                        <input type="number" id="count" name="quantity" class="form-control input-sm" value="1" min="1" {% if not available or not selected %} disabled {% endif %}>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+           
+                <input type="hidden" value="{{price}}" name="price" />
+                <input type="hidden" value="{{id}}" name="product_id" />
+                <input type="hidden" value="{{sku}}" name="sku" />
+                
+                <button type="button" class="btn btn-link pull-left" data-af-href="{{url}}">
+                    {{"Meer info"|t}}
+                </button>
+                {% if price > 0 and available %}
+                    {% set qv_variant = [] %}
+                    {% for attribute in attributes %}
+                        {% for option in attribute.options if option.active %}
+                            {% set qv_variant = qv_variant|merge([attribute.label ~ ': ' ~ option.label]) %}
+                        {% endfor %}
+                    {% endfor %}
+                    {% set wa_qv = "Hallo! Ik wil graag bestellen: " ~ name ~ (sku ? " (art.nr: " ~ sku ~ ")" : "") ~ (qv_variant is not empty ? " — " ~ qv_variant|join(', ') : "") %}
+                    <a href="https://wa.me/31850604129?text={{ wa_qv|url_encode }}" target="_blank" rel="noopener" class="fh-btn fh-btn-wa">
+                        <svg class="fh-wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.86 9.86 0 0 0 12.04 2zm4.52 12.99c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.77-1.84-.2-.48-.41-.42-.56-.43l-.48-.01c-.16 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.16 1.75 2.67 4.25 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+                        {{"Bestellen via WhatsApp"|t}}
+                    </a>
+                {% endif %}
+        </div>
+    </form>
+    <div class="modal-footer success-add hidden">
+        <button class="btn btn-link pull-left" data-dismiss="modal" aria-label="close">
+            {{"Verder winkelen"|t}}
+        </button>
+        <button class="btn btn-success" data-af-href="{{home_url}}cart">
+            {{"Afrekenen"|t}}
+        </button>
+    </div>
+</div>
